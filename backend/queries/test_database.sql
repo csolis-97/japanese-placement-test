@@ -46,55 +46,32 @@ CREATE TABLE unverified_users (
     created_at DATETIME NOT NULL
 );
 
--- n5_questions table section
+-- questions table section
 
--- Drop the n5_questions table if it exists
-DROP TABLE IF EXISTS n5_questions;
+-- Drop the questions table if it exists
+DROP TABLE IF EXISTS questions;
 
--- Create the n5_questions table
-CREATE TABLE n5_questions (
+-- Create the questions table
+CREATE TABLE questions (
     question_id INT AUTO_INCREMENT PRIMARY KEY,
-    question_title VARCHAR(255) NOT NULL,
     question_text VARCHAR(255) NOT NULL,
-    option1 VARCHAR(255),
-    option2 VARCHAR(255),
-    option3 VARCHAR(255),
-    option4 VARCHAR(255),
-    correct_option VARCHAR(255) NOT NULL
+    question_body VARCHAR(255) NOT NULL,
+    question_level ENUM ('N5', 'N4', 'N3') NOT NULL
 );
 
--- n4_questions table section
+-- answers table section
 
--- Drop the n4_questions table if it exists
-DROP TABLE IF EXISTS n4_questions;
+-- Drop the answers table if it exists
+DROP TABLE IF EXISTS answers;
 
--- Create the n4_questions table
-CREATE TABLE n4_questions (
-    question_id INT AUTO_INCREMENT PRIMARY KEY,
-    question_title VARCHAR(255) NOT NULL,
-    question_text VARCHAR(255) NOT NULL,
-    option1 VARCHAR(255),
-    option2 VARCHAR(255),
-    option3 VARCHAR(255),
-    option4 VARCHAR(255),
-    correct_option VARCHAR(255) NOT NULL
-);
-
--- n3_questions table section
-
--- Drop the n3_questions table if it exists
-DROP TABLE IF EXISTS n3_questions;
-
--- Create the n3_questions table
-CREATE TABLE n3_questions (
-    question_id INT AUTO_INCREMENT PRIMARY KEY,
-    question_title VARCHAR(255) NOT NULL,
-    question_text VARCHAR(255) NOT NULL,
-    option1 VARCHAR(255),
-    option2 VARCHAR(255),
-    option3 VARCHAR(255),
-    option4 VARCHAR(255),
-    correct_option VARCHAR(255) NOT NULL
+-- Create the answers table
+CREATE TABLE answers (
+    question_id INT NOT NULL,
+    answer_id INT NOT NULL,
+    answer_text VARCHAR(255) NOT NULL,
+    correct_answer BOOLEAN NOT NULL,
+    PRIMARY KEY (question_id, answer_id),
+    FOREIGN KEY (question_id) REFERENCES questions(question_id) ON DELETE CASCADE
 );
 
 -- Create the scores table section

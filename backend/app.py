@@ -30,6 +30,44 @@ bcrypt = Bcrypt(app)
 
 ### USE THE BELOW AS A TEMPLATE FOR NEW ROUTES ###
 
+
+# Route for the test form
+@app.route('/testform', methods=['POST'])
+def testForm():
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    data = request.json
+    # Test print to see data
+    print(data)
+    # To track the user's answers
+    answerList = []
+    paramList = []
+
+    # Extract the data from the request
+    questionCategory = data['question_category']
+    paramList.append(questionCategory)
+    questionId = data['question_id']
+    questionText = data['question_text']
+    questionBody = data['question_body']
+    answerOption = data['answer_id']
+    answerText = data['answer_text']
+    correctOption = data['correct_option']
+
+    for i in range(len(answerList)) :
+        print(answerList[i]) 
+
+    # Determine which questions to query based on the question category, build the final query, and execute it.
+
+    finalQuery = "SELECT * FROM questions Q, answers A WHERE Q.question_id = A.question_id AND Q.question_level = %s " \
+    "ORDER BY Q.question_id" 
+
+    cursor.execute(finalQuery, tuple(paramList))
+    questions = cursor.fetchall()
+    cursor.close()
+    print("Before the return")
+    return jsonify(questions)
+    # Add return statuses if needed
+
+
 # Route for forgot password
 @app.route('/forgot-password', methods=['POST'])
 def forgotPassword():
