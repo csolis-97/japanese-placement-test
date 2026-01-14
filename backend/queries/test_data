@@ -1,0 +1,61 @@
+INSERT INTO reserved_names (reserved_name, reserved_desc) VALUES
+('admin', 'Reserved for system administrator'),
+('root', 'Reserved for database superuser'),
+('guest', 'Reserved for guest access'),
+('support', 'Reserved for customer support team'),
+('moderator', 'Reserved for forum moderators');
+
+INSERT INTO users (email, password, username, verified_status, created_at) VALUES
+('alice@example.com', 'hashed_password_1', 'alice_wonder', TRUE, '2025-07-14 08:23:45'),
+('bob@example.com', 'hashed_password_2', 'bob_smith', TRUE, '2025-08-02 09:15:12'),
+('charlie@example.com', 'hashed_password_3', 'charlie_brown', FALSE, '2025-10-12 10:45:32'),
+('david@example.com', 'hashed_password_4', 'david_king', TRUE, '2025-06-20 16:05:05'),
+('eve@example.com', 'hashed_password_5', 'eve_queen', FALSE, '2025-09-18 13:30:50');
+
+INSERT INTO unverified_users (username, email, created_at) VALUES
+('john_doe', 'john_doe@example.com', '2025-12-15 12:20:00'),
+('susan_lee', 'susan_lee@example.com', '2025-11-10 11:15:25'),
+('mike_jones', 'mike_jones@example.com', '2025-10-20 14:30:40');
+
+INSERT INTO n5_questions (question_title, question_text, option1, option2, option3, option4, correct_option) VALUES
+('Kanji Recognition', 'Which of these is the kanji for "mountain"?', '川', '山', '木', '花', '山'),
+('Vocabulary', 'How do you say "cat" in Japanese?', '犬', '猫', '鳥', '馬', '猫'),
+('Grammar', 'Which sentence is correct?', '私は日本に行きます。', '私は日本に行くです。', '私は日本行きます。', '私は行きます日本。', '私は日本に行きます。'),
+('Hiragana Recognition', 'What is the hiragana character for "ki"?', 'き', 'す', 'し', 'きい', 'き'),
+('Polite Speech', 'How do you say "thank you" in a polite form?', 'ありがとう', 'すみません', 'ありがとうございません', 'ありがとうございます', 'ありがとうございます');
+
+INSERT INTO n4_questions (question_title, question_text, option1, option2, option3, option4, correct_option) VALUES
+('Kanji Recognition', 'Which of these is the kanji for "water"?', '木', '水', '土', '火', '水'),
+('Grammar', 'Choose the correct sentence.', '本を読んでいます。', '本を読んでいますか。', '本を読んだです。', '本を読んだます。', '本を読んでいます。'),
+('Vocabulary', 'What is the meaning of "学生"?', 'Teacher', 'Student', 'School', 'University', 'Student'),
+('Sentence Construction', 'Which sentence is using the te-form correctly?', 'おいしい食べました。', 'おいしい食べてます。', 'おいしい食べています。', 'おいしい食べます。', 'おいしい食べています。'),
+('Polite Expression', 'How do you ask "Can you help me?" in polite Japanese?', '手伝ってくれますか？', '手伝っていただけますか？', '手伝ってもらえますか？', '手伝ってくれる？', '手伝っていただけますか？');
+
+INSERT INTO n3_questions (question_title, question_text, option1, option2, option3, option4, correct_option) VALUES
+('Kanji Recognition', 'What is the reading for the kanji "語"?', 'ご', 'ごう', 'けい', 'ごえ', 'ご'),
+('Grammar', 'Choose the sentence that correctly uses "ながら".', '音楽を聴きながら勉強します。', '音楽を聴きながら勉強している。', '音楽を聴きながら勉強したい。', '音楽を聴きながら勉強しました。', '音楽を聴きながら勉強します。'),
+('Vocabulary', 'What does "社会" mean?', 'Society', 'School', 'Economy', 'Environment', 'Society'),
+('Reading Comprehension', 'How do you say "I had dinner with my friend" in Japanese?', '友達と晩ご飯を食べました。', '友達と晩ご飯を食べる。', '友達と晩ご飯を食べています。', '友達と晩ご飯を食べる予定です。', '友達と晩ご飯を食べました。'),
+('Expression', 'Which of these sentences means "I don’t have a favorite food"?', '好きな食べ物はありません。', '好きな食べ物はありますか？', '好きな食べ物を食べたいです。', '好きな食べ物は好きです。', '好きな食べ物はありません。');
+
+INSERT INTO scores (user_id, total_score, entrance_level, test_date) VALUES
+(1, 85, 'N5', '2025-12-10 11:00:00'),
+(2, 92, 'N4', '2025-12-10 11:30:00'),
+(3, 75, 'N5', '2025-12-10 12:00:00'),
+(4, 88, 'N3', '2025-12-10 12:30:00'),
+(5, 95, 'N3', '2025-12-10 13:00:00');
+
+INSERT INTO messages (sender_id, message_topic, message_body, created_at) VALUES
+(1, 'Account Verification', 'Your account has been verified successfully!', '2025-12-12 14:00:00'),
+(2, 'Test Results', 'Your test results have been uploaded. Check your score.', '2025-12-12 14:30:00'),
+(3, 'Password Reset', 'Click on the link to reset your password.', '2025-12-12 15:00:00'),
+(4, 'System Update', 'There will be a system update scheduled tomorrow.', '2025-12-12 15:30:00'),
+(5, 'New Features', 'We have added new features to the app. Check them out!', '2025-12-12 16:00:00');
+
+INSERT INTO message_recipients (message_id, recipient_id) VALUES
+(1, 2),
+(1, 3),
+(2, 1),
+(3, 4),
+(4, 5),
+(5, 1);
