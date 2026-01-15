@@ -28,9 +28,6 @@ app.config['MYSQL_DB'] = os.getenv('SQL_DB')
 mysql = MySQL(app)
 bcrypt = Bcrypt(app)
 
-### USE THE BELOW AS A TEMPLATE FOR NEW ROUTES ###
-
-
 # Route for the test form
 @app.route('/testform', methods=['POST'])
 def testForm():
@@ -48,7 +45,8 @@ def testForm():
     questionId = data['question_id']
     questionText = data['question_text']
     questionBody = data['question_body']
-    answerOption = data['answer_id']
+    answerId = data['answer_id']
+    answerOption = data['question_id']['answer_id']
     answerText = data['answer_text']
     correctOption = data['correct_option']
 
@@ -66,32 +64,6 @@ def testForm():
     print("Before the return")
     return jsonify(questions)
     # Add return statuses if needed
-
-
-# Route for forgot password
-@app.route('/forgot-password', methods=['POST'])
-def forgotPassword():
-    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    data = request.json
-    email = data['email']
-
-    query = "SELECT * FROM users WHERE email = ?"
-    cursor.execute(query, (email,))
-    account = cursor.fetchone()
-
-    if account == None :
-        res = make_response({'status' : 'an account with that email does not exist'})
-        res.status_code = 301
-        cursor.close()
-        return res
-    else :
-        # Write the logic for sending the actual emails
-        ###
-        #
-        res = make_response({'status' : 'an email has been sent to the provided email address'})
-        res.status_code = 201
-        cursor.close()
-        return res
 
 if __name__ == '__main__':
     app.run(debug=True, host="localhost", port=int("5000"))
