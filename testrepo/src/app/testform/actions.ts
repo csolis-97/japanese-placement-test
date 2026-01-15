@@ -18,7 +18,11 @@ export async function testForm(givenFields: testForm) {
     const questionText = givenFields.questionText;
     const questionBody = givenFields.questionBody;
     const questionCategory = givenFields.questionCategory;
-    const answerOne = givenFields.answerId[0];
+    const answerId = givenFields.answerId;
+    const answerText = givenFields.answerText;
+    const correctAnswer = givenFields.correctAnswer;
+
+    /*const answerOne = givenFields.answerId[0];
     const answerTwo = givenFields.answerId[1];
     const answerThree = givenFields.answerId[2];
     const answerFour = givenFields.answerId[3];
@@ -30,13 +34,18 @@ export async function testForm(givenFields: testForm) {
     const correctAnswerTwo = givenFields.correctAnswer[1];
     const correctAnswerThree = givenFields.correctAnswer[2];
     const correctAnswerFour = givenFields.correctAnswer[3];
+    */
 
     //Check that each const is properly logged
     console.log(questionId);
     console.log(questionText);
     console.log(questionBody);
     console.log(questionCategory);
-    console.log(answerOne);
+    console.log(answerId);
+    console.log(answerText);
+    console.log(correctAnswer);
+    
+    /*console.log(answerOne);
     console.log(answerTwo);
     console.log(answerThree);
     console.log(answerFour);
@@ -48,7 +57,33 @@ export async function testForm(givenFields: testForm) {
     console.log(correctAnswerTwo);
     console.log(correctAnswerThree);
     console.log(correctAnswerFour);
+    */
 
     console.log("BEGIN TEST DATA RETRIEVAL");
 
+    //Try to retrieve the test data from the database
+    
+    try {
+        console.log("Attempt to retrieve test data...");
+        const response = await fetch('http://localhost:5000/testform', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({'question_category' : questionCategory, 'question_id' : questionId, 'question_text' : questionText,
+                'question_body' : questionBody, 'answer_id' : answerId, 'answer_text' : answerText, 'correct_answer' : correctAnswer})
+        });
+
+        //Get the response from the database and return
+        const data = await response.json();
+        console.log("Here is the response from the database:");
+        console.log(data);
+        return data;
+    }
+    //If an error occured during retrieval, catch it and log it
+    catch (error) {
+        console.log(error);
+        return "Internal Server Error";
+    }
 }
+export default testForm;
