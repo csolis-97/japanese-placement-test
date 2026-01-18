@@ -1,17 +1,16 @@
 "use server";
 
 //Define a type for storing the test form data
-type testForm = {
+type testFormData = {
     questionId: number;
     questionText: string;
     questionBody: string;
     questionCategory: string;
     answerId: number[];
     answerText: string[];
-    correctAnswer: boolean[];
 }
 
-export async function testForm(givenFields: testForm) {
+export async function testForm(givenFields: testFormData) {
 
     //Divide the form data into separate variables
     const questionId = givenFields.questionId;
@@ -20,7 +19,6 @@ export async function testForm(givenFields: testForm) {
     const questionCategory = givenFields.questionCategory;
     const answerId = givenFields.answerId;
     const answerText = givenFields.answerText;
-    const correctAnswer = givenFields.correctAnswer;
 
     /*const answerOne = givenFields.answerId[0];
     const answerTwo = givenFields.answerId[1];
@@ -30,10 +28,6 @@ export async function testForm(givenFields: testForm) {
     const answerTextTwo = givenFields.answerText[1];
     const answerTextThree = givenFields.answerText[2];
     const answerTextFour = givenFields.answerText[3];
-    const correctAnswerOne = givenFields.correctAnswer[0];
-    const correctAnswerTwo = givenFields.correctAnswer[1];
-    const correctAnswerThree = givenFields.correctAnswer[2];
-    const correctAnswerFour = givenFields.correctAnswer[3];
     */
 
     //Check that each const is properly logged
@@ -43,7 +37,6 @@ export async function testForm(givenFields: testForm) {
     console.log(questionCategory);
     console.log(answerId);
     console.log(answerText);
-    console.log(correctAnswer);
     
     /*console.log(answerOne);
     console.log(answerTwo);
@@ -53,10 +46,6 @@ export async function testForm(givenFields: testForm) {
     console.log(answerTextTwo);
     console.log(answerTextThree);
     console.log(answerTextFour);
-    console.log(correctAnswerOne);
-    console.log(correctAnswerTwo);
-    console.log(correctAnswerThree);
-    console.log(correctAnswerFour);
     */
 
     console.log("BEGIN TEST DATA RETRIEVAL");
@@ -71,7 +60,7 @@ export async function testForm(givenFields: testForm) {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({'question_category' : questionCategory, 'question_id' : questionId, 'question_text' : questionText,
-                'question_body' : questionBody, 'answer_id' : answerId, 'answer_text' : answerText, 'correct_answer' : correctAnswer})
+                'question_body' : questionBody, 'answer_id' : answerId, 'answer_text' : answerText})
         });
 
         //Get the response from the database and return

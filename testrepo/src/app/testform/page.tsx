@@ -1,9 +1,67 @@
 "use client"
 
+import testForm from "./actions";
 import Link from "next/link";
 import Image from "next/image";
+import {useState, useEffect} from "react";
 
 export default function Home() {
+
+  //Type defined below will be used for setting the test questions and answers
+  type testFormType = {
+    questionId: number;
+    questionText: string;
+    questionBody: string;
+    questionCategory: string;
+    answerId: number[];
+    answerText: string[];
+  }
+
+  //Interface below will be used for when each question itself is displayed
+  interface testQuestion {
+    questionId: number;
+    questionText: string;
+    questionBody: string;
+    questionCategory: string;
+    answerId: number[];
+    answerText: string[];
+  }
+
+  //Although not needed, here is a sample of a constant being defined to map results from one table to another
+  /*const mapNewTestForm = (post: any): testForm => {
+    questionId: post.new_question_id
+  }
+  */
+
+  const [questions, setQuestions] = useState<string>('');
+  const [testFormat, setTestFormat] = useState<testFormType>({
+    'questionId' : 0,
+    'questionText' : '',
+    'questionBody' : '',
+    'questionCategory' : '',
+    'answerId' : [],
+    'answerText' : []
+  })
+
+  //This useState will track the user's selected answer for each question
+  const [selectedAnswers, setSelectedAnswers] = useState<string>('');
+
+  //This useState will check if the test has been submitted
+  const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
+
+  //This useState will track the user's score
+  const [userScore, setUserScore] = useState<number>(0);
+
+  //Finally, useState for errors
+  const [error, setError] = useState<string | undefined>('');
+
+  //Function to handle the test form itself
+  async function handleTestForm(event: React.FormEvent) {
+    //Here, the test data will be fetched from the database
+    const data = await testForm(testFormat);
+  }
+
+  //HTML return for the test form page
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
       <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
