@@ -10,7 +10,11 @@ type testFormData = {
     answerText: string[];
 }
 
-export async function testForm(givenFields: testFormData) {
+type answerData = {
+    answerText: string[]
+}
+
+export async function testForm(action: string, givenFields: testFormData) {
 
     //Divide the form data into separate variables
     const questionId = givenFields.questionId;
@@ -20,59 +24,69 @@ export async function testForm(givenFields: testFormData) {
     const answerId = givenFields.answerId;
     const answerText = givenFields.answerText;
 
-    /*const answerOne = givenFields.answerId[0];
-    const answerTwo = givenFields.answerId[1];
-    const answerThree = givenFields.answerId[2];
-    const answerFour = givenFields.answerId[3];
-    const answerTextOne = givenFields.answerText[0];
-    const answerTextTwo = givenFields.answerText[1];
-    const answerTextThree = givenFields.answerText[2];
-    const answerTextFour = givenFields.answerText[3];
-    */
+    // This action will send the answers to the backend for processing
+    if (action === "sendAnswers") {
 
-    //Check that each const is properly logged
-    console.log(questionId);
-    console.log(questionText);
-    console.log(questionBody);
-    console.log(questionCategory);
-    console.log(answerId);
-    console.log(answerText);
-    
-    /*console.log(answerOne);
-    console.log(answerTwo);
-    console.log(answerThree);
-    console.log(answerFour);
-    console.log(answerTextOne);
-    console.log(answerTextTwo);
-    console.log(answerTextThree);
-    console.log(answerTextFour);
-    */
+        // Create a snapshot of the submission time to send alongside the POST request
+        let submittedTime = new Date();
+        console.log("HERE IS THE SUBMISSION TIMESTAP")
+        console.log(submittedTime)
 
-    console.log("BEGIN TEST DATA RETRIEVAL");
+        console.log(answerText)
+        console.log("SEND THE ANSWERS TO THE BACKEND");
+        try {
+            console.log("Attempt to send the answers...")
+            const response = await fetch('http://localhost:5000/testform', {
+                method: 'POST',
+                headers: {
+                    'Content-Type' : 'application/json',
+                },
+                body: JSON.stringify({'action' : action, 'date' : submittedTime, 'question_category' : questionCategory, 'question_id' : questionId, 'question_text' : questionText,
+                    'question_body' : questionBody, 'answer_id' : answerId, 'answer_text' : answerText})
+            });
 
-    //Try to retrieve the test data from the database
-    
-    try {
-        console.log("Attempt to retrieve test data...");
-        const response = await fetch('http://localhost:5000/testform', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({'question_category' : questionCategory, 'question_id' : questionId, 'question_text' : questionText,
-                'question_body' : questionBody, 'answer_id' : answerId, 'answer_text' : answerText})
-        });
+            const data = await response.json();
+            console.log("Here is the response from the database");
+            console.log(data);
+            return data;
+        }
 
-        //Get the response from the database and return
-        const data = await response.json();
-        console.log("Here is the response from the database:");
-        console.log(data);
-        return data;
+        catch(error) {
+            console.log(error);
+            console.log("Internal Server Error")
+        }
+
     }
-    //If an error occured during retrieval, catch it and log it
-    catch (error) {
-        console.log(error);
-        return "Internal Server Error";
+    
+    //Default action is to retrieve the test data
+    else {
+        action = "retrieveQuestions"
+        console.log("BEGIN TEST DATA RETRIEVAL");
+
+        //Try to retrieve the test data from the database
+        
+        try {
+            console.log("Attempt to retrieve test data...");
+            const response = await fetch('http://localhost:5000/testform', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({'action' : action, 'question_category' : questionCategory, 'question_id' : questionId, 'question_text' : questionText,
+                    'question_body' : questionBody, 'answer_id' : answerId, 'answer_text' : answerText})
+            });
+
+            //Get the response from the database and return
+            const data = await response.json();
+            console.log("Here is the response from the database:");
+            console.log(data);
+            return data;
+        }
+        //If an error occured during retrieval, catch it and log it
+        catch (error) {
+            console.log(error);
+            return "Internal Server Error";
+        }
     }
 }
 export default testForm;
