@@ -1,11 +1,11 @@
 "use client"
-//export const dynamic = 'force-dynamic';
 
-import testForm from "./actions";
+import {attemptNumber, testForm} from "./actions";
 import Link from "next/link";
 import Image from "next/image";
+import {useRouter} from "next/navigation"
 import {useState, useActionState, useEffect} from "react";
-import QuestionDisplay from "../components/QuestionDisplay";
+import QuestionDisplay from "../../components/QuestionDisplay";
 
 export default function Home() {
 
@@ -17,6 +17,7 @@ export default function Home() {
     questionCategory: string;
     answerId: number[];
     answerText: string[];
+    userAttempt: number;
   }
 
   //Interface below will be used for when each question itself is displayed. Fields should be the exact same as the ones in
@@ -48,8 +49,8 @@ export default function Home() {
   const isLastQuestion = currentQuestion >= questions.length-1;
 
   //These variables will apply the styling for the regular and disabled buttons
-  const regularButton = "mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600";
-  const disabledButton = "mt-4 px-4 py-2 bg-gray-500 text-white rounded";
+  const regularButton = "mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 position:sticky top:0";
+  const disabledButton = "mt-4 px-4 py-2 bg-gray-500 text-white rounded position:sticky top:0";
 
   // This useState is used to fetch the results from the database, which will then be stored in the questions useState.
   const [testFormat, setTestFormat] = useState<testFormType>({
@@ -58,11 +59,13 @@ export default function Home() {
     'questionBody' : '',
     'questionCategory' : '',
     'answerId' : [],
-    'answerText' : []
+    'answerText' : [],
+    'userAttempt' : 0
   })
 
   //The different between const and let is that const variables cannot be reassigned, while let variables can.
-  // This answerArray will track all user answers.
+  // attemptNum will later hold the current user's attempt number, while answerArray will track all user answers.
+  let attemptNum = 0;
   let answerArrayBuild: string[] = [];
   let ctr: number = 0;
 
@@ -81,34 +84,42 @@ export default function Home() {
   //This useState will check if the test has been submitted
   const [isSubmitted, setIsSubmitted] = useState<boolean>();
 
-  //This useState will track the user's score
-  const [userScore, setUserScore] = useState<number>(0);
+  //This useState will work together with the context in order to track the user's graded scores
+  const [gradedAnswers, setGradedAnswers] = useState<boolean[]>([]);
 
   //Finally, useState for errors
-  const [error, setError] = useState<string | undefined>('');
+  const [error, setError] = useState<string | string[] | undefined>('');
 
-  //Function to handle the test form itself
+  const router = useRouter();
+
+  //Function to handle the test form itself, once the user presses the submit button
   async function handleTestForm(event: React.FormEvent) {
     // Default behavior of form submission, to send data and reload the page, is prevented here.
     event.preventDefault();
-
-    console.log("BEFORE AWAITING TEST FORMAT");
+    console.log("BEFORE SUBMITTING ANSWERS");
     //Here, the test data will be fetched from the database
-    const data = await testForm('sendAnswers', testFormat);
     // If the data is successfully retrieved, log the data, assign it to questionsData, then set the testFormat useState
-    if (data) {
-      console.log("Test form data successfully retrieved from the backend.");
-      console.log(data);
-      let questionsData = data;
-      setQuestions(questionsData);
-      //setTestFormat(questionsData);
-
+    if (answerArray) {
       // Set the isSubmitted useState to true once test is submitted
       setIsSubmitted(true);
       console.log("TEST WAS SUBMITTED!")
       console.log(isSubmitted);
       console.log("PLEASE CHECK HERE")
       console.log(answerArray)
+
+      // Next, fetch the test attempt number for the user, as this will be needed to display the correct results later on
+      const fetchedAttemptNum = await attemptNumber('getAttemptNumber', attemptNum);
+      // If the attempt number is successfully retrieved, set the value to attemptNum. Otherwise log an error.
+      if (fetchedAttemptNum) {
+        console.log("HERE IS THE USER'S CURRENT ATTEMPT NUMBER");
+        console.log(fetchedAttemptNum);
+        attemptNum = fetchedAttemptNum;
+        console.log("Test attempt number fetched and set to attemptNum");
+        console.log(attemptNum);
+      }
+      else {
+        console.log("Error fetching test attempt number in useEffect.");
+      }
 
       //In order to submit the answers, create finalAnswers to properly map the answers to an object of testFormType.
       //Since we only need answerText, everything else is left blank.
@@ -118,41 +129,47 @@ export default function Home() {
         questionBody: '',
         questionCategory: '',
         answerId: [],
-        answerText : answerArray
+        answerText : answerArray,
+        userAttempt: attemptNum
       };
-      console.log("HERE IS THE FINALANSWERS")
+      console.log("HERE IS THE FINALANSWERS");
       console.log(finalAnswers);
+      if (attemptNum) {
+        const fetchedCheckedAnswers = await testForm('sendAnswers', finalAnswers);
+        setGradedAnswers(fetchedCheckedAnswers);
+        // THIS PRINTS AN EMPTY ARRAY
+        console.log("HERE ARE THE GRADED ANSWERS");
+        console.log(gradedAnswers)
+        // EVERYTHING HERE IS NOT PRINTED FOR SOME REASON
+        console.log("ABOUT TO PUSH THROUGH ROUTE WITH THIS ATTEMPT NUMBER!")
+        console.log(attemptNum)
+        // Since the attemptNum is a single integer, append it to router push for use in the results screen
+        router.push(`/results?attempt=${attemptNum}`);
+      }
+      // If there is an error, set the error useState and log to console.
+      else {
+        setError(answerArray);
+        console.log("An error occured while retrieving the test form data from the backend.");
+        console.log(answerArray);
 
-      await testForm('sendAnswers', finalAnswers);
-
-    }
-    // If there is an error, set the error useState and log to console.
-    else {
-      setError(data);
-      console.log("An error occured while retrieving the test form data from the backend.");
-      console.log(data);
-
-      // Set the isSubmitted useState to false in case of error
-      setIsSubmitted(false);
+        // Set the isSubmitted useState to false in case of error
+        setIsSubmitted(false);
+      }
     }
   }
 
   // Use useEffect to fetch the test form data when the component mounts or when the questionId changes
-  // Not sure if this will actually be needed, might be useful if only one question and its answers are fetched at a time though.
   console.log("ABOUT TO ENTER THE USEFFECT!")
   useEffect(() => {
     if (questions !== undefined) {
       // Note, this can also be written as async function fetchTestFormat() {...}. It's called an arrow function here.
-        const fetchTestFormat = async () => {
-          //Fetch the test form data from the backend, with 'retrieveQuestions' as the action to take
+        const fetchTestInfo = async () => {
+          // Fetch the test form data from the backend, with 'retrieveQuestions' as the action to take
           const fetchedTestFormat = await testForm('retrieveQuestions', testFormat);
           // If the data is successfully retrieved, set the testFormat useState. Otherwise log an error.
           if (fetchedTestFormat) {
             console.log("HERE IS FETCHED TEST FORMAT")
             console.log(fetchedTestFormat)
-            // THIS SETS ALL 
-            // setTestFormat(fetchedTestFormat);
-            //setTestFormat(fetchedTestFormat);
             setQuestions(fetchedTestFormat);
             console.log("Test form data fetched and set in useEffect.")
           }
@@ -160,8 +177,8 @@ export default function Home() {
             console.log("Error fetching test form data in useEffect.")
           }
         }
-        // Call the function to fetch the test format after defining it
-        fetchTestFormat();
+        // Call the function to fetch the test format and the current attempt number after defining them
+        fetchTestInfo();
     }
   }, []); // [testFormat.questionId], This dependency array ensures the effect runs when questionId changes
 
@@ -245,7 +262,7 @@ export default function Home() {
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
       <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
         <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <form onSubmit = {handleTestForm} className = "flex flex-col spacey-4 items-center justify-center">
+          <form name = "placeTest" onSubmit = {handleTestForm} className = "flex flex-col spacey-4 items-center justify-center">
             {
               //If questions exists and its length is greater than 0, or currentQuestion is less than the length, display the current question
               questions && questions.length > 0 && currentQuestion <= questions.length && (
@@ -256,12 +273,15 @@ export default function Home() {
                 questionCategory = {questions[currentQuestion].question_level}
                 answerId = {questions[currentQuestion].answer_id}
                 answerText = {questions[currentQuestion].answer_text}
+                //selectedAnswer is used to track which radio option the user has chosen
+                selectedAnswer = {answerArray[currentQuestion]}
+                //alreadyAnswered = {answerArray[currentQuestion] === null}
                 //Send the handleChange const as the value for onChangeValue so that the onChange field can be properly handled
                 onChangeValue = {handleChange}
                 />)
               /* disabled checks if the currentQuestion is 0, and disables it if it is.*/ 
               /* disabled checks if the currentQuestion is the current length of questions, and disables it if it is.*/
-              //})
+              /* REWRITE THE COMMENTS FOR THE CODE DOWN BELOW*/
             }
             {
               /* Below I used shorthand for an if-else statement in Typescript. It first has the condition, then it uses "?" to check if
@@ -273,20 +293,24 @@ export default function Home() {
               regular. The Next button acts the same, except it checks if the boolean isLastQuestion returns true.
               */
             }
-          <div>
-            <button
-            type = "button" name = "back" className = {isFirstQuestion ? (disabledButton) : (regularButton)}
-            disabled = {isFirstQuestion}
-            onClick = {handleButtonChange}>Back</button>
-            <button 
-            type = "button" name = "next" className = {isLastQuestion ? (disabledButton) : (regularButton)}
-            disabled = {isLastQuestion}
-            onClick = {handleButtonChange}>Next</button>
-            <button type = "submit" className = {!isLastQuestion ? (disabledButton) : (regularButton)}
-            disabled = {!isLastQuestion}
-            onClick = {handleTestForm}>Submit Test</button>
-          </div>
           </form>
+          <div className = "flex items-center justify-center gap-40">
+            <button
+            type = "button" form = "placeTest" name = "back" className = {isFirstQuestion || isSubmitted === true ? (disabledButton) : (regularButton)}
+            disabled = {isFirstQuestion || isSubmitted === true}
+            onClick = {handleButtonChange}>Back</button>
+            {isLastQuestion ? (
+              <button type = "submit" form = "placeTest" name = "submitButton" className = {!isLastQuestion || isSubmitted === true ? (disabledButton) : (regularButton)}
+              disabled = {!isLastQuestion || isSubmitted === true}
+              onClick = {handleTestForm}>Submit Test</button>
+            ) : (
+              <button 
+              type = "button" form = "placeTest" name = "next" className = {isLastQuestion || !answerArray[currentQuestion] || isSubmitted === true ? (disabledButton) : (regularButton)}
+              disabled = {isLastQuestion || !answerArray[currentQuestion] || isSubmitted === true}
+              onClick = {handleButtonChange}>Next</button>
+            )
+            }
+          </div>
         </div>
       </main>
     </div>
