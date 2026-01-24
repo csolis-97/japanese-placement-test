@@ -38,7 +38,7 @@ app.config['MYSQL_DB'] = os.getenv('DB_NAME')
 mysql = MySQL(app)
 bcrypt = Bcrypt(app)
 
-# Route for the test form
+####//// Route for the test form ////####
 @app.route('/testform', methods=['GET', 'POST'])
 def testForm():
     data = request.json
@@ -51,15 +51,35 @@ def testForm():
 
     # Parameters to be used regardless of action type
     action = data['action']
+
     # This will be used to track the parameters passed to the SQL query, if any are needed
     paramList = []
 
-
     ### SECTION FOR RETRIEVING TEST QUESTION DATA ###
 
+    # If the action is getAttemptNumber, get the user's current attempt number and return it
+    if action == 'getAttemptNumber' :
+        #### FOR NOW USE user_id 1 AS A PLACEHOLDER, SINCE THERE ARE NO USERS CURRENTLY
+        attemptNum = data['user_attempt']
+        print("VALUE OF ATTEMPT NUM RIGHT NOW")
+        print(attemptNum)
+        attemptQuery = "SELECT U.attempt_id FROM user_answers U, scores S WHERE S.user_id = 1 AND S.score_id = U.score_id"
 
-    # If the action is retrieveQuestions (default in the front end), retrieve the data from the database
-    if action == 'retrieveQuestions' :
+        cursor.execute(attemptQuery,)
+        attemptCheck = cursor.fetchall()
+
+        # If the length of the results is bigger than 0, set attemptNum to the length + 1 for a new attempt. Otherwise set it to 1.
+        if len(attemptCheck) > 0:
+            attemptNum = len(attemptCheck)+1
+        else:
+            attemptNum = 1
+        print("FINAL VALUE OF ATTEMPT NUM")
+        print(attemptNum)
+        print("Before the return")
+        return jsonify(attemptNum)
+    
+    # If the action is retrieveQuestions (default in the front end), select all the question info and return it
+    elif action == 'retrieveQuestions' :
 
         # EDIT THIS BACK IN ONCE THE QUESTION LEVEL FUNCTIONALITY IS ACHIEVED
 
@@ -146,8 +166,25 @@ def testForm():
         isCorrect = []
         answerId = []
         paramList = []
-        # Store the user's answers that were retrieved in answerList
+        # Store the user's answers that were retrieved in answerList and the attempt number in attemptNum
         answerList = data['answer_text']
+        attemptNum = data['user_attempt']
+        
+        print("VALUE OF ATTEMPT NUM RIGHT NOW")
+        print(attemptNum)
+        attemptQuery = "SELECT U.attempt_id FROM user_answers U, scores S WHERE S.user_id = 1 AND S.score_id = U.score_id"
+
+        cursor.execute(attemptQuery,)
+        attemptCheck = cursor.fetchall()
+
+        # If the length of the results is bigger than 0, set attemptNum to the length + 1 for a new attempt. Otherwise set it to 1.
+        if len(attemptCheck) > 0:
+            attemptNum = len(attemptCheck)+1
+        else:
+            attemptNum = 1
+        print("FINAL VALUE OF ATTEMPT NUM")
+        print(attemptNum)
+
         # DEBUG CHECK THE VALUES IN ANSWERLIST
         print("ANSWER LIST")
         print(answerList)
@@ -224,10 +261,12 @@ def testForm():
         totalScore = 0.0
         correctNum = 0
         # Iterate through the isCorrect list, increment correctNum for each True value contained within isCorrect
-        for i in isCorrect:
+        for i, row in enumerate(isCorrect):
             # DEBUG FOR CHECKING THE CURRENT VALUE OF ISCORRECT
-            print(isCorrect[i])
-            if isCorrect[i] == True:
+            print(isCorrect[row])
+            print(row)
+            print(i)
+            if row == True:
                 correctNum = correctNum + 1
 
         # DEBUG FOR CHECKING CURRENT VALUES OF CORRECTNUM AND TOTALQ
@@ -288,64 +327,180 @@ def testForm():
 
         # NOW ENTER THE SECTION FOR STORING THE USER'S ANSWERS
 
-        # First, get the length of answerList and assign it to answerLength. Alongside it, valueString and valueQuery are created to
-        # properly build the query. valueString represents the five parameters that will be passed when inserting the user's answers
-        # to the user_answers table. Since the amount of submitted answers may vary, valueQuery will need to be built accordingly.
-        answerLength = len(answerList)
-        valueString = "(%s, %s, %s, %s, %s),"
-        valueQuery = []
-
-        '''Enter a loop to properly build valueQuery. In order to insert the correct amount of values into the database, the for loop
-        iterates until it reaches the length of answerLength and appends one of two strings to valueQuery. If the current index is 
-        greater than or equal to answerLength-1, this is the last item in the answerList, so append the given string to properly
-        close the INSERT() VALUES() statement that will be used in a momement. Otherwise, append anotherValueString. 
-        '''
-        for i in range(answerLength):
-            if i >= answerLength-1:
-                valueQuery.append("(%s, %s, %s, %s, %s);")
-                print(i)
-                print("FILLING IN THE VALUEQUERY WITH FINAL!")
-            else:
-                valueQuery.append(valueString)
-                print(i)
-                print("FILLING IN THE VALUEQUERY WITH NEW LINE!")
-
         # Empty paramList once again
         paramList = []
-        #DEBUG FOR CHECKING THE FINAL STATE OF VALUEQUERY
-        print("THIS IS WHAT VALUE QUERY LOOKS LIKE")
-        print(valueQuery)
+        # Check if the user actually had any answers. If not, skip to the else statement without interacting with the database.
+        if len(isCorrect) > 0:
+            # First, get the length of answerList and assign it to answerLength. Alongside it, valueString and valueQuery are created to
+            # properly build the query. valueString represents the five parameters that will be passed when inserting the user's answers
+            # to the user_answers table. Since the amount of submitted answers may vary, valueQuery will need to be built accordingly.
+            answerLength = len(answerList)
+            valueString = "(%s, %s, %s, %s, %s),"
+            valueQuery = []
 
-        # Check if both answerList and isCorrect are not empty. If not, enter a for loop with enumeration in order to append the
-        # proper values that will be used as parameters for the query in paramList.
-        if len(answerList) > 0 and len(isCorrect) > 0: 
+            '''Enter a loop to properly build valueQuery. In order to insert the correct amount of values into the database, the for loop
+            iterates until it reaches the length of answerLength and appends one of two strings to valueQuery. If the current index is 
+            greater than or equal to answerLength-1, this is the last item in the answerList, so append the given string to properly
+            close the INSERT() VALUES() statement that will be used in a momement. Otherwise, append anotherValueString. 
+            '''
+            for i in range(answerLength):
+                if i >= answerLength-1:
+                    valueQuery.append("(%s, %s, %s, %s, %s);")
+                    print(i)
+                    print("FILLING IN THE VALUEQUERY WITH FINAL!")
+                else:
+                    valueQuery.append(valueString)
+                    print(i)
+                    print("FILLING IN THE VALUEQUERY WITH NEW LINE!")
+
+            #DEBUG FOR CHECKING THE FINAL STATE OF VALUEQUERY
+            print("THIS IS WHAT VALUE QUERY LOOKS LIKE")
+            print(valueQuery)
+
+            print("THIS IS THE CHECK FOR ANSWER LIST AGAIN")
+            print(answerList)
+
+            # Enter a for loop with enumeration in order to append the proper values that will be used as parameters for the query 
+            # in paramList.
             for i, row in enumerate(answerList):
                 paramList.append(scoreId)
+                paramList.append(attemptNum)
                 paramList.append(questionId[i])
-                paramList.append(answerId[i])
-                paramList.append(answerList[row])
+                paramList.append((answerList[row]))
                 paramList.append(isCorrect[i])
 
             # DEBUG FOR THE PARAMLIST
             print("HERE IS THE FINAL PARAMLIST")
             print(paramList)
+            storeQuery = f"INSERT INTO user_answers(score_id, attempt_id, question_id, user_answer_text, user_was_correct) VALUES {" ".join(valueQuery)}"
 
-            # If valueQuery is not empty, create the query to store each answer alongside its information in the table and execute it
-            if len(valueQuery) > 0:
-
-                storeQuery = f"INSERT INTO user_answers(score_id, question_id, user_answer_id, user_answer_text, user_was_correct) VALUES {" ".join(valueQuery)}"
-
-                cursor.execute(storeQuery, tuple(paramList))
-                # This is the version used with flask_mysql, but the wheel fails to build so I used the flaskext.mysql version above
-                # mysql.connection.commit()
-                # Commit the change so that it appears in the database
-                commitChange = mysql.get_db()
-                commitChange.commit()
-                print("SUCCESSFULLY STORED THE ANSWERS!")
+            cursor.execute(storeQuery, tuple(paramList))
+            # This is the version used with flask_mysql, but the wheel fails to build so I used the flaskext.mysql version above
+            # mysql.connection.commit()
+            # Commit the change so that it appears in the database
+            commitChange = mysql.get_db()
+            commitChange.commit()
+            print("SUCCESSFULLY STORED THE ANSWERS!")
+        else:
+            print("USER SUBMITTED NO ANSWERS, SO THERE IS NOTHING TO STORE.")
 
         # Finally, close the cursor
         cursor.close()
         return jsonify(isCorrect)
+    
+####//// Route for the results ////####
+@app.route('/results', methods=['GET', 'POST'])
+def resultDisplay():
+    print("HELLO")
+
+    data = request.json
+    cursor = mysql.get_db().cursor(MySQLdb.cursors.DictCursor)
+
+    #First declare variables and other stuff that will be used across both types of actions
+    action = data['action']
+    paramList = []
+
+    # First, get the proper result data by using the attempt_id in the data
+    attemptId = data['attempt_id']
+    print("ATTEMPTID FOR CURRENT RETRIEVAL")
+    print(attemptId)
+
+    if action == 'retrieveResults':
+        # SINCE THERE CURRENTLY ISN'T ANY USER FUNCTIONALITY, SET user_id TO 1
+        resultQuery = "SELECT S.score_id, S.total_score, S.entrance_level, S.test_date FROM scores S, user_answers U WHERE " \
+        "S.user_id = 1 AND S.score_id = U.score_id AND U.attempt_id = %s"
+
+        #Execute the query with the parameters, store the first entry, close the cursor, and return
+        cursor.execute(resultQuery, attemptId)
+        resultData = cursor.fetchone()
+        cursor.close()
+
+        print("CURRENT RESULT RECORD DATA")
+        print(resultData)
+
+        ### THERE MOST LIKELY WILL BE AN ERROR IF THE DATE IS NOT CONVERTED BACK TO THE FORMAT USED IN TYPESCRIPT.
+        ### IF IT DOES WORK, FIX IT HERE REGARDLESS
+        print("EXAMPLE OF DATETIME FORMAT IN SQL")
+        print('2014-08-04 12:56:23')
+        print("EXAMPLE OF TYPESCRIPT DATE FORMAT IN TYPESCRIPT. SINCE THE MILISECONDS WERE NOT SAVED, IGNORE THOSE")
+        print('2014-08-04T12:56:23:123Z')
+
+        # Add T for the Time and Z for UTC timezone
+        oldDate = str(resultData['test_date'])
+        print("OLDDATE")
+        print(oldDate)
+        # Use isoformat as it is the quickest way to format the date in the proper manner
+        finalDate = f"{resultData['test_date'].isoformat()}Z"
+        print("FINALDATE")
+        print(finalDate)
+        # Set the new date in the resultData before sending
+        resultData['test_date'] = finalDate
+
+        print("FINAL RESULTS DATA")
+        print(resultData)
+
+        print("Before the return")
+        return jsonify(resultData)
+
+
+    elif action == 'retrieveAnswers':
+
+        #### REPLACE USER_ID=1 WHEN THE USER FUNCTIONALITY IS IMPLEMENTED
+        # DISTINCT keyword is used so that duplicate records are not obtained
+        answersQuery = "SELECT DISTINCT Q.question_id, Q.question_text, Q.question_body, Q.question_level, A.answer_id, A.answer_text, " \
+        "A.correct_answer, U.user_answer_text, U.user_was_correct FROM questions Q " \
+        "JOIN answers A ON Q.question_id = A.question_id " \
+        "JOIN user_answers U ON A.question_id = U.question_id " \
+        "JOIN scores S ON U.score_id AND S.score_id WHERE U.attempt_id = %s AND S.user_id = 1 ORDER BY Q.question_id"
+
+        cursor.execute(answersQuery, attemptId)
+        answerData = cursor.fetchall()
+        cursor.close()
+
+        # DEBUG PRINT THE RESULT OF FETCHING FROM THE DATABASE
+        print("BEFORE THE FOR LOOP!")
+        print(answerData)
+
+        '''Make a temporary dictionary to correctly assign each answer_id, answer_text, and correct_answer to the correct question_id.
+        For each row in questions, the current value of question_id will be used to check if it is currently in the dictionary.
+        If it is not, add the current question_id, question_text, question_body, question_level, user_answer_text, user_was_correct,
+        and three empty arrays for answer_id, answer_text, and correct_answer.
+        '''
+        groupedAnswers = {}
+        for row in answerData :
+            questionKey = row['question_id']
+
+            if questionKey not in groupedAnswers: 
+                groupedAnswers[questionKey] = {
+                "question_id" : row['question_id'],
+                "question_text" : row['question_text'],
+                "question_body" : row['question_body'],
+                "question_level" : row['question_level'],
+                "answer_id" : [],
+                "answer_text" : [],
+                "correct_answer" : [],
+                "user_answer_text" : row['user_answer_text'],
+                "user_was_correct" : row['user_was_correct']
+            }
+            
+            # Append the current answer_id, answer_text, and correct_answer to the current row within the dictionary, regardless if 
+            # questionKey was already in the dictionary or not.
+            groupedAnswers[questionKey]["answer_id"].append(row['answer_id'])
+            groupedAnswers[questionKey]["answer_text"].append(row['answer_text'])
+            groupedAnswers[questionKey]["correct_answer"].append(row['correct_answer'])
+
+        # DEBUG, ONCE THE GROUPING IS FINISHED PRINT THE RESULTS
+        print("GROUPED!")
+        print(groupedAnswers)
+        # Set answerData to groupedAnswers before returning. The keys are not needed, so just convert it to a list using the values.
+        answerData = list(groupedAnswers.values())
+        # DEBUG, PRINT THE FINAL VERSION OF THE DATA TO BE SENT TO THE FRONT END
+        print("NEW DATA!")
+        print(answerData)
+
+        print("Before the return")
+        return jsonify(answerData)
+    
 
 if __name__ == '__main__':
     app.run(debug=True, host="localhost", port=int("5000"))

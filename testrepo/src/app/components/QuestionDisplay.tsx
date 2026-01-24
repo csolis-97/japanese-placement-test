@@ -1,5 +1,6 @@
 "use client";
 
+//FIX THE LOGIC FOR ALREADY ANSWERED LATER ON, DEPENDING ON HOW I DECIDE TO DO THINGS
 //Define the props for the questions being displayed
 interface questionDisplayProps {
     questionId: number;
@@ -8,9 +9,10 @@ interface questionDisplayProps {
     questionCategory: string;
     answerId: number[];
     answerText: string[];
+    selectedAnswer: string;
     alreadyAnswered?: boolean;
-    isCorrect?: boolean;
-
+    correctAnswer?: boolean[];
+    wasCorrect?: boolean;
     /* Since I've never used this syntax before, I'll explain it right now. onChangeValue is the name of the function,
     event: React.ChangeEvent<HTMLInputElement> is the argument, the arrow is part of the arrow function declaration,
     and void is the return type. Since this function will only be used to set the answer selected by the user in the form,
@@ -18,8 +20,12 @@ interface questionDisplayProps {
     that for later.
     */
     
-    onChangeValue: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    onChangeValue?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
+
+const regularRadio = "ml-2 text-gray-600"
+const correctRadio = "ml-2 text-green-600"
+const wrongRadio = "ml-2 text-red-600"
 
 /* Below, I learned a new syntax for string interpolation in React components using Typescript. While variables are inserted alone by enclosing
 them within {}, when combining them with strings, use backticks `` and preface each variable with a $ before enclosing them with {}. This
@@ -27,19 +33,35 @@ works similar to how f is used for string literals in Python, the backticks I me
 export default function questionDisplay(props: questionDisplayProps) {
         //console.log("MESSAGE FROM QUESTIONDISPLAY!");
         //console.log(props);
+            console.log("ALREADY ANSWERED?");
+            console.log(props.alreadyAnswered);
+            console.log("LOG THE CORRECT ANSWERS IF ANY!!")
+            console.log(props.correctAnswer);
+            console.log("VALUE IN SELECTED ANSWER!")
+            console.log(props.selectedAnswer)
+            console.log("WAS CORRECT?")
+            console.log(props.wasCorrect)
     return (
         <div>
             <div>
+                <h1 className = "text-gray-600 font-semibold mt-4">Question #{props.questionId}</h1>
                 <h2 className = "text-gray-800 font-semibold mt-2">{props.questionText}</h2>
                 <p className = "text-gray-600">{props.questionBody}</p>
-                <p className = "text-gray-600">{props.questionId}</p>
                 <fieldset disabled = {props.alreadyAnswered} className = "mt-2">
                 {props.answerText?.map((answer, index) => (
                     //fieldset should only be disabled if the question has already been answered.
+                    //checked tracks which radio option the user has selected by setting selectedAnswer to the value of answer
+                    //readOnly is enabled only during the results page, as no onChange will be provided
+                    //Although booleans in the data, convert correctAnswers to numbers for comparison.
+                    //Each radio option will only be colored correct IF the user chose that option, or if it was actually correct.
+                    //If the user chose the wrong option, color only that radio red.
                     <div key={index} className = "mt-2">
-                        <input type = "radio" id = {`answer-${props.answerId[index]}`} name = {`question-${props.questionId}`} value = {answer}
-                        onChange = {props.onChangeValue}/>
-                        <label htmlFor ={`answer-${props.answerId[index]}`} className = "ml-2 text-gray-600">{props.answerText[index]}</label>
+                        <input type = "radio" id = {`answer-${props.answerId[index]}`} name = {`question-${props.questionId}`} value = {answer || props.selectedAnswer}
+                        onChange = {props.onChangeValue} checked = { props.selectedAnswer === answer}
+                        readOnly = {props.alreadyAnswered} />
+                        <label htmlFor ={`answer-${props.answerId[index]}`} className = { props.selectedAnswer === props.answerText[index] && Number(props.wasCorrect) === 1 || Number(props.correctAnswer?.[index]) === 1 ? 
+                            (correctRadio) : props.selectedAnswer === props.answerText[index] && Number(props.wasCorrect) === 0 ? 
+                            (wrongRadio) : (regularRadio) }>{props.answerText[index]}</label>
                     </div>
                     ))
                 }

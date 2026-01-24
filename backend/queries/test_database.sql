@@ -97,11 +97,11 @@ DROP TABLE IF EXISTS user_answers;
 -- Create the user_answers table
 CREATE TABLE user_answers (
     score_id INT NOT NULL,
+    attempt_id INT NOT NULL,
     question_id INT NOT NULL,
-    user_answer_id INT NOT NULL,
     user_answer_text VARCHAR(255) NOT NULL,
     user_was_correct BOOLEAN NOT NULL,
-    PRIMARY KEY (score_id, question_id),
+    PRIMARY KEY (score_id, attempt_id, question_id),
     FOREIGN KEY (score_id) REFERENCES scores(score_id) ON DELETE CASCADE,
     FOREIGN KEY (question_id) REFERENCES questions(question_id) ON DELETE CASCADE
 );

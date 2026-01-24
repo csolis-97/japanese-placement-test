@@ -8,10 +8,33 @@ type testFormData = {
     questionCategory: string;
     answerId: number[];
     answerText: string[];
+    userAttempt: number;
 }
 
-type answerData = {
-    answerText: string[]
+export async function attemptNumber(action: string, userAttempt: number) {
+    // This action will send the answers to the backend for processing
+    action = "getAttemptNumber"
+    console.log("BEGIN RETRIEVAL OF THE USER'S CURRENT ATTEMPT")
+    try {
+        console.log("Attempt to get the attempt number...")
+        const response = await fetch('http://localhost:5000/testform', {
+            method: 'POST',
+            headers: {
+                'Content-Type' : 'application/json',
+            },
+            body: JSON.stringify({'action' : action, 'user_attempt' : userAttempt})
+        });
+
+        const data = await response.json();
+        console.log("Here is the response from the database");
+        console.log(data);
+        return data;
+    }
+
+    catch(error) {
+        console.log(error);
+        console.log("Internal Server Error")
+    }
 }
 
 export async function testForm(action: string, givenFields: testFormData) {
@@ -23,10 +46,10 @@ export async function testForm(action: string, givenFields: testFormData) {
     const questionCategory = givenFields.questionCategory;
     const answerId = givenFields.answerId;
     const answerText = givenFields.answerText;
+    const userAttempt = givenFields.userAttempt;
 
     // This action will send the answers to the backend for processing
     if (action === "sendAnswers") {
-
         // Create a snapshot of the submission time to send alongside the POST request
         let submittedTime = new Date();
         console.log("HERE IS THE SUBMISSION TIMESTAP")
@@ -42,7 +65,7 @@ export async function testForm(action: string, givenFields: testFormData) {
                     'Content-Type' : 'application/json',
                 },
                 body: JSON.stringify({'action' : action, 'date' : submittedTime, 'question_category' : questionCategory, 'question_id' : questionId, 'question_text' : questionText,
-                    'question_body' : questionBody, 'answer_id' : answerId, 'answer_text' : answerText})
+                    'question_body' : questionBody, 'answer_id' : answerId, 'answer_text' : answerText, 'user_attempt' : userAttempt})
             });
 
             const data = await response.json();
@@ -57,7 +80,6 @@ export async function testForm(action: string, givenFields: testFormData) {
         }
 
     }
-    
     //Default action is to retrieve the test data
     else {
         action = "retrieveQuestions"
@@ -89,4 +111,4 @@ export async function testForm(action: string, givenFields: testFormData) {
         }
     }
 }
-export default testForm;
+//export default {attemptNumber, testForm};
