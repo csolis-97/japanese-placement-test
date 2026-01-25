@@ -1,6 +1,6 @@
 "use client"
 
-import {attemptNumber, testForm} from "./actions";
+import {attemptNumber, questionCheck, testForm} from "./actions";
 import Link from "next/link";
 import Image from "next/image";
 import {useRouter} from "next/navigation"
@@ -18,6 +18,14 @@ export default function Home() {
     answerId: number[];
     answerText: string[];
     userAttempt: number;
+    resultId: number;
+  }
+
+  type responseType = {
+    questionId: number;
+    userText: string;
+    userAttempt: number;
+    resultId: number;
   }
 
   //Interface below will be used for when each question itself is displayed. Fields should be the exact same as the ones in
@@ -60,13 +68,14 @@ export default function Home() {
     'questionCategory' : '',
     'answerId' : [],
     'answerText' : [],
-    'userAttempt' : 0
+    'userAttempt' : 0,
+    'resultId' : 0
   })
 
   //The different between const and let is that const variables cannot be reassigned, while let variables can.
-  // attemptNum will later hold the current user's attempt number, while answerArray will track all user answers.
-  let attemptNum = 0;
+  // answerArray will track all user answers.
   let answerArrayBuild: string[] = [];
+  let answerStatusBuild: boolean[] = [];
   let ctr: number = 0;
 
   for (ctr; ctr <= questions.length-1; ctr++) {
@@ -81,6 +90,19 @@ export default function Home() {
   //This useState will track the current difficult level of the test
   const [selectedLevel, setSelectedLevel] = useState<string>('N3');
 
+  //THis useState will track if the current question was answered or not
+  ctr = 0
+  for (ctr; ctr <= questions.length-1; ctr++) {
+    answerStatusBuild.push(false)
+  }
+  const [answerStatus, setAnswerStatus] = useState<boolean[]>(answerStatusBuild);
+
+  //This useState will track the current attempt number for the user
+  const [currentAttempt, setCurrentAttempt] = useState<number>(0);
+
+  //This useStatewill track the user's current result ID
+  const [resultId, setResultid] = useState<number>(0);
+
   //This useState will check if the test has been submitted
   const [isSubmitted, setIsSubmitted] = useState<boolean>();
 
@@ -91,6 +113,34 @@ export default function Home() {
   const [error, setError] = useState<string | string[] | undefined>('');
 
   const router = useRouter();
+
+  async function handleQuestionSubmit(event: React.FormEvent) {
+    event.preventDefault();
+    console.log("BEFORE SUBMITTING THE CURRENT ANSWER")
+    if (answerArray[currentQuestion]) {
+      console.log("USER ANSWER TO BE SUBMITTED")
+      console.log(answerArray[currentQuestion])
+
+      let currentAnswer: responseType = {
+        questionId: currentQuestion,
+        userText: answerArray[currentQuestion],
+        userAttempt: currentAttempt,
+        resultId: resultId
+      };
+      const fetchedresultId = await questionCheck('sendOneAnswer', currentAnswer)
+      console.log("ANSWER SUBMITTED!")
+      if (fetchedresultId && resultId === 0) {
+        console.log("HERE IS THE RESULTID THAT WILL BE USED")
+        console.log(fetchedresultId)
+        setResultid(fetchedresultId)
+        console.log("SET RESULTID TO THIS")
+        console.log(resultId)
+      }
+      else {
+        console.log("Error fetching the current result ID.");
+      }
+    }
+  }
 
   //Function to handle the test form itself, once the user presses the submit button
   async function handleTestForm(event: React.FormEvent) {
@@ -107,20 +157,6 @@ export default function Home() {
       console.log("PLEASE CHECK HERE")
       console.log(answerArray)
 
-      // Next, fetch the test attempt number for the user, as this will be needed to display the correct results later on
-      const fetchedAttemptNum = await attemptNumber('getAttemptNumber', attemptNum);
-      // If the attempt number is successfully retrieved, set the value to attemptNum. Otherwise log an error.
-      if (fetchedAttemptNum) {
-        console.log("HERE IS THE USER'S CURRENT ATTEMPT NUMBER");
-        console.log(fetchedAttemptNum);
-        attemptNum = fetchedAttemptNum;
-        console.log("Test attempt number fetched and set to attemptNum");
-        console.log(attemptNum);
-      }
-      else {
-        console.log("Error fetching test attempt number in useEffect.");
-      }
-
       //In order to submit the answers, create finalAnswers to properly map the answers to an object of testFormType.
       //Since we only need answerText, everything else is left blank.
       let finalAnswers: testFormType = {
@@ -130,11 +166,12 @@ export default function Home() {
         questionCategory: '',
         answerId: [],
         answerText : answerArray,
-        userAttempt: attemptNum
+        userAttempt: currentAttempt,
+        resultId: resultId
       };
       console.log("HERE IS THE FINALANSWERS");
       console.log(finalAnswers);
-      if (attemptNum) {
+      if (currentAttempt !== 0) {
         const fetchedCheckedAnswers = await testForm('sendAnswers', finalAnswers);
         setGradedAnswers(fetchedCheckedAnswers);
         // THIS PRINTS AN EMPTY ARRAY
@@ -142,9 +179,9 @@ export default function Home() {
         console.log(gradedAnswers)
         // EVERYTHING HERE IS NOT PRINTED FOR SOME REASON
         console.log("ABOUT TO PUSH THROUGH ROUTE WITH THIS ATTEMPT NUMBER!")
-        console.log(attemptNum)
-        // Since the attemptNum is a single integer, append it to router push for use in the results screen
-        router.push(`/results?attempt=${attemptNum}`);
+        console.log(currentAttempt)
+        // Since the  currentAttempt value is a single integer, append it to router push for use in the results screen
+        router.push(`/results?attempt=${currentAttempt}`);
       }
       // If there is an error, set the error useState and log to console.
       else {
@@ -158,8 +195,8 @@ export default function Home() {
     }
   }
 
-  // Use useEffect to fetch the test form data when the component mounts or when the questionId changes
-  console.log("ABOUT TO ENTER THE USEFFECT!")
+  // Use useEffect to fetch the test form data when the component mounts
+  console.log("ABOUT TO ENTER THE USEFFECT FOR QUESTIONS!")
   useEffect(() => {
     if (questions !== undefined) {
       // Note, this can also be written as async function fetchTestFormat() {...}. It's called an arrow function here.
@@ -177,10 +214,33 @@ export default function Home() {
             console.log("Error fetching test form data in useEffect.")
           }
         }
-        // Call the function to fetch the test format and the current attempt number after defining them
+        // Call the function to fetch the test format after defining it
         fetchTestInfo();
     }
   }, []); // [testFormat.questionId], This dependency array ensures the effect runs when questionId changes
+
+  // use another useEffect to fetch the attempt number for the user when the component mounts
+  useEffect(() => {
+    if (currentAttempt === 0) {
+      const getAttemptNumber = async() => {
+      // Next, fetch the test attempt number for the user, as this will be needed to display the correct results later on
+      const fetchedAttemptNum = await attemptNumber('getAttemptNumber', currentAttempt);
+      // If the attempt number is successfully retrieved, set the value to currentAttempt. Otherwise log an error.
+      if (fetchedAttemptNum) {
+        console.log("HERE IS THE USER'S CURRENT ATTEMPT NUMBER");
+        console.log(fetchedAttemptNum);
+        setCurrentAttempt(fetchedAttemptNum);
+        console.log("Test attempt number fetched and set to currentAttempt");
+        console.log(currentAttempt);
+      }
+      else {
+        console.log("Error fetching test attempt number.");
+      }
+      }
+    // Call the function to fetch the current attempt number after defining it
+    getAttemptNumber();
+    }
+  }, [])
 
   // FOR DEBUG. This second useEffect will track the user's current answer for the current question
   useEffect(() => {
@@ -239,11 +299,27 @@ export default function Home() {
     }
     // Logic for the Next button
     else {
+      setAnswerStatus((prevData) => ({
+        ...prevData,
+        [currentQuestion] : true
+      }))
       /* prev => prev + 1 is an example of a functional update in useState. Prev is the immediate, latest version of the
       state before it was updated. It is a function that takes prev as its argument and returns prev + 1 as the result.
       */
       setCurrentQuestion(prev => prev + 1)
+      handleQuestionSubmit(event);
     }
+  }
+
+    //This function handles the logic for submitting the current question using a button.
+  const handleButtonQuestionSubmit = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    //Take the name of the event that cause the current call to handleButtonChange
+    const {name, value, onclick} = event.currentTarget
+    //Logic for the Back button
+      /* prev => prev + 1 is an example of a functional update in useState. Prev is the immediate, latest version of the
+      state before it was updated. It is a function that takes prev as its argument and returns prev + 1 as the result.
+      */
+      setCurrentQuestion(prev => prev + 1)
   }
 
   console.log("ABOUT TO ENTER THE HTML!")
@@ -275,7 +351,7 @@ export default function Home() {
                 answerText = {questions[currentQuestion].answer_text}
                 //selectedAnswer is used to track which radio option the user has chosen
                 selectedAnswer = {answerArray[currentQuestion]}
-                //alreadyAnswered = {answerArray[currentQuestion] === null}
+                alreadyAnswered = {answerStatus[currentQuestion]}
                 //Send the handleChange const as the value for onChangeValue so that the onChange field can be properly handled
                 onChangeValue = {handleChange}
                 />)

@@ -9,6 +9,14 @@ type testFormData = {
     answerId: number[];
     answerText: string[];
     userAttempt: number;
+    resultId: number;
+}
+
+type responseData = {
+    questionId: number;
+    userText: string;
+    userAttempt: number;
+    resultId: number;
 }
 
 export async function attemptNumber(action: string, userAttempt: number) {
@@ -47,6 +55,7 @@ export async function testForm(action: string, givenFields: testFormData) {
     const answerId = givenFields.answerId;
     const answerText = givenFields.answerText;
     const userAttempt = givenFields.userAttempt;
+    const resultId = givenFields.resultId;
 
     // This action will send the answers to the backend for processing
     if (action === "sendAnswers") {
@@ -64,8 +73,9 @@ export async function testForm(action: string, givenFields: testFormData) {
                 headers: {
                     'Content-Type' : 'application/json',
                 },
-                body: JSON.stringify({'action' : action, 'date' : submittedTime, 'question_category' : questionCategory, 'question_id' : questionId, 'question_text' : questionText,
-                    'question_body' : questionBody, 'answer_id' : answerId, 'answer_text' : answerText, 'user_attempt' : userAttempt})
+                body: JSON.stringify({'action' : action, 'date' : submittedTime, 'question_category' : questionCategory, 
+                    'question_id' : questionId, 'question_text' : questionText, 'question_body' : questionBody, 'answer_id' : answerId, 
+                    'answer_text' : answerText, 'user_attempt' : userAttempt, 'score_id' : resultId})
             });
 
             const data = await response.json();
@@ -94,8 +104,8 @@ export async function testForm(action: string, givenFields: testFormData) {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({'action' : action, 'question_category' : questionCategory, 'question_id' : questionId, 'question_text' : questionText,
-                    'question_body' : questionBody, 'answer_id' : answerId, 'answer_text' : answerText})
+                body: JSON.stringify({'action' : action, 'question_category' : questionCategory, 'question_id' : questionId, 
+                    'question_text' : questionText, 'question_body' : questionBody, 'answer_id' : answerId, 'answer_text' : answerText})
             });
 
             //Get the response from the database and return
@@ -111,4 +121,43 @@ export async function testForm(action: string, givenFields: testFormData) {
         }
     }
 }
-//export default {attemptNumber, testForm};
+
+export async function questionCheck(action: string, givenFields: responseData) {
+
+    //Divide the form data into separate variables
+    const questionId = givenFields.questionId;
+    const userText = givenFields.userText;
+    const userAttempt = givenFields.userAttempt;
+    const resultId = givenFields.resultId;
+
+    // This action will send the current question's answer to the backend for processing
+    if (action === "sendOneAnswer") {
+        // Create a snapshot of the submission time to send alongside the POST request
+        let submittedTime = new Date();
+        console.log("HERE IS THE SUBMISSION TIMESTAP")
+        console.log(submittedTime)
+
+        console.log(userText)
+        console.log("SEND THE ANSWERS TO THE BACKEND");
+        try {
+            console.log("Attempt to send the answers...")
+            const response = await fetch('http://localhost:5000/testform', {
+                method: 'POST',
+                headers: {
+                    'Content-Type' : 'application/json',
+                },
+                body: JSON.stringify({'action' : action, 'question_id' : questionId, 'user_answer_text' : userText, 'user_attempt' : userAttempt, 'score_id' : resultId})
+            });
+
+            const data = await response.json();
+            console.log("Here is the response from the database after sending the current answer data:");
+            console.log(data);
+            return data;
+        }
+
+        catch(error) {
+            console.log(error);
+            console.log("Internal Server Error: Answer could not be checked.")
+        }
+    }
+}
