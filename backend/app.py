@@ -9,7 +9,7 @@ pymysql.install_as_MySQLdb()
 import MySQLdb.cursors
 import os
 
-# Here is a sample of importing functions from other files in the backend
+# Import all the functions defined elsewhere in the backend
 from test_data_functions import *
 
 app = Flask(__name__)
@@ -60,108 +60,103 @@ def testForm():
     # If the action is getAttemptNumber, get the user's current attempt number and return it
     if action == 'getAttemptNumber' :
         initialNum = data['user_attempt']
-        attemptNum = getAttemptNum(initialNum, cursor)
+        attemptNum = getAttemptNum(cursor, initialNum)
         print("Before the return")
         return jsonify(attemptNum)
-    
-    # If the action is retrieveQuestions (default in the front end), select all the question info and return it
-    elif action == 'retrieveQuestions' :
 
-        # EDIT THIS BACK IN ONCE THE QUESTION LEVEL FUNCTIONALITY IS ACHIEVED
 
-        # questionCategory = data['question_category']
-        # paramList.append(questionCategory)
-        # questionText = data['question_text']
-        # questionBody = data['question_body']
-        # answerText = data['answer_text']
+    # If the action is getResultNumber, get the ID for the current score data
+    elif action == 'getResultNumber' :
+        print("RETRIEVING THE RESULT ID!")
+        initialId = data['score_id']
+        # Now, create a score record in the database if scoreId was equal or less than 0, so that the answers can be inserted here in 
+        # the future.
+        print("ENTER THE IF STATEMENT")
+        if initialId == 0:
+            ##### FOR NOW USE USER_ID OF 1, I JUST PUT A RANDOM PLACEHOLDER FOR THE TIMEBEING
+            recordQuery = "INSERT INTO scores(user_id, total_score, entrance_level, test_date) VALUES (1, 0, 'Beginner I', '2000-01-01 12:00:00');"
+            cursor.execute(recordQuery)
+            print("EXECUTED!")
+            # This is the version used with flask_mysql, but the wheel fails to build so I used the flaskext.mysql version above
+            # mysql.connection.commit()
+            # Commit the change so that it appears in the database
+            print("COMMITED!")
+            commitChange = mysql.get_db()
+            commitChange.commit()
+            # This will be used when inserting values into the user_answer table. It takes the id value inserted for the auto_incremented
+            # score_id column and returns it
+            scoreId = cursor.lastrowid
+            print("SUCCESSFULLY CREATE THE SCORE RECORD!")
+        else:
+            scoreId = data['score_id']
+        print(f"The record ID to be used is {scoreId}!")
+        print("Before the return")
+        return jsonify(scoreId)
 
-        # for i in range(len(answerList)) :
-        #     print(answerList[i]) 
 
-        # Determine which questions to query based on the question category, build the final query, and execute it.
-        ### I MAY JUST DO THIS WITHIN THIS FILE OR IN THE FRONT END, I'LL DECIDE WHEN I GET THERE
-        finalQuery = "SELECT A.question_id, A.answer_id, A.answer_text, Q.question_text, Q.question_body, " \
-        "Q.question_level FROM questions Q, answers A WHERE Q.question_id = A.question_id ORDER BY Q.question_id" 
+    # If the action is retrieveOneQuestion, retrieve a new question and all of its info based on specific conditions
+    elif action == 'retrieveOneQuestion' :
+        # Set the data from the JSON request
+        questionCategory = data['question_category']
+        questionId = data['question_id']
+        wasCorrect = data['was_correct']
+        questionTrack = data['past_id']
 
-        # EDIT THIS BACK IN ONCE THE QUESTION LEVEL FUNCTIONALITY IS ACHIEVED
-        # finalQuery = "SELECT * FROM questions Q, answers A WHERE Q.question_id = A.question_id AND Q.question_level = %s " \
-        # "ORDER BY Q.question_id" 
-        # cursor.execute(finalQuery, tuple(paramList))
+        print("CURRENT QUESTION LEVEL")
+        print(questionCategory)
+        print("DID USER GET IT RIGHT?")
+        print(wasCorrect)
+        print("LIST OF QUESTION IDS THAT WERE ALREADY USED")
+        print(questionTrack)
 
-        # Execute the query, fetch all the results, store them in questions, and close the cursor
-        cursor.execute(finalQuery)
-        questions = cursor.fetchall()
+        # Determine the difficulty level of the next question based on the user's answer
+        questionCategory = difficultyLevel(data, wasCorrect, questionCategory)
+
+        # Fetch the next question based on the current level, alongside avoiding all previously used question_ids
+        newQuestion = fetchNewQuestion(cursor, questionId, questionCategory, questionTrack)
+
+        # Once a suitable question has been found, close the cursor
         cursor.close()
-
         # DEBUG PRINT THE RESULT OF FETCHING FROM THE DATABASE
         print("BEFORE THE FOR LOOP!")
-        print(questions)
+        print(newQuestion)
 
-        '''Make a temporary dictionary to correctly assign each answer_id and answer_text to the correct question_id.
-        For each row in questions, the current value of question_id will be used to check if it is currently in the dictionary.
-        If it is not, add the current question_id, question_text, question_body, question_level, and two empty arrays for
-        answer_id and answer_text.
-        '''
-        groupedQuestions = {}
-        for row in questions :
-            questionKey = row['question_id']
+        # Create the key and fields that will be used to map the data into a dictionary and then convert that to one list
+        questionKey = 'question_id'
+        singleFields = ['question_id', 'question_text', 'question_body', 'question_level']
+        nestedFields = ['answer_id', 'answer_text']
 
-            if questionKey not in groupedQuestions: 
-                groupedQuestions[questionKey] = {
-                "question_id" : row['question_id'],
-                "question_text" : row['question_text'],
-                "question_body" : row['question_body'],
-                "question_level" : row['question_level'],
-                "answer_id" : [],
-                "answer_text" : []
-            }
-            
-            # Append the current answer_id and answer_text to the current row within the dictionary, regardless if questionKey was
-            # already in the dictionary or not.
-            groupedQuestions[questionKey]["answer_id"].append(row['answer_id'])
-            groupedQuestions[questionKey]["answer_text"].append(row['answer_text'])
-
-        # DEBUG, ONCE THE GROUPING IS FINISHED PRINT THE RESULTS
-        print("GROUPED!")
-        print(groupedQuestions)
-        # Set questions to groupedQuestions before returning. The keys are not needed, so just convert it to a list using the values.
-        questions = list(groupedQuestions.values())
-        # DEBUG, PRINT THE FINAL VERSION OF THE DATA TO BE SENT TO THE FRONT END
-        print("NEW DATA!")
-        print(questions)
+        # Map the question and answer data to one single list with this function and return results to newQuestion
+        newQuestion = mapAnswerstoQuestion(newQuestion, questionKey, singleFields, nestedFields)
 
         print("Before the return")
-        return jsonify(questions)
+        return jsonify(newQuestion)
         # Add return statuses if needed
 
 
     ### SECTION FOR RECEIVING USER ANSWERS, CHECKING THEM, AND STORING THEM ###
-
+    # Else if the action is "sendOneAnswer" then get the JSON data info, check if the answer was correct, and store
+    # The user's response in the database before returning the checked answer.
     elif action == 'sendOneAnswer':
-        print("HELLO 2!")
-
-        '''A few lists are declared here. isCorrect will store a boolean value of either True or False, depending on whether the answer 
-        the user gave was correct or not. answerId only stores the integer of each question checked after the value is retrieved from the
-        database. paramList merely stores the parameters for the SQL query.
-        '''
+        # isCorrect will store a boolean value of either True or False, depending on whether the answer the user gave 
+        # was correct or not. answerId only stores the integer of each question checked after the value is retrieved from the
+        # database.
         isCorrect = []
         answerId = []
-        paramList = []
 
         # Store the user's answer data that was retrieved and get the current attemptNum from the database
         questionId = data['question_id']
         answerData = data['user_answer_text']
         attemptNum = data['user_attempt']
+        questionTrack = data['past_id']
         scoreId = data['score_id']
-        print(data)
-        print("RESULT ID!")
-        print(data['score_id'])
-        #if data['user_attempt'] > 0: 
-        #    scoreId = data['user_attempt']
-        if attemptNum == 0:
-            attemptNum = getAttemptNum(attemptNum, cursor)
 
-        # DEBUG CHECK THE VALUES IN ANSWERDATA
+        # ALL OF THE BELOW IS DEBUG TO CHECK THE VALUES
+        print(data)
+        print("ATTEMPT NUMBER!")
+        print(attemptNum)
+        print("RESULT ID!")
+        print(scoreId)
         print("ANSWER DATA")
         print(answerData)
 
@@ -170,50 +165,16 @@ def testForm():
 
         # Check which of the users answers were correct and store that information in isCorrect
         isCorrect = gradeAnswers(results, questionId)
-        # Now, create a score record in the database if scoreId was equal or less than 0, so that the answers can be inserted here in 
-        # the future.
-        if scoreId == 0:
-            ##### FOR NOW USE USER_ID OF 1, I JUST PUT A RANDOM PLACEHOLDER FOR THE TIMEBEING
-            recordQuery = "INSERT INTO scores(user_id, total_score, entrance_level, test_date) VALUES (1, 0, 'N5', '2000-01-01 12:00:00');"
-            cursor.execute(recordQuery,)
-            # This is the version used with flask_mysql, but the wheel fails to build so I used the flaskext.mysql version above
-            # mysql.connection.commit()
-            # Commit the change so that it appears in the database
-            commitChange = mysql.get_db()
-            commitChange.commit()
-            # This will be used when inserting values into the user_answer table. It takes the id value inserted for the auto_incremented
-            # score_id column and returns it
-            scoreId = cursor.lastrowid
-            print("SUCCESSFULLY CREATE THE SCORE RECORD!")
 
-        # NOW ENTER THE SECTION FOR STORING THE USER'S ANSWERS
-
-        # Empty paramList once again
-        paramList = []
         # Check if the user actually had any answers. If not, skip to the else statement without interacting with the database.
         if len(isCorrect) > 0:
             # Assign valueQuery to the returned array
             valueQuery = buildValueQuery(answerData)
-            # Enter a for loop with enumeration in order to append the proper values that will be used as parameters for the query 
-            # in paramList.
-            if str(answerData):
-                paramList.append(scoreId)
-                paramList.append(attemptNum)
-                paramList.append(questionId+1)
-                paramList.append(answerData)
-                paramList.append(isCorrect)
-            else:
-                for i, row in enumerate(answerData):
-                    paramList.append(scoreId)
-                    paramList.append(attemptNum)
-                    paramList.append(questionId+1)
-                    paramList.append(answerData[i])
-                    paramList.append(isCorrect)
+            # Then assign paramList to the array that was built in the function
+            paramList = buildAnswerData(answerData, scoreId, attemptNum, questionId, isCorrect, questionTrack)
 
-            # DEBUG FOR THE PARAMLIST
-            print("HERE IS THE FINAL PARAMLIST")
-            print(paramList)
-            storeQuery = f"INSERT INTO user_answers(score_id, attempt_id, question_id, user_answer_text, user_was_correct)  VALUES {" ".join(valueQuery)}"
+            # Build the query using valueQuery, with paramList as its values
+            storeQuery = f"INSERT INTO user_answers(score_id, attempt_id, question_id, response_order, user_answer_text, user_was_correct) VALUES {" ".join(valueQuery)}"
 
             cursor.execute(storeQuery, tuple(paramList))
             # This is the version used with flask_mysql, but the wheel fails to build so I used the flaskext.mysql version above
@@ -225,40 +186,46 @@ def testForm():
         else:
             print("USER SUBMITTED NO ANSWERS, SO THERE IS NOTHING TO STORE.")
 
-        # Finally, close the cursor
+        # Finally, close the cursor and return the data
         cursor.close()
-        return jsonify(scoreId)
+        return jsonify(isCorrect)
 
 
-    # If the action is sendAnswers, check the user's answers, then store them in the database
-    elif action == 'sendAnswers':
-        questionId = []
-        isCorrect = []
-        answerId = []
+    # If the action is submitTest, check the user's answers, score the test, then finally update the record given the correct score_id
+    elif action == 'submitTest':
+        # Store the data retrieved from the JSON into separate variables
+        scoreId = data['score_id']
+        attemptNum = data['user_attempt']
+        isCorrect = data['was_correct']
+        questionTrack = data['past_id']
         paramList = []
         # Fetch the submission date and time from the data and convert it into a string, since the format must be changed
-        submitTime = str(data['date'])
-        # Store the user's answers that were retrieved in answerList and get the current attemptNum from the database
-        answerList = data['answer_text']
-        attemptNum = data['user_attempt']
-        scoreId = data['score_id']
-        attemptNum = getAttemptNum(attemptNum, cursor)
+        submitTime = data['date']
 
         # DEBUG CHECK THE VALUES IN ANSWERLIST
         print("ANSWER LIST")
-        print(answerList)
+        print(isCorrect)
+        print("QUESTION TRACK")
+        print(questionTrack)
+        print(f"SCORE ID IS: {scoreId}!")
+        print(f"ATTEMPT NUMBER IS: {attemptNum}!")
+        
+        paramList = [scoreId, attemptNum]
 
-        # Enter a function to get the correct answer info based on the question_id of the questions answered
-        results = getCorrectAnswerInfo(cursor, answerList, questionId, answerId)
+        # Make a query to get all the question levels for each question the user answered based on the questionTrack and the score_id
+        # Small note because I didn't know about using the map function here until I looked it up. In order to join a list with non integer
+        # values, you can merely do a join. However, if there are integers you must map them to a string first.
+        levelQuery = "SELECT DISTINCT Q.question_id, Q.question_level, U.user_was_correct, U.response_order FROM questions Q, scores S, " \
+        "user_answers U WHERE S.score_id = U.score_id AND Q.question_id = U.question_id AND S.score_id = %s AND U.attempt_id = %s " \
+        f"AND Q.question_id IN ({", ".join(map(str, questionTrack))}) ORDER BY U.response_order"
+        cursor.execute(levelQuery, tuple(paramList))
+        levelList = cursor.fetchall()
 
-        # Check which of the users answers were correct and store that information in isCorrect
-        isCorrect = gradeAnswers(results, questionId)
-
-        # Calculate the score, and using the submitTime, a function called storeScore will return the necessary paramList
+        # Using the submitTime, a function called calculateScore will return the necessary paramList for updating the current score ID
         paramList = []
         print("PARAM LIST BEFORE THE CALL!!")
         print(paramList)
-        paramList = calculateScore(cursor, isCorrect, submitTime)
+        paramList = calculateScore(isCorrect, questionTrack, levelList, submitTime)
         paramList.append(scoreId)
         
         # Now, the correct record will be updated with the results in the database
@@ -274,152 +241,30 @@ def testForm():
         commitChange = mysql.get_db()
         commitChange.commit()
         print("SUCCESSFULLY STORED THE SCORES!")
-
-        # NOW ENTER THE SECTION FOR STORING THE USER'S ANSWERS
-
-        # Empty paramList once again
-        paramList = []
-        # Check if the user actually had any answers. If not, skip to the else statement without interacting with the database.
-        if len(isCorrect) > 0:
-            # Assign valueQuery to the returned array
-            valueQuery = buildValueQuery(answerList)
-
-            # Enter a for loop with enumeration in order to append the proper values that will be used as parameters for the query 
-            # in paramList.
-            for i, row in enumerate(answerList):
-                paramList.append(scoreId)
-                paramList.append(attemptNum)
-                paramList.append(questionId[i])
-                paramList.append(answerList[i])
-                paramList.append(isCorrect[i])
-
-            # DEBUG FOR THE PARAMLIST
-            print("HERE IS THE FINAL PARAMLIST")
-            print(paramList)
-            storeQuery = f"INSERT INTO user_answers(score_id, attempt_id, question_id, user_answer_text, user_was_correct)  VALUES {" ".join(valueQuery)}"
-
-            cursor.execute(storeQuery, tuple(paramList))
-            # This is the version used with flask_mysql, but the wheel fails to build so I used the flaskext.mysql version above
-            # mysql.connection.commit()
-            # Commit the change so that it appears in the database
-            commitChange = mysql.get_db()
-            commitChange.commit()
-            print("SUCCESSFULLY STORED THE ANSWERS!")
-        else:
-            print("USER SUBMITTED NO ANSWERS, SO THERE IS NOTHING TO STORE.")
-
         # Finally, close the cursor
         cursor.close()
-        return jsonify(isCorrect)
+        return jsonify("Test submitted!")
     
-        '''A few lists are declared here. The questionId list will store the proper ID of each question the user answered, so that the 
-        proper answers can be checked. isCorrect will store a boolean value of either True or False, depending on whether the answer 
-        the user gave was correct or not. answerId only stores the integer of each question checked after the value is retrieved from the
-        database. paramList merely stores the parameters for the SQL query.
-        '''
-        '''
-        questionId = []
-        isCorrect = []
-        answerId = []
-        paramList = []
-        # Fetch the submission date and time from the data and convert it into a string, since the format must be changed
-        submitTime = str(data['date'])
-        # Store the user's answers that were retrieved in answerList and get the current attemptNum from the database
-        answerList = data['answer_text']
-        attemptNum = data['user_attempt']
-        attemptNum = getAttemptNum(attemptNum, cursor)
 
-        # DEBUG CHECK THE VALUES IN ANSWERLIST
-        print("ANSWER LIST")
-        print(answerList)
+    # A default case just in case
+    else:
+        return jsonify("No proper action was specified in the results page!")
 
-        # Enter a function to get the correct answer info based on the question_id of the questions answered
-        results = getCorrectAnswerInfo(cursor, answerList, questionId, answerId)
 
-        # Check which of the users answers were correct and store that information in isCorrect
-        isCorrect = gradeAnswers(results, questionId)
-
-        # Calculate the score, and using the submitTime, a function called storeScore will return the necessary paramList
-        paramList = calculateScore(cursor, isCorrect, submitTime)
-        
-        # Now, the score will be inserted into the database
-         
-        ##### FOR NOW USE USER_ID OF 1, I JUST PUT A RANDOM PLACEHOLDER FOR THE TIMEBEING
-
-        ##### FOR SOME REASON, BOTH THE CORRECT SCORE AND ENTRANCE LEVEL ALONGSIDE ONE WITH A SCORE OF 0 AND N5 LEVEL ARE BOTH
-        ##### BEING INSERTED AT THE SAME TIME INTO THE TABLE. FIND OUT WHY!
-        ##### FIRST THE WRONG ONE IS BEING STORED, BUT THE CORRECT ONE HAS THE SAME SUBMISSION ID AS THE TABLE IN SCORES YET DOESN'T
-        ##### HAVE THIS DUPLICATION ERROR!
-
-        scoreQuery = "INSERT INTO scores(user_id, total_score, entrance_level, test_date) VALUES" \
-        "(1, %s, %s, %s)"
-
-        cursor.execute(scoreQuery, tuple(paramList))
-        # This is the version used with flask_mysql, but the wheel fails to build so I used the flaskext.mysql version above
-        # mysql.connection.commit()
-        # Commit the change so that it appears in the database
-        commitChange = mysql.get_db()
-        commitChange.commit()
-        # This will be used when inserting values into the user_answer table. It takes the id value inserted for the auto_incremented
-        # score_id column and returns it
-        scoreId = cursor.lastrowid
-        print("SUCCESSFULLY STORED THE SCORES!")
-
-        # NOW ENTER THE SECTION FOR STORING THE USER'S ANSWERS
-
-        # Empty paramList once again
-        paramList = []
-        # Check if the user actually had any answers. If not, skip to the else statement without interacting with the database.
-        if len(isCorrect) > 0:
-            # Assign valueQuery to the returned array
-            valueQuery = buildValueQuery(answerList)
-
-            # Enter a for loop with enumeration in order to append the proper values that will be used as parameters for the query 
-            # in paramList.
-            for i, row in enumerate(answerList):
-                paramList.append(scoreId)
-                paramList.append(attemptNum)
-                paramList.append(questionId[i])
-                paramList.append((answerList[row]))
-                paramList.append(isCorrect[i])
-
-            # DEBUG FOR THE PARAMLIST
-            print("HERE IS THE FINAL PARAMLIST")
-            print(paramList)
-            storeQuery = f"INSERT INTO user_answers(score_id, attempt_id, question_id, user_answer_text, user_was_correct)  VALUES {" ".join(valueQuery)}"
-
-            cursor.execute(storeQuery, tuple(paramList))
-            # This is the version used with flask_mysql, but the wheel fails to build so I used the flaskext.mysql version above
-            # mysql.connection.commit()
-            # Commit the change so that it appears in the database
-            commitChange = mysql.get_db()
-            commitChange.commit()
-            print("SUCCESSFULLY STORED THE ANSWERS!")
-        else:
-            print("USER SUBMITTED NO ANSWERS, SO THERE IS NOTHING TO STORE.")
-
-        # Finally, close the cursor
-        cursor.close()
-        return jsonify(isCorrect)
-        '''
-    
 ####//// Route for the results ////####
 @app.route('/results', methods=['GET', 'POST'])
 def resultDisplay():
-    print("HELLO")
-
+    # Get the data from the request and make the MySQL cursor and declare variables that will be used across all actions
     data = request.json
     cursor = mysql.get_db().cursor(MySQLdb.cursors.DictCursor)
-
-    #First declare variables and other stuff that will be used across both types of actions
     action = data['action']
-    paramList = []
 
     # First, get the proper result data by using the attempt_id in the data
     attemptId = data['attempt_id']
     print("ATTEMPTID FOR CURRENT RETRIEVAL")
     print(attemptId)
 
+    # If the action is "retrieveResults", fetch the correct result record from the database based on the current user's user_id and attempt_id.
     if action == 'retrieveResults':
         # SINCE THERE CURRENTLY ISN'T ANY USER FUNCTIONALITY, SET user_id TO 1
         resultQuery = "SELECT S.score_id, S.total_score, S.entrance_level, S.test_date FROM scores S, user_answers U WHERE " \
@@ -430,43 +275,38 @@ def resultDisplay():
         resultData = cursor.fetchone()
         cursor.close()
 
+        # DEBUG Check the data retrieved from the database
         print("CURRENT RESULT RECORD DATA")
-        # print(resultData)
+        print(resultData)
 
-        ### THERE MOST LIKELY WILL BE AN ERROR IF THE DATE IS NOT CONVERTED BACK TO THE FORMAT USED IN TYPESCRIPT.
-        ### IF IT DOES WORK, FIX IT HERE REGARDLESS
-        print("EXAMPLE OF DATETIME FORMAT IN SQL")
-        print('2014-08-04 12:56:23')
-        print("EXAMPLE OF TYPESCRIPT DATE FORMAT IN TYPESCRIPT. SINCE THE MILISECONDS WERE NOT SAVED, IGNORE THOSE")
-        print('2014-08-04T12:56:23:123Z')
-
-        # Add T for the Time and Z for UTC timezone
         oldDate = str(resultData['test_date'])
+        # DEBUG Check the format of old date
         print("OLDDATE")
         print(oldDate)
-        # Use isoformat as it is the quickest way to format the date in the proper manner
+        # Use isoformat as it is the quickest way to format the date in the proper manner, add Z for UTC timezone
         finalDate = f"{resultData['test_date'].isoformat()}Z"
+        # DEBUG Check the updated date
         print("FINALDATE")
         print(finalDate)
         # Set the new date in the resultData before sending
         resultData['test_date'] = finalDate
 
+        # DEBUG Check the final version with the updated date
         print("FINAL RESULTS DATA")
         # print(resultData)
 
         print("Before the return")
         return jsonify(resultData)
 
-
+    # Else if the action is "retrieveAnswers", fetch the correct question, answer, and user response info based on provided attempt_id and user_id
     elif action == 'retrieveAnswers':
-
         #### REPLACE USER_ID=1 WHEN THE USER FUNCTIONALITY IS IMPLEMENTED
-        # DISTINCT keyword is used so that duplicate records are not obtained
+        # This simple query will select all question and answer info only for the questions the user answered on their current attempt.
+        # The DISTINCT keyword is used so that duplicate records are not obtained.
         answersQuery = "SELECT DISTINCT Q.question_id, Q.question_text, Q.question_body, Q.question_level, A.answer_id, A.answer_text, " \
-        "A.correct_answer, U.user_answer_text, U.user_was_correct FROM questions Q " \
-        "JOIN answers A ON Q.question_id = A.question_id " \
-        "JOIN user_answers U ON A.question_id = U.question_id " \
-        "JOIN scores S ON U.score_id AND S.score_id WHERE U.attempt_id = %s AND S.user_id = 1 ORDER BY Q.question_id"
+        "A.correct_answer, U.user_answer_text, U.user_was_correct, U.response_order FROM questions Q, answers A, user_answers U, scores S " \
+        "WHERE Q.question_id = A.question_id AND A.question_id = U.question_id AND U.score_id = S.score_id AND U.attempt_id = %s AND " \
+        "S.user_id = 1 ORDER BY U.response_order"
 
         cursor.execute(answersQuery, attemptId)
         answerData = cursor.fetchall()
@@ -476,45 +316,20 @@ def resultDisplay():
         print("BEFORE THE FOR LOOP!")
         #print(answerData)
 
-        '''Make a temporary dictionary to correctly assign each answer_id, answer_text, and correct_answer to the correct question_id.
-        For each row in questions, the current value of question_id will be used to check if it is currently in the dictionary.
-        If it is not, add the current question_id, question_text, question_body, question_level, user_answer_text, user_was_correct,
-        and three empty arrays for answer_id, answer_text, and correct_answer.
-        '''
-        groupedAnswers = {}
-        for row in answerData :
-            questionKey = row['question_id']
+        # Create the necessary fields to be passed to the function so that the answers can be properly mapped to each question
+        questionKey = 'question_id'
+        singleFields = ['question_id', 'question_text', 'question_body', 'question_level', 'user_answer_text', 'user_was_correct', 'response_order']
+        nestedFields = ['answer_id', 'answer_text', 'correct_answer']
+        answerData = mapAnswerstoQuestion(answerData, questionKey, singleFields, nestedFields)
 
-            if questionKey not in groupedAnswers: 
-                groupedAnswers[questionKey] = {
-                "question_id" : row['question_id'],
-                "question_text" : row['question_text'],
-                "question_body" : row['question_body'],
-                "question_level" : row['question_level'],
-                "answer_id" : [],
-                "answer_text" : [],
-                "correct_answer" : [],
-                "user_answer_text" : row['user_answer_text'],
-                "user_was_correct" : row['user_was_correct']
-            }
-            
-            # Append the current answer_id, answer_text, and correct_answer to the current row within the dictionary, regardless if 
-            # questionKey was already in the dictionary or not.
-            groupedAnswers[questionKey]["answer_id"].append(row['answer_id'])
-            groupedAnswers[questionKey]["answer_text"].append(row['answer_text'])
-            groupedAnswers[questionKey]["correct_answer"].append(row['correct_answer'])
-
-        # DEBUG, ONCE THE GROUPING IS FINISHED PRINT THE RESULTS
-        print("GROUPED!")
-        #print(groupedAnswers)
-        # Set answerData to groupedAnswers before returning. The keys are not needed, so just convert it to a list using the values.
-        answerData = list(groupedAnswers.values())
-        # DEBUG, PRINT THE FINAL VERSION OF THE DATA TO BE SENT TO THE FRONT END
-        print("NEW DATA!")
-        #print(answerData)
-
+        # Return the retrieved answers
         print("Before the return")
         return jsonify(answerData)
+    
+
+    # A default case just in case
+    else:
+        return jsonify("No proper action was specified in the results page!")
     
 
 if __name__ == '__main__':

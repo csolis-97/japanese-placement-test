@@ -1,31 +1,51 @@
 "use client"
 
-import {attemptNumber, questionCheck, testForm} from "./actions";
+import * as testUtils from "./actions";
 import Link from "next/link";
 import Image from "next/image";
 import {useRouter} from "next/navigation"
-import {useState, useActionState, useEffect} from "react";
+import {useState, useActionState, useEffect, useRef} from "react";
 import QuestionDisplay from "../../components/QuestionDisplay";
 
 export default function Home() {
 
   //Type defined below will be used for setting the test questions and answers
-  type testFormType = {
+  type questionType = {
     questionId: number;
     questionText: string;
     questionBody: string;
     questionCategory: string;
     answerId: number[];
     answerText: string[];
-    userAttempt: number;
-    resultId: number;
+    userText: string;
+    alreadyAnswered: boolean;
   }
 
   type responseType = {
     questionId: number;
+    pastId: number[];
     userText: string;
     userAttempt: number;
     resultId: number;
+  }
+
+  type requestType = {
+    questionId: number;
+    pastId: number[];
+    questionCategory: string;
+    wasCorrect: boolean;
+  }
+
+  type submitType = {
+    isCorrect: boolean[];
+    pastId: number[];
+    userAttempt: number;
+    resultId: number;
+  }
+
+  type infoType = {
+    resultId: number;
+    userAttempt: number;
   }
 
   //Interface below will be used for when each question itself is displayed. Fields should be the exact same as the ones in
@@ -41,73 +61,66 @@ export default function Home() {
     is_correct?: boolean;
   }
 
-  //Although not needed, here is a sample of a constant being defined to map results from one table to another
-  /*const mapNewTestForm = (question: any): testForm => {
-    questionId: question.new_question_id
-  }
-  */
+  let currentRequest: requestType
+  let currentAnswer: responseType
 
   // This useState is used to store the questions received from the database
-  const [questions, setQuestions] = useState<testQuestion[]>([]);
+  const [questions, setQuestions] = useState<testQuestion>({
+    'question_id' : 0,
+    'question_text' : '',
+    'question_body' : '',
+    'question_level' : '',
+    'answer_id' : [],
+    'answer_text' : [],
+    'already_answered' : false,
+    'is_correct' : false
+  });
+  
   // This useState is used to track the current question
   const [currentQuestion, setCurrentQuestion] = useState<number>(0);
 
+  const testLength = 20;
   //These variables will be used for checking when to disable the Back and Next buttons
   const isFirstQuestion = currentQuestion === 0;
-  const isLastQuestion = currentQuestion >= questions.length-1;
+  const isLastQuestion = currentQuestion >= testLength-1;
+
+  console.log("TESTLENGTH")
+  console.log(testLength)
+  console.log("ISLASTQUESTION?")
+  console.log(isLastQuestion)
 
   //These variables will apply the styling for the regular and disabled buttons
   const regularButton = "mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 position:sticky top:0";
   const disabledButton = "mt-4 px-4 py-2 bg-gray-500 text-white rounded position:sticky top:0";
 
-  // This useState is used to fetch the results from the database, which will then be stored in the questions useState.
-  const [testFormat, setTestFormat] = useState<testFormType>({
+  //const [answerArray, setAnswerArray] = useState<string[]>(answerArrayBuild)
+  const [answerArray, setAnswerArray] = useState<questionType[]>(() =>
+    Array.from({length: testLength}, index => ({
     'questionId' : 0,
     'questionText' : '',
     'questionBody' : '',
     'questionCategory' : '',
     'answerId' : [],
     'answerText' : [],
-    'userAttempt' : 0,
-    'resultId' : 0
-  })
-
-  //The different between const and let is that const variables cannot be reassigned, while let variables can.
-  // answerArray will track all user answers.
-  let answerArrayBuild: string[] = [];
-  let answerStatusBuild: boolean[] = [];
-  let ctr: number = 0;
-
-  for (ctr; ctr <= questions.length-1; ctr++) {
-    answerArrayBuild.push("");
-  }
-
-  const [answerArray, setAnswerArray] = useState<string[]>(answerArrayBuild)
+    'userText' : '',
+    'alreadyAnswered' : false,
+  })))
 
   //This useState will track the user's selected answer for each question
+  //THIS USESTATE IS MERELY FOR DEBUG
   const [selectedAnswer, setSelectedAnswer] = useState<string>('');
-  
-  //This useState will track the current difficult level of the test
-  const [selectedLevel, setSelectedLevel] = useState<string>('N3');
 
-  //THis useState will track if the current question was answered or not
-  ctr = 0
-  for (ctr; ctr <= questions.length-1; ctr++) {
-    answerStatusBuild.push(false)
-  }
-  const [answerStatus, setAnswerStatus] = useState<boolean[]>(answerStatusBuild);
+  //This useRef will track the user's graded answers
+  const gradedAnswers = useRef<boolean[]>([])
 
-  //This useState will track the current attempt number for the user
-  const [currentAttempt, setCurrentAttempt] = useState<number>(0);
+  //This useRef will track the question IDs used
+  const questionIdTrack = useRef<number[]>([])
 
-  //This useStatewill track the user's current result ID
-  const [resultId, setResultid] = useState<number>(0);
-
-  //This useState will check if the test has been submitted
-  const [isSubmitted, setIsSubmitted] = useState<boolean>();
-
-  //This useState will work together with the context in order to track the user's graded scores
-  const [gradedAnswers, setGradedAnswers] = useState<boolean[]>([]);
+  //This useState will track test info, specifically the score ID used in the database for the record, alongside the user's current attempt number
+  const [testInfo, setTestInfo] = useState<infoType>({
+    'resultId' : 0,
+    'userAttempt' : 0
+  });
 
   //Finally, useState for errors
   const [error, setError] = useState<string | string[] | undefined>('');
@@ -117,27 +130,38 @@ export default function Home() {
   async function handleQuestionSubmit(event: React.FormEvent) {
     event.preventDefault();
     console.log("BEFORE SUBMITTING THE CURRENT ANSWER")
+    const currentAnswerData = answerArray[currentQuestion];
+  
+    // Debugging: Check what is actually in the state
+    console.log("Current State Answer:", currentAnswerData);
+
     if (answerArray[currentQuestion]) {
       console.log("USER ANSWER TO BE SUBMITTED")
       console.log(answerArray[currentQuestion])
-
-      let currentAnswer: responseType = {
-        questionId: currentQuestion,
-        userText: answerArray[currentQuestion],
-        userAttempt: currentAttempt,
-        resultId: resultId
+      // Append the current question_id to questionIdTrack
+      questionIdTrack.current[currentQuestion] = questions.question_id
+      // Fetch the test form data from the backend, with 'retrieveOneQuestion' as the action to take
+      console.log("REDEFINING THE CURRRENT RESPONSE")
+      currentAnswer = {
+      questionId: questions.question_id,
+      pastId: questionIdTrack.current,
+      userText: answerArray[currentQuestion].userText,
+      userAttempt: testInfo.userAttempt,
+      resultId: testInfo.resultId
       };
-      const fetchedresultId = await questionCheck('sendOneAnswer', currentAnswer)
+      const fetchedGradedAnswer = await testUtils.questionCheck('sendOneAnswer', currentAnswer)
       console.log("ANSWER SUBMITTED!")
-      if (fetchedresultId && resultId === 0) {
-        console.log("HERE IS THE RESULTID THAT WILL BE USED")
-        console.log(fetchedresultId)
-        setResultid(fetchedresultId)
-        console.log("SET RESULTID TO THIS")
-        console.log(resultId)
+      if (fetchedGradedAnswer) {
+        console.log("HERE IS THE RESULT OF THE QUESTION THAT WAS JUST ANSWERED")
+        console.log(fetchedGradedAnswer)
+        const gradedAnswer = fetchedGradedAnswer
+        gradedAnswers.current[currentQuestion] = gradedAnswer
+        console.log("SET THE CURRENT INDEX OF GRADED ANSWERS TO THIS")
+        console.log(gradedAnswers.current[currentQuestion])
+        return gradedAnswer
       }
       else {
-        console.log("Error fetching the current result ID.");
+        console.log("Error grading the current question.");
       }
     }
   }
@@ -147,106 +171,151 @@ export default function Home() {
     // Default behavior of form submission, to send data and reload the page, is prevented here.
     event.preventDefault();
     console.log("BEFORE SUBMITTING ANSWERS");
-    //Here, the test data will be fetched from the database
+    // Here, the test data will be fetched from the database
     // If the data is successfully retrieved, log the data, assign it to questionsData, then set the testFormat useState
     if (answerArray) {
-      // Set the isSubmitted useState to true once test is submitted
-      setIsSubmitted(true);
       console.log("TEST WAS SUBMITTED!")
-      console.log(isSubmitted);
       console.log("PLEASE CHECK HERE")
       console.log(answerArray)
-
-      //In order to submit the answers, create finalAnswers to properly map the answers to an object of testFormType.
-      //Since we only need answerText, everything else is left blank.
-      let finalAnswers: testFormType = {
-        questionId : 0,
-        questionText: '',
-        questionBody: '',
-        questionCategory: '',
-        answerId: [],
-        answerText : answerArray,
-        userAttempt: currentAttempt,
-        resultId: resultId
-      };
+      let submitInfo: submitType = {
+        resultId: testInfo.resultId,
+        pastId: questionIdTrack.current,
+        userAttempt: testInfo.userAttempt,
+        isCorrect: gradedAnswers.current
+      }
       console.log("HERE IS THE FINALANSWERS");
-      console.log(finalAnswers);
-      if (currentAttempt !== 0) {
-        const fetchedCheckedAnswers = await testForm('sendAnswers', finalAnswers);
-        setGradedAnswers(fetchedCheckedAnswers);
-        // THIS PRINTS AN EMPTY ARRAY
-        console.log("HERE ARE THE GRADED ANSWERS");
-        console.log(gradedAnswers)
-        // EVERYTHING HERE IS NOT PRINTED FOR SOME REASON
+      console.log(gradedAnswers)
+      if (testInfo.userAttempt !== 0) {
+        const fetchedResponse = await testUtils.submitTest('submitTest', submitInfo);
+        console.log(fetchedResponse)
+        const currentAttempt = testInfo.userAttempt
         console.log("ABOUT TO PUSH THROUGH ROUTE WITH THIS ATTEMPT NUMBER!")
         console.log(currentAttempt)
-        // Since the  currentAttempt value is a single integer, append it to router push for use in the results screen
         router.push(`/results?attempt=${currentAttempt}`);
       }
       // If there is an error, set the error useState and log to console.
       else {
-        setError(answerArray);
+        //setError(answerArray);
         console.log("An error occured while retrieving the test form data from the backend.");
-        console.log(answerArray);
-
-        // Set the isSubmitted useState to false in case of error
-        setIsSubmitted(false);
       }
     }
   }
 
-  // Use useEffect to fetch the test form data when the component mounts
-  console.log("ABOUT TO ENTER THE USEFFECT FOR QUESTIONS!")
+  // use a useEffect to fetch the ID to be used for the scores alongside the attempt number for the user when 
+  // the component mounts
+  console.log("ABOUT TO ENTER THE USEFFECT FOR RESULT NUMBER AND ATTEMPT NUMBER!")
   useEffect(() => {
-    if (questions !== undefined) {
-      // Note, this can also be written as async function fetchTestFormat() {...}. It's called an arrow function here.
-        const fetchTestInfo = async () => {
-          // Fetch the test form data from the backend, with 'retrieveQuestions' as the action to take
-          const fetchedTestFormat = await testForm('retrieveQuestions', testFormat);
-          // If the data is successfully retrieved, set the testFormat useState. Otherwise log an error.
-          if (fetchedTestFormat) {
-            console.log("HERE IS FETCHED TEST FORMAT")
-            console.log(fetchedTestFormat)
-            setQuestions(fetchedTestFormat);
-            console.log("Test form data fetched and set in useEffect.")
-          }
-          else {
-            console.log("Error fetching test form data in useEffect.")
-          }
-        }
-        // Call the function to fetch the test format after defining it
-        fetchTestInfo();
-    }
-  }, []); // [testFormat.questionId], This dependency array ensures the effect runs when questionId changes
+    if (testInfo.resultId === 0) {
+      const getResultNumber = async () => {
+        const fetchedresultId = await testUtils.resultNumber('getResultNumber', testInfo.resultId);
+        // If the current result's ID in the database was successfully retrieved, set the value to resultId. Otherwise log an error.
+        if (fetchedresultId) {
+          console.log("HERE IS THE ID OF THE RESULTS THAT WILL BE STORED WHEN SUBMITTED");
+          console.log(fetchedresultId);
 
-  // use another useEffect to fetch the attempt number for the user when the component mounts
-  useEffect(() => {
-    if (currentAttempt === 0) {
+          //This will set the result ID for the current test
+          setTestInfo((prevData) => ({
+            ...prevData,
+            ['resultId']: fetchedresultId
+          }))
+          console.log("Current result Id fetched and set to resultId");
+        }
+        else {
+          console.log("Error fetching the result ID to be used")
+        }
+      }
+      // Call the function to fetch the resultId to be used
+      getResultNumber();
+    }
+    if (testInfo.userAttempt === 0) {
       const getAttemptNumber = async() => {
-      // Next, fetch the test attempt number for the user, as this will be needed to display the correct results later on
-      const fetchedAttemptNum = await attemptNumber('getAttemptNumber', currentAttempt);
-      // If the attempt number is successfully retrieved, set the value to currentAttempt. Otherwise log an error.
-      if (fetchedAttemptNum) {
-        console.log("HERE IS THE USER'S CURRENT ATTEMPT NUMBER");
-        console.log(fetchedAttemptNum);
-        setCurrentAttempt(fetchedAttemptNum);
-        console.log("Test attempt number fetched and set to currentAttempt");
-        console.log(currentAttempt);
+        // Fetch the test attempt number for the user, as this will be needed to display the correct results later on
+        const fetchedAttemptNum = await testUtils.attemptNumber('getAttemptNumber', testInfo.userAttempt);
+        // If the attempt number is successfully retrieved, set the value to currentAttempt. Otherwise log an error.
+        if (fetchedAttemptNum) {
+          console.log("HERE IS THE USER'S CURRENT ATTEMPT NUMBER");
+          console.log(fetchedAttemptNum);
+
+          //This will set the attempt number for the current test
+          setTestInfo((prevData) => ({
+            ...prevData,
+            ['userAttempt']: fetchedAttemptNum
+          }))
+
+          console.log("Test attempt number fetched and set to currentAttempt");
+        }
+        else {
+          console.log("Error fetching test attempt number.");
+        }
       }
-      else {
-        console.log("Error fetching test attempt number.");
-      }
-      }
-    // Call the function to fetch the current attempt number after defining it
-    getAttemptNumber();
+      // Call the function to fetch the current attemptId to be used
+      getAttemptNumber();
     }
   }, [])
 
-  // FOR DEBUG. This second useEffect will track the user's current answer for the current question
+  // Use useEffect to fetch the test form data when the component mounts, only up until the 20th question.
+  console.log("ABOUT TO ENTER THE USEFFECT FOR QUESTIONS!")
+  useEffect(() => {
+    if (currentQuestion < testLength) {
+    console.log("GOING INTO THE FETCHING ANSWER FUNCTION")
+    // Note, this can also be written as async function fetchTestFormat() {...}. It's called an arrow function here.
+      const fetchTestInfo = async () => {
+        // Fetch the test form data from the backend, with 'retrieveOneQuestion' as the action to take
+        if (currentQuestion > 0 && questions.question_id) {
+          console.log("REDEFINING THE CURRRENT REQUEST")
+          currentRequest = {
+          questionId: questions.question_id,
+          pastId: questionIdTrack.current,
+          questionCategory: questions.question_level,
+          // Check the previous correct answer
+          wasCorrect: gradedAnswers.current[currentQuestion-1]
+          };
+        }
+        else {
+          //Make a default request for fetching the first question
+          currentRequest = {
+          questionId: 0,
+          pastId: questionIdTrack.current,
+          questionCategory: "Beginner II",
+          wasCorrect: true
+          }
+        }
+        console.log("ABOUT TO FETCH A NEW QUESTION!")
+        const fetchedQuestion = await testUtils.questionFetch('retrieveOneQuestion', currentRequest)
+        console.log("FETCH A NEW QUESTION!")
+        if (fetchedQuestion) {
+          console.log("HERE IS THE RESULT OF THE FETCHED QUESTION")
+          setQuestions(fetchedQuestion[0])
+          console.log("SET THE CURRENT QUESTION TO THIS")
+          console.log(questions)
+        }
+        else {
+          console.log("Error retrieving the next question.")
+        }
+      }
+      // Call the function to fetch the test format after defining it
+      fetchTestInfo();
+    }
+     //This array below tells React to re-run this effect whenever either the currentQuestion changes in value.
+  }, [currentQuestion]);
+
+  // FOR DEBUG. This useEffect will track all current relevant info needed
   useEffect(() => {
     console.log("CURRENT SELECTED ANSWER")
     console.log(selectedAnswer)
-  }, [selectedAnswer])
+    console.log("ABOUT TO ENTER THE HTML!")
+    console.log(questions)
+    console.log("CURRENT QUESTION!")
+    console.log(currentQuestion)
+    console.log("CURRENT FIRST AND LAST CHECKS")
+    console.log(isFirstQuestion, isLastQuestion)
+
+    console.log("CURRENT STATUS OF ANSWER ARRAY")
+    console.log(answerArray)
+
+    console.log("CURRENT LIST OF GRADED ANSWERS")
+    console.log(gradedAnswers)
+  }, [selectedAnswer, questions, currentQuestion])
   
 
   //Here the change in the selection of an answer for the current question will be handled
@@ -274,65 +343,44 @@ export default function Home() {
     console.log("CURRENT ANSWERARRAY[CURRENTQUESTION]")
     console.log(answerArray[currentQuestion])
     setSelectedAnswer(value)
-
-    //Update the array containing the user's answers, regardless of whether or not they moved onto a different question
-    //IF THE USER DOESN'T PRESS A DIFFERENT OPTION THAN THE ONE THAT IS CURRENTLY HIGHLIGHTED, IT WILL NOT BE RECOGNIZED!
-    setAnswerArray((prevData) => ({
-      ...prevData,
-      [currentQuestion] : value
-    }))
-
+    
+    //Call the setter function with prevData as its argument, then use it to map each answer to an index. If the index matches currentQuestion,
+    //set userText to value and keep the other attributes as is, otherwise do just answer.
+    setAnswerArray((prevData) =>
+      prevData.map((answer, index) =>
+      index === currentQuestion ? {...answer, userText: value} : answer
+    ))
     console.log("REPLACED IN ARRAY OF USER'S ANSWERS!!!!")
     console.log(answerArray)
   }
 
-  //This function handles the logic for the Back and Next buttons. Do some research on the specific React.stuff here
-  const handleButtonChange = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  //This function handles the logic for the Submit and Next buttons. Do some research on the specific React.stuff here
+  const handleButtonChange = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     //Take the name of the event that cause the current call to handleButtonChange
     const {name} = event.currentTarget
-    //Logic for the Back button
-    if (name === 'back') {
-      /* prev => prev - 1 is an example of a functional update in useState. Prev is the immediate, latest version of the
-      state before it was updated. It is a function that takes prev as its argument and returns prev - 1 as the result.
-      */
-      setCurrentQuestion(prev => prev - 1)
+    //Logic for the Test Submit Button
+    if (name === 'submitButton') {
+      // Wait for the question to be submitted before going any further
+      await handleQuestionSubmit(event);
+      await handleTestForm(event);
     }
     // Logic for the Next button
     else {
-      setAnswerStatus((prevData) => ({
-        ...prevData,
-        [currentQuestion] : true
-      }))
+      // Wait for the question to be submitted before going any further
+      await handleQuestionSubmit(event);
+     //Call the setter function with prevData as its argument, then use it to map each answer to an index. If the index matches currentQuestion,
+     //set alreadyAnswered to true and keep the other attributes as is, otherwise do just answer.
+      setAnswerArray((prevData) =>
+        prevData.map((answer, index) =>
+        index === currentQuestion ? {...answer, questionId: questions.question_id, alreadyAnswered: true} : answer
+      ))
       /* prev => prev + 1 is an example of a functional update in useState. Prev is the immediate, latest version of the
       state before it was updated. It is a function that takes prev as its argument and returns prev + 1 as the result.
       */
       setCurrentQuestion(prev => prev + 1)
-      handleQuestionSubmit(event);
     }
   }
-
-    //This function handles the logic for submitting the current question using a button.
-  const handleButtonQuestionSubmit = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    //Take the name of the event that cause the current call to handleButtonChange
-    const {name, value, onclick} = event.currentTarget
-    //Logic for the Back button
-      /* prev => prev + 1 is an example of a functional update in useState. Prev is the immediate, latest version of the
-      state before it was updated. It is a function that takes prev as its argument and returns prev + 1 as the result.
-      */
-      setCurrentQuestion(prev => prev + 1)
-  }
-
-  console.log("ABOUT TO ENTER THE HTML!")
-  console.log(questions)
-  console.log("CURRENT QUESTION!")
-  console.log(currentQuestion)
-
-  {console.log("QUESTIONS.LENGTH")}
-  {console.log(questions.length)}
-  console.log("CURRENT FIRST AND LAST CHECKS")
-  console.log(isFirstQuestion, isLastQuestion)
   
-
   //HTML return for the test form page
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
@@ -341,17 +389,18 @@ export default function Home() {
           <form name = "placeTest" onSubmit = {handleTestForm} className = "flex flex-col spacey-4 items-center justify-center">
             {
               //If questions exists and its length is greater than 0, or currentQuestion is less than the length, display the current question
-              questions && questions.length > 0 && currentQuestion <= questions.length && (
+              // questions && questions.length > 0 && currentQuestion <= questions.length && (
+              questions && currentQuestion < testLength && (
                 <QuestionDisplay
-                questionId = {questions[currentQuestion].question_id}
-                questionText = {questions[currentQuestion].question_text}
-                questionBody = {questions[currentQuestion].question_body}
-                questionCategory = {questions[currentQuestion].question_level}
-                answerId = {questions[currentQuestion].answer_id}
-                answerText = {questions[currentQuestion].answer_text}
-                //selectedAnswer is used to track which radio option the user has chosen
-                selectedAnswer = {answerArray[currentQuestion]}
-                alreadyAnswered = {answerStatus[currentQuestion]}
+                questionId = {currentQuestion+1}
+                questionText = {questions.question_text}
+                questionBody = {questions.question_body}
+                questionCategory = {questions.question_level}
+                answerId = {questions.answer_id}
+                answerText = {questions.answer_text}
+                selectedAnswer = {answerArray[currentQuestion].userText}
+                alreadyAnswered = {answerArray[currentQuestion].alreadyAnswered}
+                wasCorrect = {gradedAnswers.current[currentQuestion]}
                 //Send the handleChange const as the value for onChangeValue so that the onChange field can be properly handled
                 onChangeValue = {handleChange}
                 />)
@@ -371,18 +420,18 @@ export default function Home() {
             }
           </form>
           <div className = "flex items-center justify-center gap-40">
-            <button
-            type = "button" form = "placeTest" name = "back" className = {isFirstQuestion || isSubmitted === true ? (disabledButton) : (regularButton)}
-            disabled = {isFirstQuestion || isSubmitted === true}
-            onClick = {handleButtonChange}>Back</button>
             {isLastQuestion ? (
-              <button type = "submit" form = "placeTest" name = "submitButton" className = {!isLastQuestion || isSubmitted === true ? (disabledButton) : (regularButton)}
-              disabled = {!isLastQuestion || isSubmitted === true}
-              onClick = {handleTestForm}>Submit Test</button>
+              <button type = "submit" form = "placeTest" name = "submitButton" className = {//!isLastQuestion || isSubmitted === true ? (disabledButton) : (regularButton)
+                !isLastQuestion ? (disabledButton) : (regularButton)}
+              disabled = {//!isLastQuestion || isSubmitted === true
+                !isLastQuestion}
+              onClick = {handleButtonChange}>Submit Test</button>
             ) : (
               <button 
-              type = "button" form = "placeTest" name = "next" className = {isLastQuestion || !answerArray[currentQuestion] || isSubmitted === true ? (disabledButton) : (regularButton)}
-              disabled = {isLastQuestion || !answerArray[currentQuestion] || isSubmitted === true}
+              type = "button" form = "placeTest" name = "next" className = {//isLastQuestion || !answerArray[currentQuestion] || isSubmitted === true ? (disabledButton) : (regularButton)
+                isLastQuestion || !answerArray[currentQuestion] ? (disabledButton) : (regularButton)}
+              disabled = {//isLastQuestion || !answerArray[currentQuestion] || isSubmitted === true
+                isLastQuestion || !answerArray[currentQuestion]}
               onClick = {handleButtonChange}>Next</button>
             )
             }

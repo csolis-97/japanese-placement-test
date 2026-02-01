@@ -56,7 +56,7 @@ CREATE TABLE questions (
     question_id INT AUTO_INCREMENT PRIMARY KEY,
     question_text VARCHAR(255) NOT NULL,
     question_body VARCHAR(255) NOT NULL,
-    question_level ENUM ('N5', 'N4', 'N3') NOT NULL
+    question_level ENUM ('Beginner I', 'Beginner II', 'Intermediate I', 'Intermediate II', 'Advanced') NOT NULL
 );
 
 -- answers table section
@@ -83,7 +83,7 @@ CREATE TABLE scores (
     score_id INT NOT NULL UNIQUE AUTO_INCREMENT,
     user_id INT NOT NULL,
     total_score FLOAT NOT NULL,
-    entrance_level VARCHAR(255) NOT NULL,
+    entrance_level ENUM ('Beginner I', 'Beginner II', 'Intermediate I', 'Intermediate II', 'Advanced') NOT NULL,
     test_date DATETIME NOT NULL,
     PRIMARY KEY (score_id, user_id),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
@@ -99,6 +99,7 @@ CREATE TABLE user_answers (
     score_id INT NOT NULL,
     attempt_id INT NOT NULL,
     question_id INT NOT NULL,
+    response_order INT NOT NULL,
     user_answer_text VARCHAR(255) NOT NULL,
     user_was_correct BOOLEAN NOT NULL,
     PRIMARY KEY (score_id, attempt_id, question_id),

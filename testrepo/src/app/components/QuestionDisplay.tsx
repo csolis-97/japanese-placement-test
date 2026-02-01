@@ -23,6 +23,9 @@ interface questionDisplayProps {
     onChangeValue?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
+//These variables will be used for checking when to use the styles defined below
+
+// These strings will be used for determining the className styling for the radio buttons
 const regularRadio = "ml-2 text-gray-600"
 const correctRadio = "ml-2 text-green-600"
 const wrongRadio = "ml-2 text-red-600"
@@ -45,6 +48,7 @@ export default function questionDisplay(props: questionDisplayProps) {
         <div>
             <div>
                 <h1 className = "text-gray-600 font-semibold mt-4">Question #{props.questionId}</h1>
+                <h1 className = "text-gray-600 font-semibold mt-4">Level: {props.questionCategory}</h1>
                 <h2 className = "text-gray-800 font-semibold mt-2">{props.questionText}</h2>
                 <p className = "text-gray-600">{props.questionBody}</p>
                 <fieldset disabled = {props.alreadyAnswered} className = "mt-2">
