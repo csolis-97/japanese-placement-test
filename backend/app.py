@@ -11,6 +11,9 @@ import os
 
 # Import all the functions defined elsewhere in the backend
 from test_data_functions import *
+from question_retrieval_fuctions import *
+from answer_storage_functions import *
+from test_submission_functions import *
 
 app = Flask(__name__)
 
@@ -94,26 +97,26 @@ def testForm():
         return jsonify(scoreId)
 
 
-    # If the action is retrieveOneQuestion, retrieve a new question and all of its info based on specific conditions
-    elif action == 'retrieveOneQuestion' :
+    # If the action is retrieveStage, retrieve a new question and all of its info based on specific conditions
+    elif action == 'retrieveStage' :
         # Set the data from the JSON request
         questionCategory = data['question_category']
         questionId = data['question_id']
-        wasCorrect = data['was_correct']
+        wasCorrect = data['was_correct']                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
         questionTrack = data['past_id']
 
         print("CURRENT QUESTION LEVEL")
         print(questionCategory)
-        print("DID USER GET IT RIGHT?")
+        print("DID USER GET THEM RIGHT?")
         print(wasCorrect)
         print("LIST OF QUESTION IDS THAT WERE ALREADY USED")
         print(questionTrack)
 
         # Determine the difficulty level of the next question based on the user's answer
-        questionCategory = difficultyLevel(data, wasCorrect, questionCategory)
+        questionCategory = difficultyLevel(wasCorrect, questionCategory)
 
         # Fetch the next question based on the current level, alongside avoiding all previously used question_ids
-        newQuestion = fetchNewQuestion(cursor, questionId, questionCategory, questionTrack)
+        newQuestion = fetchNewQuestion(cursor, questionCategory, questionTrack)
 
         # Once a suitable question has been found, close the cursor
         cursor.close()
@@ -135,9 +138,9 @@ def testForm():
 
 
     ### SECTION FOR RECEIVING USER ANSWERS, CHECKING THEM, AND STORING THEM ###
-    # Else if the action is "sendOneAnswer" then get the JSON data info, check if the answer was correct, and store
+    # Else if the action is "sendStage" then get the JSON data info, check if the answer was correct, and store
     # The user's response in the database before returning the checked answer.
-    elif action == 'sendOneAnswer':
+    elif action == 'sendStage':
         # isCorrect will store a boolean value of either True or False, depending on whether the answer the user gave 
         # was correct or not. answerId only stores the integer of each question checked after the value is retrieved from the
         # database.
@@ -197,6 +200,7 @@ def testForm():
         scoreId = data['score_id']
         attemptNum = data['user_attempt']
         isCorrect = data['was_correct']
+        stageArray = data ['stage_array']
         questionTrack = data['past_id']
         paramList = []
         # Fetch the submission date and time from the data and convert it into a string, since the format must be changed
@@ -225,8 +229,19 @@ def testForm():
         paramList = []
         print("PARAM LIST BEFORE THE CALL!!")
         print(paramList)
-        paramList = calculateScore(isCorrect, questionTrack, levelList, submitTime)
+
+        # Use the data retrieved from the database query, questions answered and their results to calculate the score. The total score 
+        # and the percentage correct for each stage will be returned to the two variables.
+        totalScore, levelPercent = calculateScore(levelList, questionTrack, isCorrect)
+
+        # Using the percentage correct for each stage alongside the level of difficulty for each stage, decide placement
+        entranceLevel = decidePlacement(levelPercent, stageArray)
+
+        # Use the submission time, the total score, and the entrance level to finalize the params
+        paramList = finalizeSubmitParams(submitTime, totalScore, entranceLevel)
         paramList.append(scoreId)
+        #paramList = calculateScore(isCorrect, stageArray, questionTrack, levelList, submitTime)
+        #paramList.append(scoreId)
         
         # Now, the correct record will be updated with the results in the database
          

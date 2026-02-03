@@ -13,18 +13,18 @@ type testFormData = {
 }
 
 type responseData = {
-    questionId: number;
+    questionId: number[];
     pastId: number[];
-    userText: string;
+    userText: string[];
     userAttempt: number;
     resultId: number;
 }
 
 type requestData = {
-    questionId: number;
+    questionId: number[];
     pastId: number[];
     questionCategory: string;
-    wasCorrect: boolean;
+    wasCorrect: boolean[];
 }
 
 type submitData = {
@@ -32,6 +32,7 @@ type submitData = {
     userAttempt: number;
     pastId: number[];
     isCorrect: boolean[];
+    stageArray: string[];
 }
 
 export async function resultNumber(action: string, resultId: number) {
@@ -92,6 +93,8 @@ export async function submitTest(action: string, givenFields: submitData) {
     const resultId = givenFields.resultId;
     const userAttempt = givenFields.userAttempt;
     const pastId = givenFields.pastId;
+    const stageArray = givenFields.stageArray;
+
     // This action will submit the test to the backend for processing
     action == "submitTest"
     // Create a snapshot of the submission time to send alongside the POST request
@@ -110,7 +113,7 @@ export async function submitTest(action: string, givenFields: submitData) {
                 'Content-Type' : 'application/json',
             },
             body: JSON.stringify({'action' : action, 'date' : submittedTime, 'was_correct' : isCorrect, 'score_id' : resultId,
-                 'user_attempt' : userAttempt, 'past_id' : pastId})
+                 'user_attempt' : userAttempt, 'past_id' : pastId, 'stage_array' : stageArray})
         });
 
         const data = await response.json();
@@ -171,9 +174,9 @@ export async function questionFetch(action: string, givenFields: requestData) {
     const questionCategory = givenFields.questionCategory;
     const wasCorrect = givenFields.wasCorrect;
 
-    action = "retrieveOneQuestion"
-    console.log("HERE IS THE USER'S CURRENT LEVEL AND QUESTION ID ALONGSIDE WHETHER THEY WERE CORRECT OR NOT")
-    console.log(questionCategory, questionId, wasCorrect)
+    action = "retrieveStage"
+    console.log("HERE IS THE USER'S CURRENT LEVEL AND QUESTION ID ALONGSIDE WHETHER THEY WERE CORRECT OR NOT AND ALL PAST ID's")
+    console.log(questionCategory, questionId, wasCorrect, pastId)
     console.log("SEND THIS INFO TO THE BACKEND")
         try {
         console.log("Attempt to retrieve a new question...")
@@ -208,7 +211,7 @@ export async function questionCheck(action: string, givenFields: responseData) {
     const resultId = givenFields.resultId;
 
     // This action will create the record that will be used to store the results and return the resultId to be used
-    action = "sendOneAnswer"
+    action = "sendStage"
     // Create a snapshot of the submission time to send alongside the POST request
     let submittedTime = new Date();
     console.log("HERE IS THE SUBMISSION TIMESTAP")
@@ -220,6 +223,8 @@ export async function questionCheck(action: string, givenFields: responseData) {
     console.log(userAttempt)
     console.log("RESULT ID")
     console.log(resultId)
+    console.log("CURRENT QUESTION ID")
+    console.log(questionId)
     console.log("SEND THE ANSWERS TO THE BACKEND");
     try {
         console.log("Attempt to send the answers...")
