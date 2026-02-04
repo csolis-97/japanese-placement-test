@@ -73,56 +73,6 @@ def calculateScore(levelList, questionTrack, isCorrect):
     return totalScore, levelPercent
 
 
-# This function will calculate the user's score based on how many questions they got correct, and decide their entrance level.
-# After that is done, it will call finalizeSubmitParams
-def calculateCorrect(questionTrack, levelPercent, correctArray, correctNum):
-    # The index order for the list below is as follows: 0 = Stage 1, 1 = Stage 2, 
-    # 2 = Stage 3, 3 = Stage 4, 4 = Stage 5
-    # questionCount = [5, 5, 5, 5]
-    questionLength = len(questionTrack)
-    # Level percent will be used to store the correct percentage per stage
-    levelPercent = [None, None, None, None]
-    averageTotal = 0.0
-    correctNum = 0
-
-    # Calculate the percentage of correct answers for each stage and store it in the proper index of levelPercent
-    for i in levelPercent:
-        if i != 0:
-            levelPercent[i] = ((correctArray[i] / (questionLength / 4)) * 100)
-            print(f"THE CURRENT INDEX I IN LEVEL PERCENT IS THIS: {levelPercent[i]}")
-
-    #for i, row in enumerate(questionCount):
-    #    print(f"CURRENT VALUE OF I IN QUESTION COUNT IS {i}")
-    #    print(f"CURRENT VALUE OF ROW IN QUESTION COUNT IS {row}")
-    #    if row != 0:
-    #        levelPercent[i] = ((correctArray[i]/questionCount[i]) * 100)
-    #        print(f"THE CURRENT INDEX I IN LEVEL PERCENT IS THIS: {levelPercent[i]}")
-
-    #for i, row in enumerate(levelPercent):
-    #    print(f"CURRENT VALUE OF I IN LEVELPERCENT IS {i}")
-    #    if row != None:
-    #        # Since there are different amounts of correctly answered questions per category, use a weighted method.
-    #        # The current percentage will be first divided by 100 to get a decimal value, then multipled by the 
-    #        # current difficulty level's number of correctly answered questions and finally appeneded to correctNum. 
-    #        correctNum = correctNum + ((row / 100) * correctArray[i])
-    #        print(f"CURRENT CORRECTNUM: {correctNum}")
-    #    else:
-    #        print("No questions for this difficulty level were answered, so it is None.")
-
-    # RIGHT NOW TOTALSCORE IS MERELY AN AVERAGE OF PERCENT CORRECT, IF I DECIDE TO USE AN ACCURATE PERCENTAGE I WILL NEED DIFFERENT POINT VALUES PER CATEGORY!
-    # ALTERNATIVELY, JUST SHOW x / 20 QUESTIONS CORRECT ON THE RESULTS SCREEN!
-    # Finally, calculate the actual average. Since all stages have a total of five questions, just use the first index of the array
-    averageTotal = (correctNum/questionLength) * 100
-    # DEBUG FOR CHECKING THE RESULTING PERCENTAGE
-    print(f"HERE IS THE AVERAGE TOTAL: {averageTotal}")
-    print(f"HERE IS THE PERCENTAGE OF QUESTIONS CORRECT IN TOTAL PER CATEGORY {levelPercent}")
-    print(f"HERE IS THE TOTAL NUMBER OF QUESTIONS PER CATEGORY {questionLength}")
-    print(f"HERE IS THE TOTAL NUMBER OF QUESTIONS CORRECT PER CATEGORY {correctArray}")
-
-    totalScore = averageTotal
-    return totalScore, levelPercent
-    #return finalizeSubmitParams(submitTime, totalScore, entranceLevel)
-
 # This will be used to place the user in the correct level based on how well they did on the exam using the values of stageArray and levelPercent
 def decidePlacement(levelPercent, stageArray):
     # A list that contains the five difficulty levels as strings

@@ -1,6 +1,5 @@
 "use client";
 
-//FIX THE LOGIC FOR ALREADY ANSWERED LATER ON, DEPENDING ON HOW I DECIDE TO DO THINGS
 //Define the props for the questions being displayed
 interface questionDisplayProps {
     questionId: number;
@@ -61,7 +60,9 @@ export default function questionDisplay(props: questionDisplayProps) {
                     //If the user chose the wrong option, color only that radio red.
                     <div key={index} className = "mt-2">
                         <input type = "radio" id = {`answer-${props.answerId[index]}`} name = {`question-${props.questionId}`} value = {answer || props.selectedAnswer}
-                        onChange = {props.onChangeValue} checked = { props.selectedAnswer === answer}
+                            className = {props.selectedAnswer === props.answerText[index] && Number(props.wasCorrect) === 1 || Number(props.correctAnswer?.[index]) === 1 ? 
+                            (correctRadio) : (regularRadio) }
+                            onChange = {props.onChangeValue} checked = { props.selectedAnswer === answer}
                         readOnly = {props.alreadyAnswered} />
                         <label htmlFor ={`answer-${props.answerId[index]}`} className = { props.selectedAnswer === props.answerText[index] && Number(props.wasCorrect) === 1 || Number(props.correctAnswer?.[index]) === 1 ? 
                             (correctRadio) : props.selectedAnswer === props.answerText[index] && Number(props.wasCorrect) === 0 ? 

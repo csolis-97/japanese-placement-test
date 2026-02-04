@@ -47,6 +47,7 @@ export default function Home() {
     correct_answer?: boolean[];
     user_answer_text: string;
     user_was_correct?: boolean;
+    response_order: number;
   }
 
   //Interface below will be used for displaying the user's results.
@@ -74,9 +75,6 @@ export default function Home() {
 
   // This useState is used to store the result information received from the database
   const [results, setResults] = useState<testResult>();
-
-  //This useState will work together with the context in order to track the user's graded scores
-  const [gradedAnswers, setGradedAnswers] = useState<boolean[]>([]);
 
   // This useState is used to fetch the answers and questions from the database, which will then be stored in the questions useState.
   const [answerFormat, setAnswerFormat] = useState<answerType>({
@@ -170,11 +168,10 @@ export default function Home() {
             questions && questions.length > 0 && results && (
               <ResultDisplay
               attemptId = {attemptNum}
-              totalScore = {results.total_score}
+              totalScore = { // The total_score stored is actually the percentage of overall correct questions, so calculate the correct number here
+                (results.total_score / 100) * questions.length}
               entranceLevel = {results.entrance_level}
               testDate = {results.test_date}
-              //FIX THIS, IT DOES WORK BUT I EITHER NEED TO PUT A PERCENTAGE LIKE 100 OR LEAVE IT AS THE TOTAL NUMBER OF QUESTIONS
-              //CORRECT
               totalQuestions = {questions.length}
             />)
           }
@@ -183,8 +180,8 @@ export default function Home() {
             {
               questions.map((question) =>
                 <QuestionDisplay
-                key = {question.question_id}
-                questionId = {question.question_id}
+                key = {question.response_order}
+                questionId = {question.response_order}
                 questionText = {question.question_text}
                 questionBody = {question.question_body}
                 questionCategory = {question.question_level}

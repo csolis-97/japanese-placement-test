@@ -240,11 +240,8 @@ def testForm():
         # Use the submission time, the total score, and the entrance level to finalize the params
         paramList = finalizeSubmitParams(submitTime, totalScore, entranceLevel)
         paramList.append(scoreId)
-        #paramList = calculateScore(isCorrect, stageArray, questionTrack, levelList, submitTime)
-        #paramList.append(scoreId)
         
         # Now, the correct record will be updated with the results in the database
-         
         ##### FOR NOW USE USER_ID OF 1, I JUST PUT A RANDOM PLACEHOLDER FOR THE TIMEBEING
 
         scoreQuery = "UPDATE scores SET total_score = %s, entrance_level = %s, test_date = %s WHERE user_id = 1 AND score_id = %s"

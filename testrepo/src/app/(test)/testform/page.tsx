@@ -178,7 +178,6 @@ export default function Home() {
         const gradedAnswer = fetchedGradedAnswer
         // Use the "..." to keep the list flat
         gradedAnswers.current.push(...gradedAnswer)
-        //gradedAnswers.current[currentQuestion] = gradedAnswer
         console.log("SET THE CURRENT INDEX OF GRADED ANSWERS TO THIS")
         console.log(gradedAnswers.current.slice(-5))
         return gradedAnswer
@@ -405,7 +404,7 @@ export default function Home() {
       // Wait for the question to be submitted before going any further
       await handleQuestionSubmit(event);
      //Call the setter function with prevData as its argument, then use it to map each answer to an index. If the index matches currentQuestion,
-     //set alreadyAnswered to true and keep the other attributes as is, otherwise do just answer.
+     //set alreadyAnswered to true, the questionId to the current question in the stage, and keep the other attributes as is, otherwise do just answer.
       setAnswerArray((prevData) =>
         prevData.map((answer, index) =>
         index === currentQuestion ? {...answer, questionId: questions[stageQuestion].question_id, alreadyAnswered: true} : answer
@@ -440,34 +439,30 @@ export default function Home() {
                 //Send the handleChange const as the value for onChangeValue so that the onChange field can be properly handled
                 onChangeValue = {handleChange}
                 />)
-              /* disabled checks if the currentQuestion is 0, and disables it if it is.*/ 
-              /* disabled checks if the currentQuestion is the current length of questions, and disables it if it is.*/
-              /* REWRITE THE COMMENTS FOR THE CODE DOWN BELOW*/
             }
             {
               /* Below I used shorthand for an if-else statement in Typescript. It first has the condition, then it uses "?" to check if
               it is true or not. If it is true, run the code in the first set of paranthesis. If not, it will go to the ":" and run
               the code in the second set of paranthesis. Additional conditions require another condition followed by "?" and "()".
-              
-              For the Back and Next buttons below, the CSS styling is determined by the result of the if statement. If the boolean
-              isFirstQuestion returns true, then it will be disabled and the disabledButton style will be used. Otherwise it will be
-              regular. The Next button acts the same, except it checks if the boolean isLastQuestion returns true.
+              For the Submit and Next buttons below, the CSS styling is determined by the result of the if statement.
               */
             }
           </form>
           <div className = "flex items-center justify-center gap-40">
             {isLastQuestion ? (
-              <button type = "submit" form = "placeTest" name = "submitButton" className = {//!isLastQuestion || isSubmitted === true ? (disabledButton) : (regularButton)
-                !isLastQuestion ? (disabledButton) : (regularButton)}
-              disabled = {//!isLastQuestion || isSubmitted === true
-                !isLastQuestion}
+              <button type = "submit" form = "placeTest" name = "submitButton" className = {
+                // If it is not the last question, or if the user has not selected an answer, used the disabled style. Otherwise use regular.
+                !isLastQuestion || !answerArray[currentQuestion].userText ? (disabledButton) : (regularButton)}
+              disabled = { // If it is not the last question, or if the user has not selected an answer
+                !isLastQuestion || !answerArray[currentQuestion].userText}
               onClick = {handleButtonChange}>Submit Test</button>
             ) : (
               <button 
-              type = "button" form = "placeTest" name = "next" className = {//isLastQuestion || !answerArray[currentQuestion] || isSubmitted === true ? (disabledButton) : (regularButton)
-                isLastQuestion || !answerArray[currentQuestion] ? (disabledButton) : (regularButton)}
-              disabled = {//isLastQuestion || !answerArray[currentQuestion] || isSubmitted === true
-                isLastQuestion || !answerArray[currentQuestion]}
+              type = "button" form = "placeTest" name = "next" className = { 
+                // If it is the last question, or if the user has not selected an answer, used the disabled style. Otherwise use regular.
+                isLastQuestion || !answerArray[currentQuestion].userText ? (disabledButton) : (regularButton)}
+              disabled = { // If it is the last question, or if the user has not selected an answer
+                isLastQuestion || !answerArray[currentQuestion].userText}
               onClick = {handleButtonChange}>Next</button>
             )
             }
