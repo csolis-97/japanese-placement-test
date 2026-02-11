@@ -13,7 +13,7 @@ def calculateScore(levelList, questionTrack, isCorrect):
 
     # The index order for the two lists below is as follows: 0 = Stage 1, 1 = Stage 2, 
     # 2 = Stage 3, 3 = Stage 4, 4 = Stage 5
-    correctArray = [0, 0, 0, 0]
+    correctArray = [0, 0, 0, 0, 0]
 
     print(f"ISCORRECT LOOKS LIKE THIS BEFORE ENUMERATION: {isCorrect}")
     # Iterate through the isCorrect dictionary values and increment correctNum for each True value contained within isCorrect
@@ -24,7 +24,11 @@ def calculateScore(levelList, questionTrack, isCorrect):
         print(f"CURRENT CORRECTNUM: {correctNum}")
         print(f"CURRENT QUESTION'S DIFFICULTY LEVEL IS THIS: {row['question_level']}")
 
-        if i < 20 and i > 14:
+        if i < 25 and i > 19:
+            if row['user_was_correct'] == True:
+                print("GOT STAGE 5 QUESTION RIGHT!")
+                correctArray[4] = correctArray[4]+1
+        elif i < 20 and i > 14:
             if row['user_was_correct'] == True:
                 print("GOT STAGE 4 QUESTION RIGHT!")
                 correctArray[3] = correctArray[3]+1
@@ -49,13 +53,13 @@ def calculateScore(levelList, questionTrack, isCorrect):
 
     questionLength = len(questionTrack)
     # Level percent will be used to store the correct percentage per stage
-    levelPercent = [0, 0, 0, 0]
+    levelPercent = [0, 0, 0, 0, 0]
     averageTotal = 0.0
     correctNum = sum(correctArray)
 
     # Calculate the percentage of correct answers for each stage and store it in the proper index of levelPercent
     for i in range(len(levelPercent)):
-        levelPercent[i] = ((correctArray[i] / (questionLength / 4)) * 100)
+        levelPercent[i] = ((correctArray[i] / (questionLength / 5)) * 100)
         print(f"THE CURRENT INDEX I IN LEVEL PERCENT IS THIS: {levelPercent[i]}")
 
     # RIGHT NOW TOTALSCORE IS MERELY AN AVERAGE OF PERCENT CORRECT, IF I DECIDE TO USE AN ACCURATE PERCENTAGE I WILL NEED DIFFERENT POINT VALUES PER CATEGORY!
@@ -74,7 +78,7 @@ def calculateScore(levelList, questionTrack, isCorrect):
 
 
 # This will be used to place the user in the correct level based on how well they did on the exam using the values of stageArray and levelPercent
-def decidePlacement(levelPercent, stageArray):
+'''def decidePlacement(levelPercent, stageArray):
     # A list that contains the five difficulty levels as strings
     # Index 0 for Beginner I, 1 for Beginner II, 2 for Intermediate I, 3 for Intermediate II, 4 for Advanced
     diffList = ["Beginner I", "Beginner II", "Intermediate I", "Intermediate II", "Advanced"]
@@ -112,12 +116,12 @@ def decidePlacement(levelPercent, stageArray):
         print("LAST STAGE GRADED AT OR ABOVE 0 BUT LESS THAN 40 AND WAS BEGINNER I!")
         entranceLevel = "Beginner I"
 
-    return entranceLevel
+    return entranceLevel'''
 
 
 # This function will convert the date to the proper MySQL format before returning all of the necessary parameters needed to store
 # The results
-def finalizeSubmitParams(submitTime, totalScore, entranceLevel):
+def finalizeSubmitParams(submitTime, totalScore, entranceLevel, userId, scoreId):
     # NOW FINALIZE THE PARAMLIST
     # Empty the paramList again for future use
     paramList = []
@@ -136,6 +140,6 @@ def finalizeSubmitParams(submitTime, totalScore, entranceLevel):
     print("ENTRANCE LEVEL")
     print(entranceLevel)
     # Set the paramList's arguments to totalScore, entranceLevel, and finalTime
-    paramList = [totalScore, entranceLevel, finalTime]
+    paramList = [totalScore, entranceLevel, finalTime, userId, scoreId]
     print(paramList)
     return paramList

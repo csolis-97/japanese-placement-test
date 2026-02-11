@@ -18,7 +18,7 @@ interface questionDisplayProps {
     it does not need to return anything, hence void. I'm curious on the syntax of React.ChangeEvent itself, but I'll leave
     that for later.
     */
-    
+
     onChangeValue?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -33,16 +33,16 @@ const wrongRadio = "ml-2 text-red-600"
 them within {}, when combining them with strings, use backticks `` and preface each variable with a $ before enclosing them with {}. This
 works similar to how f is used for string literals in Python, the backticks I mean. */
 export default function questionDisplay(props: questionDisplayProps) {
-        //console.log("MESSAGE FROM QUESTIONDISPLAY!");
-        //console.log(props);
-            console.log("ALREADY ANSWERED?");
-            console.log(props.alreadyAnswered);
-            console.log("LOG THE CORRECT ANSWERS IF ANY!!")
-            console.log(props.correctAnswer);
-            console.log("VALUE IN SELECTED ANSWER!")
-            console.log(props.selectedAnswer)
-            console.log("WAS CORRECT?")
-            console.log(props.wasCorrect)
+    //console.log("MESSAGE FROM QUESTIONDISPLAY!");
+    //console.log(props);
+    console.log("ALREADY ANSWERED?");
+    console.log(props.alreadyAnswered);
+    console.log("LOG THE CORRECT ANSWERS IF ANY!!")
+    console.log(props.correctAnswer);
+    console.log("VALUE IN SELECTED ANSWER!")
+    console.log(props.selectedAnswer)
+    console.log("WAS CORRECT?")
+    console.log(props.wasCorrect)
     return (
         <div>
             <div>

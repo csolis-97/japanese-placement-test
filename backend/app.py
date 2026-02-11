@@ -8,6 +8,7 @@ import pymysql
 pymysql.install_as_MySQLdb()
 import MySQLdb.cursors
 import os
+import datetime
 
 # Import all the functions defined elsewhere in the backend
 from test_data_functions import *
@@ -58,44 +59,56 @@ def testForm():
     # This will be used to track the parameters passed to the SQL query, if any are needed
     paramList = []
 
-    ### SECTION FOR RETRIEVING TEST QUESTION DATA ###
+    ### SECTION FOR CREATING TEST RECORD ###
 
-    # If the action is getAttemptNumber, get the user's current attempt number and return it
-    if action == 'getAttemptNumber' :
-        initialNum = data['user_attempt']
-        attemptNum = getAttemptNum(cursor, initialNum)
-        print("Before the return")
-        return jsonify(attemptNum)
+    # If the action is createRecord, create a record for the results, and send the attempt_id and score_id back
+    if action == 'createRecord':
+        initialAttempt = data['user_attempt']
+        initialScoreId = data['score_id']
+        email = data['email']
+        name = data['name']
+        submitTime = data['submit_time']
 
+        paramList = []
 
-    # If the action is getResultNumber, get the ID for the current score data
-    elif action == 'getResultNumber' :
-        print("RETRIEVING THE RESULT ID!")
-        initialId = data['score_id']
+        print(f"HERE IS THE INITIAL ATTEMPT NUMBER: {initialAttempt}")
+        print(f"HERE IS THE INITIAL SCORE ID: {initialScoreId}")
+        print(f"HERE IS THE USER'S EMAIL: {email}")
+        print(f"HERE IS THE USER'S NAME: {name}")
+
+        # DEBUG CHECK SUBMIT TIME VALUE
+        print("SUBMIT TIME")
+        print(submitTime)
+        # Here, the string will be stripped of the T for Time, Z for the UTC offset, using datetime and fromisoformat
+        tempTime = datetime.datetime.fromisoformat(submitTime)
+        finalTime = str(tempTime)
+        # DEBUG CHECK FINAL TIME VALUE
+        print("FINAL TIME")
+        print(finalTime)
+
+        # First, create a new record in the database for the current user, assuming that a user with the same email does not already exist. 
+        # If it does, skip to the next step.
+        userId = checkEmail(cursor, mysql, email, name, finalTime)
+
         # Now, create a score record in the database if scoreId was equal or less than 0, so that the answers can be inserted here in 
         # the future.
-        print("ENTER THE IF STATEMENT")
-        if initialId == 0:
-            ##### FOR NOW USE USER_ID OF 1, I JUST PUT A RANDOM PLACEHOLDER FOR THE TIMEBEING
-            recordQuery = "INSERT INTO scores(user_id, total_score, entrance_level, test_date) VALUES (1, 0, 'Beginner I', '2000-01-01 12:00:00');"
-            cursor.execute(recordQuery)
-            print("EXECUTED!")
-            # This is the version used with flask_mysql, but the wheel fails to build so I used the flaskext.mysql version above
-            # mysql.connection.commit()
-            # Commit the change so that it appears in the database
-            print("COMMITED!")
-            commitChange = mysql.get_db()
-            commitChange.commit()
-            # This will be used when inserting values into the user_answer table. It takes the id value inserted for the auto_incremented
-            # score_id column and returns it
-            scoreId = cursor.lastrowid
-            print("SUCCESSFULLY CREATE THE SCORE RECORD!")
-        else:
-            scoreId = data['score_id']
-        print(f"The record ID to be used is {scoreId}!")
-        print("Before the return")
-        return jsonify(scoreId)
+        scoreId = createScoreRecord(cursor, mysql, initialScoreId, userId, finalTime)
 
+        # Next, get the current attempt number for the user.
+        if initialAttempt == 0:
+            attemptNum = getAttemptNum(cursor, initialAttempt, userId)
+        else :
+            attemptNum = initialAttempt
+        print(f"The current attempt id to be used is {attemptNum}")
+        print(f"The current result id is {scoreId}")
+
+        # Now put the score_id and attempt_id into a list and return the values
+        testInfo = [scoreId, attemptNum]
+        print("Before the return")
+        return jsonify(testInfo)
+
+
+    ### SECTION FOR RETRIEVING TEST QUESTION DATA ###
 
     # If the action is retrieveStage, retrieve a new question and all of its info based on specific conditions
     elif action == 'retrieveStage' :
@@ -153,6 +166,7 @@ def testForm():
         attemptNum = data['user_attempt']
         questionTrack = data['past_id']
         scoreId = data['score_id']
+        currentStage = data['current_stage']
 
         # ALL OF THE BELOW IS DEBUG TO CHECK THE VALUES
         print(data)
@@ -174,10 +188,10 @@ def testForm():
             # Assign valueQuery to the returned array
             valueQuery = buildValueQuery(answerData)
             # Then assign paramList to the array that was built in the function
-            paramList = buildAnswerData(answerData, scoreId, attemptNum, questionId, isCorrect, questionTrack)
+            paramList = buildAnswerData(answerData, scoreId, attemptNum, questionId, isCorrect, questionTrack, currentStage)
 
             # Build the query using valueQuery, with paramList as its values
-            storeQuery = f"INSERT INTO user_answers(score_id, attempt_id, question_id, response_order, user_answer_text, user_was_correct) VALUES {" ".join(valueQuery)}"
+            storeQuery = f"INSERT INTO user_answers(score_id, attempt_id, question_id, response_order, stage_answered, user_answer_text, user_was_correct) VALUES {" ".join(valueQuery)}"
 
             cursor.execute(storeQuery, tuple(paramList))
             # This is the version used with flask_mysql, but the wheel fails to build so I used the flaskext.mysql version above
@@ -235,16 +249,30 @@ def testForm():
         totalScore, levelPercent = calculateScore(levelList, questionTrack, isCorrect)
 
         # Using the percentage correct for each stage alongside the level of difficulty for each stage, decide placement
-        entranceLevel = decidePlacement(levelPercent, stageArray)
+        ###entranceLevel = decidePlacement(levelPercent, stageArray)
+
+        # Set entranceLevel to the last difficulty value in stageArray
+        print(f"THE USER WENT THROUGH THE FOLLOWING STAGES: {stageArray}")
+        entranceLevel = stageArray[len(stageArray) - 1]
+        print(f"ENTRANCE LEVEL TO BE USED: {entranceLevel}")
+
+        # Next, get the correct user_id based on the result id and the attempt id
+        paramList = [scoreId, attemptNum]
+        getUserQuery = "SELECT U.id, U.email, U.fullname FROM users U, user_answers UA, scores S WHERE U.id = S.user_id AND S.score_id = UA.score_id " \
+        "AND UA.score_id = %s AND UA.attempt_id = %s"
+        cursor.execute(getUserQuery, tuple(paramList))
+        # Do something with this later
+        userInfo = cursor.fetchone()
+        print(f"USER INFO THAT WAS RETRIEVED! {userInfo}")
+        userId = userInfo['id']
 
         # Use the submission time, the total score, and the entrance level to finalize the params
-        paramList = finalizeSubmitParams(submitTime, totalScore, entranceLevel)
-        paramList.append(scoreId)
+        paramList = finalizeSubmitParams(submitTime, totalScore, entranceLevel, userId, scoreId)
         
         # Now, the correct record will be updated with the results in the database
         ##### FOR NOW USE USER_ID OF 1, I JUST PUT A RANDOM PLACEHOLDER FOR THE TIMEBEING
 
-        scoreQuery = "UPDATE scores SET total_score = %s, entrance_level = %s, test_date = %s WHERE user_id = 1 AND score_id = %s"
+        scoreQuery = "UPDATE scores SET total_score = %s, entrance_level = %s, test_date = %s WHERE user_id = %s AND score_id = %s"
 
         cursor.execute(scoreQuery, tuple(paramList))
         # This is the version used with flask_mysql, but the wheel fails to build so I used the flaskext.mysql version above
@@ -273,17 +301,29 @@ def resultDisplay():
 
     # First, get the proper result data by using the attempt_id in the data
     attemptId = data['attempt_id']
+    scoreId = data['score_id']
     print("ATTEMPTID FOR CURRENT RETRIEVAL")
     print(attemptId)
 
+    # Next, get the correct user_id based on the result id and the attempt id
+    paramList = [scoreId, attemptId]
+    getUserQuery = "SELECT U.id, U.email, U.fullname FROM users U, user_answers UA, scores S WHERE U.id = S.user_id AND S.score_id = UA.score_id " \
+    "AND UA.score_id = %s AND UA.attempt_id = %s"
+    cursor.execute(getUserQuery, tuple(paramList))
+    # Do something with this later
+    userInfo = cursor.fetchone()
+    print(f"USER INFO THAT WAS RETRIEVED! {userInfo}")
+    userId = userInfo['id']
+
+
     # If the action is "retrieveResults", fetch the correct result record from the database based on the current user's user_id and attempt_id.
     if action == 'retrieveResults':
-        # SINCE THERE CURRENTLY ISN'T ANY USER FUNCTIONALITY, SET user_id TO 1
+        paramList = [userId, attemptId]
         resultQuery = "SELECT S.score_id, S.total_score, S.entrance_level, S.test_date FROM scores S, user_answers U WHERE " \
-        "S.user_id = 1 AND S.score_id = U.score_id AND U.attempt_id = %s"
+        "S.user_id = %s AND S.score_id = U.score_id AND U.attempt_id = %s"
 
         #Execute the query with the parameters, store the first entry, close the cursor, and return
-        cursor.execute(resultQuery, attemptId)
+        cursor.execute(resultQuery, tuple(paramList))
         resultData = cursor.fetchone()
         cursor.close()
 
@@ -312,15 +352,15 @@ def resultDisplay():
 
     # Else if the action is "retrieveAnswers", fetch the correct question, answer, and user response info based on provided attempt_id and user_id
     elif action == 'retrieveAnswers':
-        #### REPLACE USER_ID=1 WHEN THE USER FUNCTIONALITY IS IMPLEMENTED
+        paramList = [attemptId, userId]
         # This simple query will select all question and answer info only for the questions the user answered on their current attempt.
         # The DISTINCT keyword is used so that duplicate records are not obtained.
         answersQuery = "SELECT DISTINCT Q.question_id, Q.question_text, Q.question_body, Q.question_level, A.answer_id, A.answer_text, " \
         "A.correct_answer, U.user_answer_text, U.user_was_correct, U.response_order FROM questions Q, answers A, user_answers U, scores S " \
         "WHERE Q.question_id = A.question_id AND A.question_id = U.question_id AND U.score_id = S.score_id AND U.attempt_id = %s AND " \
-        "S.user_id = 1 ORDER BY U.response_order"
+        "S.user_id = %s ORDER BY U.response_order"
 
-        cursor.execute(answersQuery, attemptId)
+        cursor.execute(answersQuery, paramList)
         answerData = cursor.fetchall()
         cursor.close()
 

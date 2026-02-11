@@ -25,12 +25,13 @@ CREATE TABLE reserved_names (
 -- Drop the users table if it exists
 DROP TABLE IF EXISTS users;
 
--- Create the users table
+-- Create the users table, for now passwords and usernames are unncessary so they are not marked as NOT NULL
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     email VARCHAR(255) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
-    username VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255),
+    username VARCHAR(255) UNIQUE,
+    fullname VARCHAR(255) NOT NULL,
     verified_status BOOLEAN,
     created_at DATETIME NOT NULL
 );
@@ -100,6 +101,7 @@ CREATE TABLE user_answers (
     attempt_id INT NOT NULL,
     question_id INT NOT NULL,
     response_order INT NOT NULL,
+    stage_answered INT NOT NULL,
     user_answer_text VARCHAR(255) NOT NULL,
     user_was_correct BOOLEAN NOT NULL,
     PRIMARY KEY (score_id, attempt_id, question_id),

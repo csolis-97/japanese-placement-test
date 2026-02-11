@@ -24,7 +24,6 @@ def getCorrectAnswerInfo(cursor, answerList, questionId, answerId):
 
             '''Here, append the current answeredQuestion value to the list of questionId.
             The SQL query will expect a value for answer_text and then question_id in that order, so the list is set accordingly.'''
-            # questionId.append(int(answeredQuestion))
             paramList = [answeredQuestion, int(questionId[i])]
             checkQuestions(paramList, cursor, answerId, results)
 
@@ -100,7 +99,7 @@ def buildValueQuery(answerList):
         answerLength = 1
     else:
         answerLength = len(answerList)
-    valueString = "(%s, %s, %s, %s, %s, %s),"
+    valueString = "(%s, %s, %s, %s, %s, %s, %s),"
     valueQuery = []
 
     '''Enter a loop to properly build valueQuery. In order to insert the correct amount of values into the database, the for loop
@@ -110,7 +109,7 @@ def buildValueQuery(answerList):
     '''
     for i in range(answerLength):
         if i >= answerLength-1:
-            valueQuery.append("(%s, %s, %s, %s, %s, %s);")
+            valueQuery.append("(%s, %s, %s, %s, %s, %s, %s);")
             print(i)
             print("FILLING IN THE VALUEQUERY WITH FINAL!")
         else:
@@ -127,7 +126,7 @@ def buildValueQuery(answerList):
     return valueQuery
 
 # This function is used to build the parameters that will be inserted into the valueQuery from the previous method
-def buildAnswerData(answerData, scoreId, attemptNum, questionId, isCorrect, questionTrack):
+def buildAnswerData(answerData, scoreId, attemptNum, questionId, isCorrect, questionTrack, currentStage):
     # Initiate paramList
     paramList = []
     # Enter a for loop with enumeration in order to append the proper values that will be used as parameters for the query 
@@ -137,6 +136,7 @@ def buildAnswerData(answerData, scoreId, attemptNum, questionId, isCorrect, ques
         paramList.append(attemptNum)
         paramList.append(questionId)
         paramList.append(len(questionTrack))
+        paramList.append(currentStage + 1)
         paramList.append(answerData)
         paramList.append(isCorrect)
     else:
@@ -151,6 +151,7 @@ def buildAnswerData(answerData, scoreId, attemptNum, questionId, isCorrect, ques
                 paramList.append(i + 1)
             else:
                 paramList.append((i + 1) + (len(questionTrack) - 5))
+            paramList.append(currentStage + 1)
             paramList.append(answerData[i])
             paramList.append(isCorrect[i])
 

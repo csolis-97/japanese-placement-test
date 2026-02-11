@@ -66,9 +66,12 @@ export default function Home() {
   */
   const searchParams = useSearchParams();
   const attemptParam = searchParams.get('attempt');
+  const resultParam = searchParams.get('r');
   let attemptNum = attemptParam ? Number(attemptParam) : 0;
-  console.log("HERE IS THE ATTEMPT NUMBER IN THE RESULTS PAGE FROM THE SEARCH PARAMS WITHIN THE USEEFFECT!")
+  let resultNum = resultParam ? Number(resultParam) : 0;
+  console.log("HERE IS THE ATTEMPT NUMBER AND RECORD NUMBER IN THE RESULTS PAGE FROM THE SEARCH PARAMS WITHIN THE USEEFFECT!")
   console.log(attemptNum)
+  console.log(resultNum)
 
   // This useState is used to store the questions received from the database
   const [questions, setQuestions] = useState<testQuestion[]>([]);
@@ -85,7 +88,7 @@ export default function Home() {
     'answerId' : [],
     'answerText' : [],
     'attemptId' : attemptNum,
-    'resultId' : 0,
+    'resultId' : resultNum,
     'correctAnswer' : [],
     'userText' : '',
     'wasCorrect' : false
@@ -93,7 +96,7 @@ export default function Home() {
 
   // This useState is used to fetch the results from the database
   const [resultsFormat, setResultsFormat] = useState<resultType>({
-    'resultId' : 0,
+    'resultId' : resultNum,
     'attemptId' : attemptNum,
     'totalScore' : 0,
     'entranceLevel' : '',
@@ -108,9 +111,10 @@ export default function Home() {
   // Use useEffect to fetch the test data when the component mounts.
   console.log("ABOUT TO ENTER THE USEFFECT IN THE RESULTS!")
   useEffect(() => {
-    if (attemptParam !== null && resultsFormat.attemptId !== attemptNum) {
+    if (attemptParam !== null && resultParam !== null && resultsFormat.attemptId !== attemptNum && resultsFormat.resultId !== resultNum) {
       setResultsFormat((prevData) => ({
         ...prevData,
+        'resultId' : resultNum,
         'attemptId': attemptNum
       }))
       // Fetch the attempt number search parameter and store it in attemptNum, which will be given to the resultsFormat useState

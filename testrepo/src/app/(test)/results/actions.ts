@@ -53,7 +53,7 @@ export async function answerData(action: string, givenFields: answerData) {
             body: JSON.stringify({'action' : action, 'question_category' : questionCategory, 'question_id' : questionId, 
                 'question_text' : questionText, 'question_body' : questionBody, 'answer_id' : answerId, 'answer_text' : answerText, 
                 'correct_answer' : correctAnswer, 'user_answer_text' : userText, 'user_was_correct' : wasCorrect,
-                'attempt_id' : attemptId, 'result_id' : resultId})
+                'attempt_id' : attemptId, 'score_id' : resultId})
         });
 
         //Get the response from the database and return

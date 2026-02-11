@@ -5,8 +5,8 @@ def difficultyLevel(wasCorrect, questionCategory):
 
     # Increase difficulty if the answer was right, or stay at current difficulty
     if len(wasCorrect) == 1:
-        print("START WITH INTERMEDIATE I")
-        newCategory = "Intermediate I"
+        print("START WITH BEGINNER I")
+        newCategory = "Beginner I"
     elif sum(wasCorrect) >= 4:
         print("ANSWERS WERE RIGHT!")
         match questionCategory:
