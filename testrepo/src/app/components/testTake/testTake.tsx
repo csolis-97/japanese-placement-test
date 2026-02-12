@@ -2,8 +2,7 @@
 
 import * as testUtils from "./testActions";
 import { useRouter } from "next/navigation";
-import { useState, useEffect, useRef } from "react";
-import { Dispatch, SetStateAction } from "react";
+import { useState, useEffect, useRef, Dispatch, SetStateAction} from "react";
 import QuestionDisplay from "../QuestionDisplay";
 import StageComplete from "../StageComplete";
 import { infoData } from "@/app/components/testStart/startActions";
@@ -459,11 +458,7 @@ export default function TestTake({currentTestInfo, setCurrentTestInfo, currentDi
     }
     // Logic for the Next button
     else {
-      /* prev => prev + 1 is an example of a functional update in useState. Prev is the immediate, latest version of the
-      state before it was updated. It is a function that takes prev as its argument and returns prev + 1 as the result.
-      */
       setCurrentQuestion(prev => prev + 1);
-
       //Also set the current stage's question too
       stageInfo.current.stageQuestion = stageInfo.current.stageQuestion + 1;
     }
@@ -473,6 +468,17 @@ export default function TestTake({currentTestInfo, setCurrentTestInfo, currentDi
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
       <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
+        {
+          // Await the correct number of answers for the stage before moving on
+          isSubmitted !== false && (<StageComplete
+            stageNum = {stageInfo.current.stageNum}
+            stagePassed = {correctTotal.current > 3 ? true : false}
+            difficultyLevel = {stageInfo.current.stageDifficulty[stageInfo.current.stageNum]}
+            totalQuestions = {stageInfo.current.stageQuestion + 1}
+            totalCorrect = {correctTotal.current}
+            onButtonChange = {handleNextStage}
+          />)
+        }
         <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
           <form name = "placeTest" onSubmit = {handleTestForm} className = "flex flex-col spacey-4 items-center justify-center">
             {
@@ -500,19 +506,6 @@ export default function TestTake({currentTestInfo, setCurrentTestInfo, currentDi
               */
             }
           </form>
-          <div>
-            {
-              // Await the correct number of answers for the stage before moving on
-              isSubmitted !== false && (<StageComplete
-                stageNum = {stageInfo.current.stageNum}
-                stagePassed = {correctTotal.current > 3 ? true : false}
-                difficultyLevel = {stageInfo.current.stageDifficulty[stageInfo.current.stageNum]}
-                totalQuestions = {stageInfo.current.stageQuestion + 1}
-                totalCorrect = {correctTotal.current}
-                onButtonChange = {handleNextStage}
-              />)
-            }
-          </div>
           <div className = "flex items-center justify-center gap-40">
             {isLastQuestion  ? (
               <button type = "submit" form = "placeTest" name = "submitButton" className = {
