@@ -43,35 +43,40 @@ export default function questionDisplay(props: questionDisplayProps) {
     console.log(props.selectedAnswer)
     console.log("WAS CORRECT?")
     console.log(props.wasCorrect)
+
     return (
-        <div>
-            <div>
-                <h1 className = "text-gray-600 font-semibold mt-4">Question #{props.questionId}</h1>
-                <h1 className = "text-gray-600 font-semibold mt-4">Level: {props.questionCategory}</h1>
-                <h2 className = "text-gray-800 font-semibold mt-2">{props.questionText}</h2>
-                <p className = "text-gray-600">{props.questionBody}</p>
-                <fieldset disabled = {props.alreadyAnswered} className = "mt-2">
-                {props.answerText?.map((answer, index) => (
-                    //fieldset should only be disabled if the question has already been answered.
-                    //checked tracks which radio option the user has selected by setting selectedAnswer to the value of answer
-                    //readOnly is enabled only during the results page, as no onChange will be provided
-                    //Although booleans in the data, convert correctAnswers to numbers for comparison.
-                    //Each radio option will only be colored correct IF the user chose that option, or if it was actually correct.
-                    //If the user chose the wrong option, color only that radio red.
-                    <div key={index} className = "mt-2">
-                        <input type = "radio" id = {`answer-${props.answerId[index]}`} name = {`question-${props.questionId}`} value = {answer || props.selectedAnswer}
-                            className = {props.selectedAnswer === props.answerText[index] && Number(props.wasCorrect) === 1 || Number(props.correctAnswer?.[index]) === 1 ? 
-                            (correctRadio) : (regularRadio) }
-                            onChange = {props.onChangeValue} checked = { props.selectedAnswer === answer}
-                        readOnly = {props.alreadyAnswered} />
-                        <label htmlFor ={`answer-${props.answerId[index]}`} className = { props.selectedAnswer === props.answerText[index] && Number(props.wasCorrect) === 1 || Number(props.correctAnswer?.[index]) === 1 ? 
-                            (correctRadio) : props.selectedAnswer === props.answerText[index] && Number(props.wasCorrect) === 0 ? 
-                            (wrongRadio) : (regularRadio) }>{props.answerText[index]}</label>
-                    </div>
-                    ))
-                }
-                </fieldset>
+        <div className = "flex flex-col bg-gray-100 rounded-lg w-full">
+            <div className = "divide-y-2 divide-gray-400">
+                <div className = "flex flex-col">
+                    <h1 className = "text-gray-600 font-semibold text-3xl p-4">Question #{props.questionId}</h1>
+                    <h1 className = "text-gray-600 font-semibold text-xl px-4">Level: {props.questionCategory}</h1>
+                    <h2 className = "text-gray-800 font-semibold divide-y-2 px-4">{props.questionText}</h2>
+                    <p className = "text-gray-600 font-semibold text-2xl p-4">{props.questionBody}</p>
+                </div>
+                <div className = "p-4">
+                    <fieldset disabled = {props.alreadyAnswered} className = "text-2xl" >
+                        {props.answerText?.map((answer, index) => (
+                        //fieldset should only be disabled if the question has already been answered.
+                        //checked tracks which radio option the user has selected by setting selectedAnswer to the value of answer
+                        //readOnly is enabled only during the results page, as no onChange will be provided
+                        //Although booleans in the data, convert correctAnswers to numbers for comparison.
+                        //Each radio option will only be colored correct IF the user chose that option, or if it was actually correct.
+                        //If the user chose the wrong option, color only that radio red.
+                        <div key={index} className = "mt-2">
+                            <input type = "radio" id = {`answer-${props.answerId[index]}`} name = {`question-${props.questionId}`} value = {answer || props.selectedAnswer}
+                                className = {props.selectedAnswer === props.answerText[index] && Number(props.wasCorrect) === 1 || Number(props.correctAnswer?.[index]) === 1 ? 
+                                (correctRadio) : (regularRadio) }
+                                onChange = {props.onChangeValue} checked = { props.selectedAnswer === answer}
+                            readOnly = {props.alreadyAnswered} />
+                            <label htmlFor ={`answer-${props.answerId[index]}`} className = { props.selectedAnswer === props.answerText[index] && Number(props.wasCorrect) === 1 || Number(props.correctAnswer?.[index]) === 1 ? 
+                                (correctRadio) : props.selectedAnswer === props.answerText[index] && Number(props.wasCorrect) === 0 ? 
+                                (wrongRadio) : (regularRadio) }>{props.answerText[index]}</label>
+                        </div>
+                        ))
+                    }
+                    </fieldset>
+                </div>
             </div>
         </div>
-    )
+    );
 }

@@ -5,8 +5,9 @@ import { useState, useEffect, useRef } from "react";
 import { Dispatch, SetStateAction } from "react";
 
 //These variables will apply the styling for the regular and disabled buttons
-const regularButton = "mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 position:sticky top:0";
-const disabledButton = "mt-4 px-4 py-2 bg-gray-500 text-white rounded position:sticky top:0";
+const buttonStyle = "mt-4 px-8 py-4 font-semibold text-sm text-white position:sticky top:0";
+const regularButton = "bg-[#d1190d] hover:bg-[#700f09]";
+const disabledButton = "bg-gray-500";
 
 // This interface will be used to properly receive the two useState which are passed to the component
 interface testProps {
@@ -105,12 +106,13 @@ export default function TestStart({initialTestInfo, setInitialTestInfo, currentD
     
   //HTML return for the test start
   return (
-    <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-        <form id = "userInfo" name = "userInfo" onSubmit = {handleSubmission} className = "flex flex-col spacey-4 items-center justify-center">
+    <div className="flex flex-col min-h-screen items-center justify-center gap-6">
+      <h1 className = "text-3xl font-semibold leading-10 text-black dark:text-zinc-50">Japanese Placement Test</h1>
+        <form id = "userInfo" name = "userInfo" onSubmit = {handleSubmission} className = "flex flex-col space-y-2 items-center justify-center">
             <label htmlFor = "namefield" className = "mt-2">Full Name</label>
-            <input type = "text" name = "name" id = "namefield" placeholder = "Enter your full name." className = "mt-2" onChange = {handleChange} required/>
+            <input type = "text" name = "name" id = "namefield" placeholder = "Enter your full name." className = "mt-2 shadow-md border-2 border-gray-300 rounded-sm p-1" onChange = {handleChange} required/>
             <label htmlFor = "emailfield" className = "mt-2">Email</label>
-            <input type = "text" name = "email" id = "emailfield" placeholder = "Enter your email address." className = "mt-2" onChange = {handleChange} required/>
+            <input type = "text" name = "email" id = "emailfield" placeholder = "Enter your email address." className = "mt-2 shadow-md border-2 border-gray-300 rounded-sm p-1" onChange = {handleChange} required/>
         {
             /* Below I used shorthand for an if-else statement in Typescript. It first has the condition, then it uses "?" to check if
             it is true or not. If it is true, run the code in the first set of paranthesis. If not, it will go to the ":" and run
@@ -119,10 +121,13 @@ export default function TestStart({initialTestInfo, setInitialTestInfo, currentD
             */
         }
         </form>
-        <div className = "flex items-center justify-center gap-40">
-            <button type = "submit" form = "userInfo" name = "submitButton" className = {
+        <div className = "text-xs text-gray-500 p-2 bg-gray-100 rounded-lg text-center justify-center">
+          <p className = "font-semibold">Important! For record-keeping purposes, please ensure that your name and email address are correct!</p>
+        </div>
+        <div className = "flex items-center justify-center">
+            <button type = "submit" form = "userInfo" name = "submitButton" className = {` ${buttonStyle}
             // If the user has not input an email or a name, use the disabled style. Otherwise use regular.
-            !initialTestInfo.email || !initialTestInfo.name ? (disabledButton) : (regularButton)}
+             ${!initialTestInfo.email || !initialTestInfo.name ? (disabledButton) : (regularButton)}`}
             disabled = { // If it is not the last question, or if the user has not typed in an email or name
             !initialTestInfo.email || !initialTestInfo.name}>Begin the Test</button>
         </div>

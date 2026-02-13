@@ -2,7 +2,7 @@
 
 import * as testUtils from "./testActions";
 import { useRouter } from "next/navigation";
-import { useState, useEffect, useRef, Dispatch, SetStateAction} from "react";
+import { useState, useEffect, useRef, useTransition, Dispatch, SetStateAction} from "react";
 import QuestionDisplay from "../QuestionDisplay";
 import StageComplete from "../StageComplete";
 import { infoData } from "@/app/components/testStart/startActions";
@@ -100,6 +100,9 @@ export default function TestTake({currentTestInfo, setCurrentTestInfo, currentDi
     //This useRef will track all of the question IDs used, regardless of stage
     const questionIdTrack = useRef<number[]>([])
 
+    //This useTransition will be used when new questions are being fetched, to display a loading state
+    const [isPending, startTransition] = useTransition();
+
     // RIGHT NOW EACH STAGE IS HARDCODED TO BE JUST 5 QUESTIONS, SO CHECK HERE IF THAT EVER CHANGES!
     const stageSize = 5;
     const startStage = stageInfo.current.stageNum * stageSize
@@ -116,8 +119,9 @@ export default function TestTake({currentTestInfo, setCurrentTestInfo, currentDi
     console.log(isLastQuestion)
 
     //These variables will apply the styling for the regular and disabled buttons
-    const regularButton = "mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 position:sticky top:0";
-    const disabledButton = "mt-4 px-4 py-2 bg-gray-500 text-white rounded position:sticky top:0";
+    const buttonStyle = "mt-4 px-8 py-4 font-semibold text-sm text-white position:sticky top:0";
+    const regularButton = "bg-[#d1190d] hover:bg-[#700f09]";
+    const disabledButton = "bg-gray-500";
 
     let currentRequest: testUtils.requestData
     let currentAnswer: testUtils.responseData
@@ -137,7 +141,7 @@ export default function TestTake({currentTestInfo, setCurrentTestInfo, currentDi
         currentRequest = {
           questionId: stageInfo.current.stageQuestionId,
           pastId: questionIdTrack.current,
-          questionCategory: stageInfo.current.stageDifficulty[stageInfo.current.stageNum-1],
+          questionCategory: stageInfo.current.stageDifficulty[stageInfo.current.stageNum],
           // Check the last stage's five answers
           wasCorrect: gradedAnswers.current.slice(-5)
         };
@@ -264,6 +268,16 @@ export default function TestTake({currentTestInfo, setCurrentTestInfo, currentDi
     }
   }
 
+  //This little function will calculate the correct answers for the stage
+  async function calculateCorrect(gradedAnswers:  boolean[]) {
+    const correctCount = gradedAnswers.slice(-5).filter(Boolean).length;
+    console.log("HERE IS CORRECT COUNT!")
+    console.log(correctCount)
+    //Also set correctTotal so that the count can be used through a useRef
+    correctTotal.current = correctCount
+    return correctCount
+  }
+
   // Use useEffect to fetch the test form data when the component mounts, only up until the 20th question.
   console.log("ABOUT TO ENTER THE USEFFECT FOR SETTING THE INITIAL QUESTIONS!")
   useEffect(() => {
@@ -359,21 +373,6 @@ export default function TestTake({currentTestInfo, setCurrentTestInfo, currentDi
     // This line refers to the name and value fields of an HTML input tag, and uses object destructuring to assign them values from
     // event.target, which itself refers to the HTML element that triggered the event in the first place.
     const {name, value} = event.target;
-    /* the set UseState function is called with an updater function that uses prevData as its argument. An updater function is used
-    in order to update the data of an object and then set the new object as the state of testFormat. For this reason, prevData ensures 
-    that it  receives the most updated information and that if there are other fields that won't be updated within the function, the 
-    information is passed on and not lost.
-    */
-    //setQuestions((prevData) => ({
-      /*...prevData is a copy of the current useState and its values. The next line replaces the current value with the value
-      that was assigned from event.target based on the name that was also assigned. Since the name field is assigned dynamically,
-      if you wanted to replace more than one field, you would have to hardcode the keys, but you can still dynamically assign new
-      values. If there are other fields that you do not wish to replace, however, remember to use ...prevData to carry them over
-      to the new useState.
-      */ 
-      //...prevData,
-      //[name]: value
-    //})); 
 
     //Track the current Selected Answer here by giving it the user's currently selected answer
     console.log("CURRENT ANSWERARRAY[CURRENTQUESTION]")
@@ -390,32 +389,25 @@ export default function TestTake({currentTestInfo, setCurrentTestInfo, currentDi
     console.log(answerArray)
   }
 
-  //This little function will calculate the correct answers for the stage
-  async function calculateCorrect(gradedAnswers:  boolean[]) {
-    const correctCount = gradedAnswers.slice(-5).filter(Boolean).length;
-    console.log("HERE IS CORRECT COUNT!")
-    console.log(correctCount)
-    //Also set correctTotal so that the count can be used through a useRef
-    correctTotal.current = correctCount
-    return correctCount
-  }
-
   const handleNextStage = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     event.preventDefault();
     // After the user presses the continue button, the following will be executed
     // If the user did well enough and they have not reached the final stage, move onto the next stage but do not submit the test.
     if (stageInfo.current.stageNum < 4 && correctTotal.current > 3) {
-      console.log(`SCORES FOR STAGE ${stageInfo.current.stageNum} WERE SUFFICIENT, MOVE ONTO THE NEXT STAGE.`)
-      // Now reset the ids of the current stage
-      stageInfo.current.stageQuestionId = []
-      console.log("INCREMENT THE CURRENT STAGE NUMBER AND RESET THE STAGE QUESTION COUNTER BACK TO 0!")
-      stageInfo.current.stageNum = stageInfo.current.stageNum + 1;
-      stageInfo.current.stageQuestion = 0;
-      //Reset it before exiting
-      setIsSubmitted(false);
+      startTransition( async () => {
+        console.log(`SCORES FOR STAGE ${stageInfo.current.stageNum} WERE SUFFICIENT, MOVE ONTO THE NEXT STAGE.`)
+        await handleQuestionRetrieve(event);
 
-      await handleQuestionRetrieve(event);
-      setCurrentQuestion(prev => prev + 1);
+        // Now reset the ids of the current stage
+        stageInfo.current.stageQuestionId = []
+        console.log("INCREMENT THE CURRENT STAGE NUMBER AND RESET THE STAGE QUESTION COUNTER BACK TO 0!")
+        stageInfo.current.stageNum = stageInfo.current.stageNum + 1;
+        stageInfo.current.stageQuestion = 0;
+
+        setCurrentQuestion(prev => prev + 1);
+        //Reset it before exiting
+        setIsSubmitted(false);
+      });
     }
     // Otherwise, do the following
     else {
@@ -466,8 +458,8 @@ export default function TestTake({currentTestInfo, setCurrentTestInfo, currentDi
   
   //HTML return for the test form page
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
+    <div className="flex min-h-screen items-center justify-center font-sans dark:bg-black">
+      <main className="flex w-full max-w-3xl flex-col items-start justify-between bg-white dark:bg-black">
         {
           // Await the correct number of answers for the stage before moving on
           isSubmitted !== false && (<StageComplete
@@ -479,53 +471,51 @@ export default function TestTake({currentTestInfo, setCurrentTestInfo, currentDi
             onButtonChange = {handleNextStage}
           />)
         }
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <form name = "placeTest" onSubmit = {handleTestForm} className = "flex flex-col spacey-4 items-center justify-center">
-            {
-              //If questions exists and its length is greater than 0, or currentQuestion is less than the length, display the current question
-              // questions && questions.length > 0 && currentQuestion <= questions.length && (
-              questions && questions[stageInfo.current.stageQuestion] && answerArray[currentQuestion] && (
-                <QuestionDisplay
-                  questionId = {currentQuestion + 1}
-                  questionText = {questions[stageInfo.current.stageQuestion].question_text}
-                  questionBody = {questions[stageInfo.current.stageQuestion].question_body}
-                  questionCategory = {questions[stageInfo.current.stageQuestion].question_level}
-                  answerId = {questions[stageInfo.current.stageQuestion].answer_id}
-                  answerText = {questions[stageInfo.current.stageQuestion].answer_text}
-                  selectedAnswer = {answerArray[currentQuestion]?.userText}
-                  alreadyAnswered = {answerArray[currentQuestion]?.alreadyAnswered}
-                  //Send the handleChange const as the value for onChangeValue so that the onChange field can be properly handled
-                  onChangeValue = {handleChange}
-                />)
-            }
-            {
-              /* Below I used shorthand for an if-else statement in Typescript. It first has the condition, then it uses "?" to check if
-              it is true or not. If it is true, run the code in the first set of paranthesis. If not, it will go to the ":" and run
-              the code in the second set of paranthesis. Additional conditions require another condition followed by "?" and "()".
-              For the Submit and Next buttons below, the CSS styling is determined by the result of the if statement.
-              */
-            }
-          </form>
-          <div className = "flex items-center justify-center gap-40">
+        <form name = "placeTest" onSubmit = {handleTestForm} className = "flex flex-col space-y-4 items-start justify-start">
+          {
+            //If questions exists and its length is greater than 0, or currentQuestion is less than the length, display the current question
+            // questions && questions.length > 0 && currentQuestion <= questions.length && (
+            questions && questions[stageInfo.current.stageQuestion] && answerArray[currentQuestion] && (
+              <QuestionDisplay
+                questionId = {currentQuestion + 1}
+                questionText = {questions[stageInfo.current.stageQuestion].question_text}
+                questionBody = {questions[stageInfo.current.stageQuestion].question_body}
+                questionCategory = {questions[stageInfo.current.stageQuestion].question_level}
+                answerId = {questions[stageInfo.current.stageQuestion].answer_id}
+                answerText = {questions[stageInfo.current.stageQuestion].answer_text}
+                selectedAnswer = {answerArray[currentQuestion]?.userText}
+                alreadyAnswered = {answerArray[currentQuestion]?.alreadyAnswered}
+                //Send the handleChange const as the value for onChangeValue so that the onChange field can be properly handled
+                onChangeValue = {handleChange}
+              />)
+          }
+          {
+            /* Below I used shorthand for an if-else statement in Typescript. It first has the condition, then it uses "?" to check if
+            it is true or not. If it is true, run the code in the first set of paranthesis. If not, it will go to the ":" and run
+            the code in the second set of paranthesis. Additional conditions require another condition followed by "?" and "()".
+            For the Submit and Next buttons below, the CSS styling is determined by the result of the if statement.
+            */
+          }
+          <div className = "flex w-full justify-end">
             {isLastQuestion  ? (
-              <button type = "submit" form = "placeTest" name = "submitButton" className = {
+              <button type = "submit" form = "placeTest" name = "submitButton" className = {`${buttonStyle} 
                 // If it is not the last question, the stage was submitted, or if the user has not selected an answer, used the disabled style. Otherwise use regular.
-                !isLastQuestion || isSubmitted || !answerArray[currentQuestion]?.userText ? (disabledButton) : (regularButton)}
+                ${!isLastQuestion || isSubmitted || !answerArray[currentQuestion]?.userText ? (disabledButton) : (regularButton)}`}
               disabled = { // If it is not the last question, the stage was submitted, or if the user has not selected an answer
                 !isLastQuestion || isSubmitted || !answerArray[currentQuestion]?.userText}
               onClick = {handleButtonChange}>Submit Answers</button>
             ) : (
               <button 
-              type = "button" form = "placeTest" name = "next" className = { 
+              type = "button" form = "placeTest" name = "next" className = {`${buttonStyle} 
                 // If the user has not selected an answer, used the disabled style. Otherwise use regular.
-                !answerArray[currentQuestion]?.userText ? (disabledButton) : (regularButton)}
+                ${!answerArray[currentQuestion]?.userText ? (disabledButton) : (regularButton)}`}
               disabled = { // If the user has not selected an answer
                 !answerArray[currentQuestion]?.userText}
               onClick = {handleButtonChange}>Next</button>
             )
             }
           </div>
-        </div>
+        </form>
       </main>
     </div>
   );
