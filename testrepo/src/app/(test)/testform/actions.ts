@@ -1,4 +1,4 @@
-"use server";
+/*"use server";
 
 //Define a type for storing the test form data
 type testFormData = {
@@ -247,4 +247,4 @@ export async function questionCheck(action: string, givenFields: responseData) {
         console.log(error);
         console.log("Internal Server Error: Answer could not be checked.")
     }
-}
+}*/

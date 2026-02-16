@@ -2,10 +2,11 @@
 
 import * as testUtils from "./testActions";
 import { useRouter } from "next/navigation";
-import { useState, useEffect, useRef, useTransition, Dispatch, SetStateAction} from "react";
+import { useState, useEffect, useRef, useTransition, Dispatch, SetStateAction } from "react";
 import QuestionDisplay from "../QuestionDisplay";
 import StageComplete from "../StageComplete";
 import { infoData } from "@/app/components/testStart/startActions";
+import { stageData } from "./testActions";
 import test from "node:test";
 
 //Type defined below will be used for setting the test questions and answers
@@ -18,15 +19,6 @@ type questionType = {
   answerText: string[];
   userText: string;
   alreadyAnswered: boolean;
-}
-
-//Type defined below will be used for tracking each stage's info, including each stage's difficulty,
-//The current stage number, the current question of the stage, and the current stage's question_ids.
-type stageType = {
-  stageDifficulty: string[];
-  stageNum: number;
-  stageQuestion: number;
-  stageQuestionId: number[];
 }
 
 //Interface below will be used for when each question itself is displayed. Fields should be the exact same as the ones in
@@ -42,41 +34,20 @@ interface testQuestion {
   is_correct?: boolean;
 }
 
-// This interface will be used to properly receive the two useState which are passed to the component
+// This interface will be used to properly receive the useState and data which are passed to the component
 interface testProps {
   currentTestInfo: infoData;
   setCurrentTestInfo: Dispatch<SetStateAction<infoData>>;
-  currentDisplay: string;
-  setCurrentDisplay: Dispatch<SetStateAction<string>>;
+  initialQuestions: any;
 }
 
 
-export default function TestTake({currentTestInfo, setCurrentTestInfo, currentDisplay, setCurrentDisplay} : testProps) {
+export default function TestTake({currentTestInfo, setCurrentTestInfo, initialQuestions} : testProps) {
     // This useState is used to store the questions received from the database
-    const [questions, setQuestions] = useState<testQuestion[]>([{
-    'question_id' : 0,
-    'question_text' : '',
-    'question_body' : '',
-    'question_level' : '',
-    'answer_id' : [],
-    'answer_text' : [],
-    'already_answered' : false,
-    'is_correct' : false
-    }]);
+    const [questions, setQuestions] = useState<testQuestion[]>(initialQuestions);
 
     // This useState is used to track the current question
     const [currentQuestion, setCurrentQuestion] = useState<number>(0);
-
-    //This useRef will be used to track all info of the stages of the test. Since the number of questions asked is
-    //dynamic, use the current question number modulus 5 to determine the current question index.
-    let stageInfo = useRef<stageType>({
-    'stageDifficulty': [''],
-    'stageNum' : 0,
-    'stageQuestion' : currentQuestion % 5,
-    'stageQuestionId' : []
-    })
-
-    const testLength = questions.length;
 
     //This useState is used for storing the info for the user's answers
     const [answerArray, setAnswerArray] = useState<questionType[]>([])
@@ -91,6 +62,15 @@ export default function TestTake({currentTestInfo, setCurrentTestInfo, currentDi
     //Finally, useState for errors
     const [error, setError] = useState<string | string[] | undefined>('');
 
+    //This useRef will be used to track all info of the stages of the test. Since the number of questions asked is
+    //dynamic, use the current question number modulus 5 to determine the current question index.
+    let stageInfo = useRef<stageData>({
+    'stageDifficulty': [initialQuestions[0].question_level],
+    'stageNum' : 0,
+    'stageQuestion' : currentQuestion % 5,
+    'stageQuestionId' : initialQuestions.map((question: any) => question.question_id)
+    })
+
     //This useRef will track the user's graded answers
     const gradedAnswers = useRef<boolean[]>([])
 
@@ -104,17 +84,15 @@ export default function TestTake({currentTestInfo, setCurrentTestInfo, currentDi
     const [isPending, startTransition] = useTransition();
 
     // RIGHT NOW EACH STAGE IS HARDCODED TO BE JUST 5 QUESTIONS, SO CHECK HERE IF THAT EVER CHANGES!
-    const stageSize = 5;
+    const stageSize = questions.length;
     const startStage = stageInfo.current.stageNum * stageSize
 
     //These variables will be used for checking when to disable and enable certain buttons
-
-    // IF THERE ARE ANY ERRORS WITH TEST BEING SUBMITTED EARLY, THEN THE LOGIC BELOW IS LIKELY CAUSING IT
     const isFirstQuestion = stageInfo.current.stageQuestion === 0;
-    const isLastQuestion = stageInfo.current.stageQuestion >= testLength-1;
+    const isLastQuestion = stageInfo.current.stageQuestion >= stageSize - 1;
 
-    console.log("TESTLENGTH")
-    console.log(testLength)
+    console.log("CURRENT STAGE SIZE")
+    console.log(stageSize)
     console.log("ISLASTQUESTION?")
     console.log(isLastQuestion)
 
@@ -132,22 +110,21 @@ export default function TestTake({currentTestInfo, setCurrentTestInfo, currentDi
 
     async function handleQuestionRetrieve(event: React.FormEvent) {
       event.preventDefault();
-      console.log("ABOUT TO RETRIEVE SOME NEW QUESTIONS")
+      console.log("ABOUT TO RETRIEVE SOME NEW QUESTIONS FOR THE NEXT STAGE")
       if (stageInfo.current.stageNum <= 4) {
-        console.log("GOING INTO THE FETCHING ANSWER FUNCTION")
-        // Note, this can also be written as async function fetchTestFormat() {...}. It's called an arrow function here.
+        console.log("GOING INTO THE FETCHING NEW QUESTIONS FUNCTION")
         // Fetch the test form data from the backend, with 'retrieveOneQuestion' as the action to take
-        console.log("REDEFINING THE CURRRENT REQUEST")
+        console.log("REDEFINING THE CURRRENT QUESTION REQUEST")
         currentRequest = {
           questionId: stageInfo.current.stageQuestionId,
           pastId: questionIdTrack.current,
           questionCategory: stageInfo.current.stageDifficulty[stageInfo.current.stageNum],
           // Check the last stage's five answers
-          wasCorrect: gradedAnswers.current.slice(-5)
+          wasCorrect: gradedAnswers.current.slice(-stageSize)
         };
-        console.log("ABOUT TO FETCH A NEW STAGE!")
+        console.log("ABOUT TO FETCH THE NEXT STAGE!")
         const fetchedQuestion = await testUtils.questionFetch('retrieveStage', currentRequest)
-        console.log("FETCH A NEW STAGE!")
+        console.log("FETCHED THE NEXT STAGE!")
         if (fetchedQuestion) {
           console.log("HERE IS THE RESULT OF THE FETCHED QUESTION")
           setQuestions(fetchedQuestion)
@@ -170,7 +147,11 @@ export default function TestTake({currentTestInfo, setCurrentTestInfo, currentDi
           })
 
           console.log("SET THE CURRENT QUESTION TO THIS")
-          console.log(questions)
+          console.log(fetchedQuestion)
+
+          console.log("INCREMENT THE CURRENT STAGE NUMBER AND RESET THE STAGE QUESTION COUNTER BACK TO 0!")
+          stageInfo.current.stageNum = stageInfo.current.stageNum + 1;
+          stageInfo.current.stageQuestion = 0;
           console.log("SET THE CURRENT STAGE USING THE CURRENT STAGE NUM")
           stageInfo.current.stageDifficulty[stageInfo.current.stageNum] = fetchedQuestion[0].question_level
           console.log("SET THE CURRENT STAGE QUESTION IDS")
@@ -185,18 +166,15 @@ export default function TestTake({currentTestInfo, setCurrentTestInfo, currentDi
     async function handleQuestionSubmit(event: React.FormEvent) {
       event.preventDefault();
       if (answerArray[currentQuestion] && stageInfo.current.stageQuestion === 4 ) {
-        console.log("BEFORE SUBMITTING THE CURRENT ANSWER")
-        const currentAnswerData = answerArray[currentQuestion];
-        // Debugging: Check what is actually in the state
-        console.log("Current State Answer:", currentAnswerData);
-        console.log("USER ANSWER TO BE SUBMITTED")
-        console.log(answerArray[currentQuestion])
+        console.log("USER ANSWERS TO BE SUBMITTED")
+        // Since answerArray is an object with no toString function, use JSON.stringify to properly display the answer data in the console log
+        console.log(JSON.stringify(answerArray.slice(currentQuestion - stageSize, currentQuestion)))
         // Append the current question_id to questionIdTrack, use ... to "spread" the values. The spread operator is useful when copying or
         // combining list data because it directly takes out the values from the array.
         questionIdTrack.current.push(...stageInfo.current.stageQuestionId)
         
         // Fetch the test form data from the backend, with 'retrieveOneQuestion' as the action to take
-        console.log("REDEFINING THE CURRRENT RESPONSE")
+        console.log("REDEFINING THE CURRRENT ANSWERS TO BE SUBMITTED")
         currentAnswer = {
           questionId: stageInfo.current.stageQuestionId,
           pastId: questionIdTrack.current,
@@ -208,16 +186,15 @@ export default function TestTake({currentTestInfo, setCurrentTestInfo, currentDi
         };
 
         const fetchedGradedAnswer = await testUtils.questionCheck('sendStage', currentAnswer)
-        console.log("ANSWER SUBMITTED!")
+        console.log("ANSWERS FOR THE CURRENT STAGE SUBMITTED SUBMITTED!")
         if (fetchedGradedAnswer) {
-            console.log("HERE IS THE RESULT OF THE QUESTION THAT WAS JUST ANSWERED")
+            console.log("HERE ARE THE RESULTS OF THE CURRENT STAGE")
             console.log(fetchedGradedAnswer)
-            const gradedAnswer = fetchedGradedAnswer
-            // Use the "..." to keep the list flat
-            gradedAnswers.current.push(...gradedAnswer)
-            console.log("SET THE CURRENT INDEX OF GRADED ANSWERS TO THIS")
-            console.log(gradedAnswers.current.slice(-5))
-            return gradedAnswer
+            // Use the "..." to directly push the values of fetchedGradedAnswer to gradedAnswers.current
+            gradedAnswers.current.push(...fetchedGradedAnswer)
+            console.log("HERE ARE THE LAST FIVE GRADED ANSWERS, THE ONES FROM THE CURRENT STAGE")
+            console.log(gradedAnswers.current.slice(-stageSize))
+            return fetchedGradedAnswer
         }
         else {
             console.log("Error grading the current question.");
@@ -270,52 +247,13 @@ export default function TestTake({currentTestInfo, setCurrentTestInfo, currentDi
 
   //This little function will calculate the correct answers for the stage
   async function calculateCorrect(gradedAnswers:  boolean[]) {
-    const correctCount = gradedAnswers.slice(-5).filter(Boolean).length;
+    const correctCount = gradedAnswers.slice(-stageSize).filter(Boolean).length;
     console.log("HERE IS CORRECT COUNT!")
     console.log(correctCount)
     //Also set correctTotal so that the count can be used through a useRef
     correctTotal.current = correctCount
     return correctCount
   }
-
-  // Use useEffect to fetch the test form data when the component mounts, only up until the 20th question.
-  console.log("ABOUT TO ENTER THE USEFFECT FOR SETTING THE INITIAL QUESTIONS!")
-  useEffect(() => {
-    if (currentQuestion < testLength && currentQuestion % 5 === 0 && stageInfo.current.stageNum <= 4) {
-    // Note, this can also be written as async function fetchTestFormat() {...}. It's called an arrow function here.
-      const fetchInitialQuestions = async () => {
-        // Fetch the test form data from the backend, with 'retrieveOneQuestion' as the action to take
-        //Make a default request for fetching the first question
-        currentRequest = {
-        questionId: [0],
-        pastId: questionIdTrack.current,
-        questionCategory: "Beginner II",
-        wasCorrect: [true]
-        }
-        // Now reset the ids of the current stage
-        stageInfo.current.stageQuestionId = []
-        console.log("ABOUT TO FETCH THE INITIAL STAGE!")
-        const fetchedQuestion = await testUtils.questionFetch('retrieveStage', currentRequest)
-        console.log("FETCH A NEW STAGE!")
-        if (fetchedQuestion) {
-          console.log("HERE IS THE RESULT OF THE FETCHED QUESTION")
-          setQuestions(fetchedQuestion)
-          console.log("SET THE CURRENT QUESTION TO THIS")
-          console.log(questions)
-          console.log("SET THE FIRST STAGE'S DIFFICULTY")
-          stageInfo.current.stageDifficulty[stageInfo.current.stageNum] = fetchedQuestion[0].question_level
-          console.log("SET THE FIRST STAGE'S QUESTION IDS")
-          stageInfo.current.stageQuestionId = fetchedQuestion.map((question: any) => question.question_id)
-        }
-        else {
-          console.log("Error retrieving the initial questions.")
-        }
-      }
-      // Call the function to fetch the test format after defining it
-      fetchInitialQuestions();
-    }
-     //The empty array below states that this will only occur on mount.
-  }, []);
 
   // This useEffect will populate the answerArray ONLY when the answerArray is shorter than questions, and questions is not empty
   useEffect(() => {
@@ -361,8 +299,6 @@ export default function TestTake({currentTestInfo, setCurrentTestInfo, currentDi
 
     console.log("CURRENT TEST INFO WHILE TAKING THE TEST")
     console.log(currentTestInfo)
-    console.log("CURRENT DISPLAY OPTION")
-    console.log(currentDisplay)
     console.log("HAS THE STAGE BEEN SUBMITTED?")
     console.log(isSubmitted)
   }, [selectedAnswer, questions, currentQuestion, answerArray, isSubmitted])
@@ -397,12 +333,6 @@ export default function TestTake({currentTestInfo, setCurrentTestInfo, currentDi
       startTransition( async () => {
         console.log(`SCORES FOR STAGE ${stageInfo.current.stageNum} WERE SUFFICIENT, MOVE ONTO THE NEXT STAGE.`)
         await handleQuestionRetrieve(event);
-
-        // Now reset the ids of the current stage
-        stageInfo.current.stageQuestionId = []
-        console.log("INCREMENT THE CURRENT STAGE NUMBER AND RESET THE STAGE QUESTION COUNTER BACK TO 0!")
-        stageInfo.current.stageNum = stageInfo.current.stageNum + 1;
-        stageInfo.current.stageQuestion = 0;
 
         setCurrentQuestion(prev => prev + 1);
         //Reset it before exiting

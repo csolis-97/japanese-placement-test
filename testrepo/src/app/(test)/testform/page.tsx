@@ -1,52 +1,47 @@
-"use client";
+"use server";
 
-import * as testUtils from "./actions";
-import Link from "next/link";
-import Image from "next/image";
-import {useRouter} from "next/navigation";
-import {useState, useActionState, useEffect, useRef} from "react";
-import QuestionDisplay from "../../components/QuestionDisplay";
-import TestStart from "../../components/testStart/testStart";
-import TestTake from "../../components/testTake/testTake";
+import * as testUtils from "../../components/testTake/testActions";
+import TestDisplay from "../../components/testDisplay";
 import { start } from "node:repl";
-import { infoData } from "@/app/components/testStart/startActions";
 
-export default function Home() {
+export default async function Home() {
 
-  //This useState will be used to set which component to display.
-  const [currentDisplay, setCurrentDisplay] = useState<string>('start');
+  //This const will hold the initial question info
+  let initialRequest: testUtils.requestData;
 
-  //This useState will track test info, specifically the score ID used in the database for the record, alongside the user's current attempt number,
-  //the email they entered, and their name.
-  const [testInfo, setTestInfo] = useState<infoData>({
-  'resultId' : 0,
-  'userAttempt' : 0,
-  'email' : "",
-  'name' : ""
-  });
-
-  useEffect(() => {
-    console.log("HERE IS THE CURRENT VALUES OF TESTINFO")
-    console.log(testInfo)
-  }, [])
+  // Note, this can also be written as async function fetchTestFormat() {...}. It's called an arrow function here.
+    async function fetchInitialQuestions() {
+      // Fetch the test form data from the backend, with 'retrieveOneQuestion' as the action to take
+      //Make a default request for fetching the first question
+      initialRequest = {
+      questionId: [0],
+      pastId: [],
+      questionCategory: "Beginner I",
+      wasCorrect: [false]
+      }
+      console.log("ABOUT TO FETCH THE INITIAL STAGE!")
+      const fetchedQuestion = await testUtils.questionFetch('retrieveStage', initialRequest)
+      console.log("FETCH A NEW STAGE!")
+      if (fetchedQuestion) {
+        console.log("HERE IS THE RESULT OF THE FETCHED QUESTION")
+        console.log(fetchedQuestion)
+      }
+      else {
+        console.log("Error retrieving the initial questions.")
+      }
+      return fetchedQuestion;
+    }
+    
+  const initialQuestions = await fetchInitialQuestions();
   
   //HTML return for the test form page
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#d1190d] font-sans dark:bg-black">
       <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between px-16 bg-white dark:bg-black ">
-        <div className="flex flex-col items-center">
-          {
-            currentDisplay === "start" && (
-            //LOGIC FOR SWITCHING BETWEEN COMPONENTS GOES HERE
-            <TestStart initialTestInfo = {testInfo} setInitialTestInfo = {setTestInfo} currentDisplay = {currentDisplay} setCurrentDisplay = {setCurrentDisplay}/>
-            )
-          }
-          {
-            currentDisplay === "test" && (
-              <TestTake currentTestInfo = {testInfo} setCurrentTestInfo = {setTestInfo} currentDisplay = {currentDisplay} setCurrentDisplay = {setCurrentDisplay}/>
-            )
-          }
-        </div>
+        {
+          // Send the initial questions as a prop to testDisplay component
+          <TestDisplay initialQuestions = {initialQuestions}/>
+        }
       </main>
     </div>
   );

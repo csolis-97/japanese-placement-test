@@ -45,7 +45,7 @@ export default function questionDisplay(props: questionDisplayProps) {
     console.log(props.wasCorrect)
 
     return (
-        <div className = "flex flex-col bg-gray-100 rounded-lg w-full">
+        <div className = "flex flex-col shrink-0 grow-0 bg-gray-100 rounded-lg w-[550px] h-[450px] shadow-md">
             <div className = "divide-y-2 divide-gray-400">
                 <div className = "flex flex-col">
                     <h1 className = "text-gray-600 font-semibold text-3xl p-4">Question #{props.questionId}</h1>
@@ -53,7 +53,7 @@ export default function questionDisplay(props: questionDisplayProps) {
                     <h2 className = "text-gray-800 font-semibold divide-y-2 px-4">{props.questionText}</h2>
                     <p className = "text-gray-600 font-semibold text-2xl p-4">{props.questionBody}</p>
                 </div>
-                <div className = "p-4">
+                <div className = "p-4 pt-10">
                     <fieldset disabled = {props.alreadyAnswered} className = "text-2xl" >
                         {props.answerText?.map((answer, index) => (
                         //fieldset should only be disabled if the question has already been answered.

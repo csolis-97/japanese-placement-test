@@ -1,7 +1,7 @@
 "use client";
 
 import * as infoUtils from "./startActions";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Dispatch, SetStateAction } from "react";
 
 //These variables will apply the styling for the regular and disabled buttons

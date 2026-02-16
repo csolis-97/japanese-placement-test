@@ -60,18 +60,10 @@ def getAttemptNum(cursor, attemptNum, userId):
         attemptCheck = cursor.fetchall()
         print("HERE ARE THE RESULTS OF ATTEMPTCHECK:")
         print(attemptCheck)
-        # Make a list to store attempt_id's that can no longer be used, then append all of the row data in attemptCheck to said list.
-        invalidId = []
+        # Check the last attempt_id value that was used, and set attemptNum to that number + 1. Else set it to 1.
         if attemptCheck:
-            attemptNum = 1
-            for row in attemptCheck:
-                invalidId.append(row['attempt_id'])
-                print(f"HERE ARE THE LIST OF INVALID ATTEMPT ID'S {invalidId}")
-            # Make sure that an attempt_id that has not already been used is assigned before exiting.
-            while attemptNum in invalidId:
-                print("INVALID ID SELECTED, TRY AGAIN!")
-                attemptNum = attemptNum + invalidId[0]+1
-                print(f"TRYING WITH ATTEMPT NUMBER: {attemptNum}")
+            lastId = attemptCheck[len(attemptCheck) - 1]['attempt_id']
+            attemptNum = lastId + 1
         else:
             attemptNum = 1
     print("FINAL VALUE OF ATTEMPT NUM")

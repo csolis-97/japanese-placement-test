@@ -2,6 +2,9 @@
 import Image from "next/image";
 import Link from "next/link";
 
+//This variable will apply the styling for the button
+const buttonStyle = "mt-4 px-8 py-4 font-semibold text-sm text-white position:sticky top:0 bg-[#d1190d] hover:bg-[#700f09]";
+
 export default function Home() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#d1190d] font-sans dark:bg-black">
@@ -13,8 +16,8 @@ export default function Home() {
             responses. The test is divided into four different stages, and the difficulty will adjust depending on your results from the previous stage. Once all of
             the questions are answered, you will receive the results alongside your recommended placement.
           </p>
-          <Link href="/testform" className= "text-blue-400 text-sm hover:underline">
-          If you would like to take the test, please click here.
+          <Link href = "/testform">
+              <button className = {buttonStyle} type = "button">Start</button>
           </Link>
         </div>
       </main>
