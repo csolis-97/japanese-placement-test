@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef, useTransition, Dispatch, SetStateAction } from "react";
 import QuestionDisplay from "../QuestionDisplay";
 import StageComplete from "../StageComplete";
-import { infoData } from "@/app/components/testStart/startActions";
+import { infoData } from "../testStart/startActions";
 import { stageData } from "./testActions";
 import test from "node:test";
 

@@ -1,10 +1,10 @@
 "use client"
 
-import {answerData, resultsData} from "./actions";
+import { answerData, resultsData } from "./actions";
 import Link from "next/link";
 import Image from "next/image";
-import {useSearchParams} from "next/navigation";
-import {useState, useActionState, useEffect} from "react";
+import { useSearchParams } from "next/navigation";
+import { useState, useEffect } from "react";
 import QuestionDisplay from "../../components/QuestionDisplay";
 import ResultDisplay from "../../components/ResultDisplay";
 
