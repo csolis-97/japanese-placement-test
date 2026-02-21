@@ -85,6 +85,7 @@ CREATE TABLE scores (
     user_id INT NOT NULL,
     total_score FLOAT NOT NULL,
     entrance_level ENUM ('Beginner I', 'Beginner II', 'Intermediate I', 'Intermediate II', 'Advanced') NOT NULL,
+    test_status ENUM ('IN_PROGRESS', 'COMPLETED') NOT NULL,
     test_date DATETIME NOT NULL,
     PRIMARY KEY (score_id, user_id),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE

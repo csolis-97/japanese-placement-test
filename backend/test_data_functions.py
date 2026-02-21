@@ -30,7 +30,7 @@ def createScoreRecord(cursor, mysql, initialScoreId, userId, finalTime):
     if initialScoreId == 0:
         # Set the paramList for a new query
         paramList = [userId, finalTime]
-        recordQuery = "INSERT INTO scores(user_id, total_score, entrance_level, test_date) VALUES (%s, 0, 'Beginner I', %s);"
+        recordQuery = "INSERT INTO scores(user_id, total_score, entrance_level, test_status, test_date) VALUES (%s, 0, 'Beginner I', 'IN_PROGRESS', %s);"
         cursor.execute(recordQuery, tuple(paramList))
         print("EXECUTED!")
         # This is the version used with flask_mysql, but the wheel fails to build so I used the flaskext.mysql version above
