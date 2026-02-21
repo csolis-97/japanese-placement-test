@@ -39,6 +39,8 @@ If you are interested in running this program locally, please ensure that the fo
 5. mySQL Server
 6. git
 
+Also, ensure that you have a .env file with credentials for the database as well. The flask application in the backend will search for the proper info
+in order to connect to the database instance which you create, which can be done through a tool like mySQL Workbench.
 
 ######                                  ######
 ######          RUNNING LOCALLY         ######
