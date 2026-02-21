@@ -1,10 +1,10 @@
 "use client"
 
-import {answerData, resultsData} from "./actions";
+import { answerData, resultsData } from "./actions";
 import Link from "next/link";
 import Image from "next/image";
-import {useSearchParams} from "next/navigation";
-import {useState, useActionState, useEffect} from "react";
+import { useSearchParams } from "next/navigation";
+import { useState, useEffect } from "react";
 import QuestionDisplay from "../../components/QuestionDisplay";
 import ResultDisplay from "../../components/ResultDisplay";
 
@@ -47,6 +47,7 @@ export default function Home() {
     correct_answer?: boolean[];
     user_answer_text: string;
     user_was_correct?: boolean;
+    response_order: number;
   }
 
   //Interface below will be used for displaying the user's results.
@@ -65,18 +66,18 @@ export default function Home() {
   */
   const searchParams = useSearchParams();
   const attemptParam = searchParams.get('attempt');
+  const resultParam = searchParams.get('r');
   let attemptNum = attemptParam ? Number(attemptParam) : 0;
-  console.log("HERE IS THE ATTEMPT NUMBER IN THE RESULTS PAGE FROM THE SEARCH PARAMS WITHIN THE USEEFFECT!")
+  let resultNum = resultParam ? Number(resultParam) : 0;
+  console.log("HERE IS THE ATTEMPT NUMBER AND RECORD NUMBER IN THE RESULTS PAGE FROM THE SEARCH PARAMS WITHIN THE USEEFFECT!")
   console.log(attemptNum)
+  console.log(resultNum)
 
   // This useState is used to store the questions received from the database
   const [questions, setQuestions] = useState<testQuestion[]>([]);
 
   // This useState is used to store the result information received from the database
   const [results, setResults] = useState<testResult>();
-
-  //This useState will work together with the context in order to track the user's graded scores
-  const [gradedAnswers, setGradedAnswers] = useState<boolean[]>([]);
 
   // This useState is used to fetch the answers and questions from the database, which will then be stored in the questions useState.
   const [answerFormat, setAnswerFormat] = useState<answerType>({
@@ -87,7 +88,7 @@ export default function Home() {
     'answerId' : [],
     'answerText' : [],
     'attemptId' : attemptNum,
-    'resultId' : 0,
+    'resultId' : resultNum,
     'correctAnswer' : [],
     'userText' : '',
     'wasCorrect' : false
@@ -95,7 +96,7 @@ export default function Home() {
 
   // This useState is used to fetch the results from the database
   const [resultsFormat, setResultsFormat] = useState<resultType>({
-    'resultId' : 0,
+    'resultId' : resultNum,
     'attemptId' : attemptNum,
     'totalScore' : 0,
     'entranceLevel' : '',
@@ -110,9 +111,10 @@ export default function Home() {
   // Use useEffect to fetch the test data when the component mounts.
   console.log("ABOUT TO ENTER THE USEFFECT IN THE RESULTS!")
   useEffect(() => {
-    if (attemptParam !== null && resultsFormat.attemptId !== attemptNum) {
+    if (attemptParam !== null && resultParam !== null && resultsFormat.attemptId !== attemptNum && resultsFormat.resultId !== resultNum) {
       setResultsFormat((prevData) => ({
         ...prevData,
+        'resultId' : resultNum,
         'attemptId': attemptNum
       }))
       // Fetch the attempt number search parameter and store it in attemptNum, which will be given to the resultsFormat useState
@@ -163,18 +165,17 @@ export default function Home() {
 
   //HTML return for the test form page
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
+    <div className="flex min-h-screen items-center justify-center bg-[#d1190d] font-sans dark:bg-black">
       <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
+        <div className="flex flex-col items-center gap-6 p-12 text-center sm:items-start sm:text-left">
           {
             questions && questions.length > 0 && results && (
               <ResultDisplay
               attemptId = {attemptNum}
-              totalScore = {results.total_score}
+              totalScore = { // The total_score stored is actually the percentage of overall correct questions, so calculate the correct number here
+                (results.total_score / 100) * questions.length}
               entranceLevel = {results.entrance_level}
               testDate = {results.test_date}
-              //FIX THIS, IT DOES WORK BUT I EITHER NEED TO PUT A PERCENTAGE LIKE 100 OR LEAVE IT AS THE TOTAL NUMBER OF QUESTIONS
-              //CORRECT
               totalQuestions = {questions.length}
             />)
           }
@@ -183,8 +184,8 @@ export default function Home() {
             {
               questions.map((question) =>
                 <QuestionDisplay
-                key = {question.question_id}
-                questionId = {question.question_id}
+                key = {question.response_order}
+                questionId = {question.response_order}
                 questionText = {question.question_text}
                 questionBody = {question.question_body}
                 questionCategory = {question.question_level}

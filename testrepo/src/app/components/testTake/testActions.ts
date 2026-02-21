@@ -1,7 +1,16 @@
-/*"use server";
+"use server";
+
+//Type defined below will be used for tracking each stage's info, including each stage's difficulty,
+//The current stage number, the current question of the stage, and the current stage's question_ids.
+export type stageData = {
+    stageDifficulty: string[];
+    stageNum: number;
+    stageQuestion: number;
+    stageQuestionId: number[];
+}
 
 //Define a type for storing the test form data
-type testFormData = {
+export type testFormData = {
     questionId: number;
     questionText: string;
     questionBody: string;
@@ -12,79 +21,28 @@ type testFormData = {
     resultId: number;
 }
 
-type responseData = {
+export type responseData = {
     questionId: number[];
     pastId: number[];
     userText: string[];
     userAttempt: number;
     resultId: number;
+    currentStage: number;
 }
 
-type requestData = {
+export type requestData = {
     questionId: number[];
     pastId: number[];
     questionCategory: string;
     wasCorrect: boolean[];
 }
 
-type submitData = {
+export type submitData = {
     resultId: number;
     userAttempt: number;
     pastId: number[];
     isCorrect: boolean[];
     stageArray: string[];
-}
-
-export async function resultNumber(action: string, resultId: number) {
-    // This action will create the record that will be used to store the results and return the resultId to be used
-
-    console.log(resultId)
-    console.log("GET THE ID FOR THE CURRENT SCORES FROM THE BACKEND");
-    try {
-        console.log("Attempting to create the score record and fetch the result_id...")
-        const response = await fetch('http://localhost:5000/testform', {
-            method: 'POST',
-            headers: {
-                'Content-Type' : 'application/json',
-            },
-            body: JSON.stringify({'action' : action, 'score_id' : resultId})
-        });
-
-        const data = await response.json();
-        console.log("Here is the response from the database after requesting the current result ID:");
-        console.log(data);
-        return data;
-    }
-    catch(error) {
-        console.log(error);
-        console.log("Internal Server Error: Current score's result ID could not be fetched.")
-    }
-}
-
-export async function attemptNumber(action: string, userAttempt: number) {
-    // This action will send the answers to the backend for processing
-    action = "getAttemptNumber"
-    console.log("BEGIN RETRIEVAL OF THE USER'S CURRENT ATTEMPT")
-    try {
-        console.log("Attempt to get the attempt number...")
-        const response = await fetch('http://localhost:5000/testform', {
-            method: 'POST',
-            headers: {
-                'Content-Type' : 'application/json',
-            },
-            body: JSON.stringify({'action' : action, 'user_attempt' : userAttempt})
-        });
-
-        const data = await response.json();
-        console.log("Here is the response from the database in regards to the current attempt number to be used:");
-        console.log(data);
-        return data;
-    }
-
-    catch(error) {
-        console.log(error);
-        console.log("Internal Server Error: Attempt number could not be retrieved.")
-    }
 }
 
 export async function submitTest(action: string, givenFields: submitData) {
@@ -96,7 +54,7 @@ export async function submitTest(action: string, givenFields: submitData) {
     const stageArray = givenFields.stageArray;
 
     // This action will submit the test to the backend for processing
-    action == "submitTest"
+    action = "submitTest"
     // Create a snapshot of the submission time to send alongside the POST request
     let submittedTime = new Date();
     console.log("HERE IS THE SUBMISSION TIMESTAP")
@@ -125,45 +83,6 @@ export async function submitTest(action: string, givenFields: submitData) {
     catch(error) {
         console.log(error);
         console.log("Internal Server Error: The score could not be calculated.")
-    }
-}
-
-export async function testForm(action: string, givenFields: testFormData) {
-
-    //Divide the form data into separate variables
-    const questionId = givenFields.questionId;
-    const questionText = givenFields.questionText;
-    const questionBody = givenFields.questionBody;
-    const questionCategory = givenFields.questionCategory;
-    const answerId = givenFields.answerId;
-    const answerText = givenFields.answerText;
-
-    action = "retrieveQuestions"
-    console.log("BEGIN TEST DATA RETRIEVAL");
-
-    //Try to retrieve the test data from the database
-    
-    try {
-        console.log("Attempt to retrieve test data...");
-        const response = await fetch('http://localhost:5000/testform', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({'action' : action, 'question_category' : questionCategory, 'question_id' : questionId, 
-                'question_text' : questionText, 'question_body' : questionBody, 'answer_id' : answerId, 'answer_text' : answerText})
-        });
-
-        //Get the response from the database and return
-        const data = await response.json();
-        console.log("Here is the response from the database in regards to the question data:");
-        console.log(data);
-        return data;
-    }
-    //If an error occured during retrieval, catch it and log it
-    catch (error) {
-        console.log(error);
-        return "Internal Server Error: Test question and answer data could not be retrieved.";
     }
 }
 
@@ -209,6 +128,7 @@ export async function questionCheck(action: string, givenFields: responseData) {
     const userText = givenFields.userText;
     const userAttempt = givenFields.userAttempt;
     const resultId = givenFields.resultId;
+    const currentStage = givenFields.currentStage;
 
     // This action will create the record that will be used to store the results and return the resultId to be used
     action = "sendStage"
@@ -234,7 +154,8 @@ export async function questionCheck(action: string, givenFields: responseData) {
                 'Content-Type' : 'application/json',
             },
             body: JSON.stringify({'action' : action, 'question_id' : questionId, 'past_id' : pastId, 
-                'user_answer_text' : userText, 'user_attempt' : userAttempt, 'score_id' : resultId})
+                'user_answer_text' : userText, 'user_attempt' : userAttempt, 'score_id' : resultId,
+                'current_stage' : currentStage})
         });
 
         const data = await response.json();
@@ -247,4 +168,4 @@ export async function questionCheck(action: string, givenFields: responseData) {
         console.log(error);
         console.log("Internal Server Error: Answer could not be checked.")
     }
-}*/
+}
