@@ -65,7 +65,7 @@ export async function submitTest(action: string, givenFields: submitData) {
     console.log("SEND THE ANSWERS TO THE BACKEND");
     try {
         console.log("Attempt to submit the test...")
-        const response = await fetch('http://localhost:5000/testform', {
+        const response = await fetch('http://localhost:5000/api/flask/testform', {
             method: 'POST',
             headers: {
                 'Content-Type' : 'application/json',
@@ -99,7 +99,7 @@ export async function questionFetch(action: string, givenFields: requestData) {
     console.log("SEND THIS INFO TO THE BACKEND")
         try {
         console.log("Attempt to retrieve a new question...")
-        const response = await fetch('http://localhost:5000/testform', {
+        const response = await fetch('http://localhost:5000/api/flask/testform', {
             method: 'POST',
             headers: {
                 'Content-Type' : 'application/json',
@@ -148,7 +148,7 @@ export async function questionCheck(action: string, givenFields: responseData) {
     console.log("SEND THE ANSWERS TO THE BACKEND");
     try {
         console.log("Attempt to send the answers...")
-        const response = await fetch('http://localhost:5000/testform', {
+        const response = await fetch('http://localhost:5000/api/flask/testform', {
             method: 'POST',
             headers: {
                 'Content-Type' : 'application/json',

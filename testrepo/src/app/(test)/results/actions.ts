@@ -45,7 +45,7 @@ export async function answerData(action: string, givenFields: answerData) {
     
     try {
         console.log("Attempt to retrieve test data...");
-        const response = await fetch('http://localhost:5000/results', {
+        const response = await fetch('http://localhost:5000/api/flask/results', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -84,7 +84,7 @@ export async function resultsData(action: string, givenFields: resultData) {
     
     try {
         console.log("Attempt to retrieve test data...");
-        const response = await fetch('http://localhost:5000/results', {
+        const response = await fetch('http://localhost:5000/api/flask/results', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
