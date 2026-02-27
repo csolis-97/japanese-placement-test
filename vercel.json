@@ -2,7 +2,10 @@
     "rewrites": [
             {
             "source": "/api/flask/:path*",
-            "destination": "/api/app.py"
+            "destination": "/backend/app.py"
         }
-    ]
+    ],
+    "env" : {
+        "PYTHONPATH" : "backend"
+    }
 }
