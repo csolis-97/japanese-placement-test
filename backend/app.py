@@ -24,6 +24,7 @@ CORS(app, resources={r"/*" : {"origins" : "http://localhost:3000"}})
 # Load the environment variables from the .env file, which will then be used to configure the database connection
 load_dotenv()
 app.secret_key = 'your_secret_key'
+app.secret_key = os.getenv('SESSION_SECRET')
 
 # The syntax when using flaskext.mysql is slightly different
 app.config['MYSQL_DATABASE_HOST'] = os.getenv('DB_HOST')

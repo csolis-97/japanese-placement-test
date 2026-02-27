@@ -46,7 +46,7 @@ export default function questionDisplay(props: questionDisplayProps) {
 
     return (
         // Here, min-h-[650px] is used to ensure that the height is a minimum of 650, but will grow if content is bigger than that using h-fit.
-        <div className = "flex flex-col shrink-0 grow-0 bg-gray-100 rounded-lg w-full max-w-[650px] min-h-[650px] h-fit shadow-md">
+        <div className = "flex flex-col shrink-0 grow-0 bg-gray-100 rounded-lg w-full min-w-[650px] min-h-[650px] h-fit shadow-md">
             <div className = "flex flex-col min-w-0 min-h-0 divide-y-2 divide-gray-400">
                 <div className = "">
                     <h1 className = "text-gray-600 font-semibold text-3xl p-4">Question #{props.questionId}</h1>
