@@ -1,9 +1,4 @@
 {
-    "functions": {
-        "backend/app.py": {
-            "runtime": "@vercel/python"
-        }
-    },
     "env" : {
         "PYTHONPATH" : "backend"
     }
