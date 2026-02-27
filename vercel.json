@@ -1,5 +1,26 @@
 {
-    "env" : {
-        "PYTHONPATH" : "backend"
+  "version": 2,
+  "builds": [
+    {
+      "src": "testrepo/package.json",
+      "use": "@vercel/next"
+    },
+    {
+      "src": "backend/app.py",
+      "use": "@vercel/python"
     }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/flask/:path*",
+      "destination": "backend/app.py"
+    },
+    {
+      "source": "/((?!api/flask).*)",
+      "destination": "testrepo/$1"
+    }
+  ],
+  "env": {
+    "PYTHONPATH": "backend"
+  }
 }
