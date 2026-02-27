@@ -1,10 +1,9 @@
 {
-    "rewrites": [
-            {
-            "source": "/api/flask/:path*",
-            "destination": "/backend/app.py"
+    "functions": {
+        "backend/app.py": {
+            "runtime": "@vercel/python"
         }
-    ],
+    },
     "env" : {
         "PYTHONPATH" : "backend"
     }
