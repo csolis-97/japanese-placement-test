@@ -43,6 +43,11 @@ app.config['MYSQL_DB'] = os.getenv('DB_NAME')
 mysql = MySQL(app)
 bcrypt = Bcrypt(app)
 
+####//// Route for the home ////####
+@app.route('/', methods=['POST'])
+def home():
+    return jsonify("Backend is running!")
+
 ####//// Route for the test form ////####
 @app.route('/testform', methods=['GET', 'POST'])
 def testForm():
