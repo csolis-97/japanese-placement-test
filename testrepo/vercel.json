@@ -1,4 +1,7 @@
 {
+  "functions": {
+    "flask_app/index.py": { "runtime": "@vercel/python" }
+  },
   "rewrites": [
     {
       "source": "/api/flask/:path*",
