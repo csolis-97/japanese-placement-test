@@ -1,7 +1,7 @@
 {
   "rewrites": [
     {
-      "source": "/api/flask/:path*",
+      "source": "/api/flask/(.*)",
       "destination": "/api/index"
     }
   ]
