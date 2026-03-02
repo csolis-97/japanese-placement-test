@@ -1,7 +1,7 @@
 "use server";
 
-import * as testUtils from "../../components/testTake/testActions";
-import TestDisplay from "../../components/TestDisplay";
+import * as testUtils from "@/app/components/testTake/testActions";
+import TestDisplay from "@/app/components/TestDisplay";
 
 export default async function Home() {
 
