@@ -1,5 +1,12 @@
 "use server";
 
+const getURL = () => {
+    if (process.env.VERCEL_URL) {
+        return `https://${process.env.VERCEL_URL}`;
+    }
+    return process.env.FRONTEND_URL
+}
+
 //Define a type for storing the test form data
 export type answerData = {
     questionId: number;
@@ -45,7 +52,7 @@ export async function answersData(action: string, givenFields: answerData) {
     
     try {
         console.log("Attempt to retrieve test data...");
-        const response = await fetch(`${process.env.FRONTEND_URL}/api/flask/results`, {
+        const response = await fetch(`${getURL()}/api/flask/results`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -84,7 +91,7 @@ export async function resultsData(action: string, givenFields: resultData) {
     
     try {
         console.log("Attempt to retrieve test data...");
-        const response = await fetch(`${process.env.FRONTEND_URL}/api/flask/results`, {
+        const response = await fetch(`${getURL()}/api/flask/results`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

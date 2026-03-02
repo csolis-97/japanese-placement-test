@@ -7,7 +7,6 @@ import QuestionDisplay from "../QuestionDisplay";
 import StageComplete from "../StageComplete";
 import { infoData } from "../testStart/startActions";
 import { stageData } from "./testActions";
-import test from "node:test";
 
 //Type defined below will be used for setting the test questions and answers
 type questionType = {

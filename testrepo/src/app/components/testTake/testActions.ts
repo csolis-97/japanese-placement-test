@@ -1,5 +1,12 @@
 "use server";
 
+const getURL = () => {
+    if (process.env.VERCEL_URL) {
+        return `https://${process.env.VERCEL_URL}`;
+    }
+    return process.env.FRONTEND_URL
+}
+
 //Type defined below will be used for tracking each stage's info, including each stage's difficulty,
 //The current stage number, the current question of the stage, and the current stage's question_ids.
 export type stageData = {
@@ -65,7 +72,7 @@ export async function submitTest(action: string, givenFields: submitData) {
     console.log("SEND THE ANSWERS TO THE BACKEND");
     try {
         console.log("Attempt to submit the test...")
-        const response = await fetch(`${process.env.FRONTEND_URL}/api/flask/testform`, {
+        const response = await fetch(`${getURL()}/api/flask/testform`, {
             method: 'POST',
             headers: {
                 'Content-Type' : 'application/json',
@@ -99,7 +106,7 @@ export async function questionFetch(action: string, givenFields: requestData) {
     console.log("SEND THIS INFO TO THE BACKEND")
         try {
         console.log("Attempt to retrieve a new question...")
-        const response = await fetch(`${process.env.FRONTEND_URL}/api/flask/testform`, {
+        const response = await fetch(`${getURL()}/api/flask/testform`, {
             method: 'POST',
             headers: {
                 'Content-Type' : 'application/json',
@@ -148,7 +155,7 @@ export async function questionCheck(action: string, givenFields: responseData) {
     console.log("SEND THE ANSWERS TO THE BACKEND");
     try {
         console.log("Attempt to send the answers...")
-        const response = await fetch(`${process.env.FRONTEND_URL}/api/flask/testform`, {
+        const response = await fetch(`${getURL()}/api/flask/testform`, {
             method: 'POST',
             headers: {
                 'Content-Type' : 'application/json',
