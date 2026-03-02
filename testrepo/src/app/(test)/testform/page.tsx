@@ -1,5 +1,3 @@
-"use server";
-
 export const dynamic = 'force-dynamic';
 
 import * as testUtils from "@/app/components/testTake/testActions";

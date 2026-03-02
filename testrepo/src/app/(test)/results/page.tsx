@@ -1,5 +1,3 @@
-"use server";
-
 import { Suspense } from "react";
 import ResultsDisplay from "@/app/components/ResultDisplay/ResultDisplay";
 
