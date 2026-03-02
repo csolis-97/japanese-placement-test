@@ -33,7 +33,8 @@ load_dotenv()
 # app.secret_key = os.getenv('SESSION_SECRET')
 
 # Get the path for the CA certificate so that SSL can be used to connect to the database.
-caPath = os.path.join(os.getcwd(), "ca.pem")
+# caPath = os.path.join(os.getcwd(), "ca.pem")
+caPath = os.path.join(os.path.dirname(__file__), "ca.pem")
 
 # The syntax when using flaskext.mysql is slightly different
 app.config['MYSQL_DATABASE_HOST'] = os.getenv('TIDB_HOST')
@@ -64,13 +65,13 @@ mysql = MySQL(app)
 bcrypt = Bcrypt(app)
 
 ####//// Route for the home ////####
-@app.route('/api/index', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
 def home():
     print("CAN YOU SEE THIS? BACKEND IS RUNNING!")
     return jsonify("Backend is running!")
 
 ####//// Route for the test form ////####
-@app.route('/api/index/testform', methods=['GET', 'POST'])
+@app.route('/testform', methods=['GET', 'POST'])
 def testForm():
     data = request.json
     cursor = mysql.get_db().cursor(MySQLdb.cursors.DictCursor)
@@ -333,7 +334,7 @@ def testForm():
 
 
 ####//// Route for the results ////####
-@app.route('/api/index/results', methods=['GET', 'POST'])
+@app.route('/results', methods=['GET', 'POST'])
 def resultDisplay():
     # Get the data from the request and make the MySQL cursor and declare variables that will be used across all actions
     data = request.json
