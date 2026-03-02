@@ -4,7 +4,7 @@ const getURL = () => {
     if (process.env.VERCEL_URL) {
         return `https://${process.env.VERCEL_URL}`;
     }
-    return process.env.FRONTEND_URL
+    return `https://${process.env.FRONTEND_URL}`;
 }
 
 //Define a type for storing the test form data
