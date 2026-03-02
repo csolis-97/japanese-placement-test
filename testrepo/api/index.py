@@ -42,6 +42,8 @@ app.config['MYSQL_DATABASE_SSL_CA'] = caPath
 app.config['MYSQL_DATABASE_SSL_VERIFY_CERT'] = os.getenv('TIDB_SSL_VERIFY_CERT')
 app.config['MYSQL_DATABASE_SSL_VERIFY_IDENTITY'] = os.getenv('TIDB_SSL_VERIFY_IDENTITY')
 
+# Use the below locally with mySQL workbench
+
 #app.config['MYSQL_DATABASE_HOST'] = os.getenv('DB_HOST')
 #app.config['MYSQL_DATABASE_USER'] = os.getenv('DB_USER')
 #app.config['MYSQL_DATABASE_PASSWORD'] = os.getenv('DB_PASSWORD')
