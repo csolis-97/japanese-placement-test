@@ -19,7 +19,10 @@ from .test_submission_functions import *
 
 app = Flask(__name__)
 
-frontURL = os.getenv('FRONTEND_URL')
+if os.getenv('VERCEL_URL'):
+    frontURL = os.getenv('VERCEL_URL')
+else:
+    frontURL = os.getenv('FRONTEND_URL')
 
 # Enables CORS for the app so that it can accept requests from the frontend running on localhost:3000
 CORS(app, resources={r"/*" : {"origins" : frontURL}})
