@@ -4,7 +4,7 @@ const getURL = () => {
     if (process.env.VERCEL_URL) {
         return `https://${process.env.VERCEL_URL}`;
     }
-    return `http://${process.env.FRONTEND_URL}` || "http://localhost:3000";
+    return `${process.env.FRONTEND_URL}` || "http://localhost:3000";
 }
 
 //Type defined below will be used for tracking each stage's info, including each stage's difficulty,
