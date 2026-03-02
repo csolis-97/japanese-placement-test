@@ -1,8 +1,7 @@
 "use server";
 
 import * as testUtils from "../../components/testTake/testActions";
-import TestDisplay from "../../components/testDisplay";
-import { start } from "node:repl";
+import TestDisplay from "../../components/TestDisplay";
 
 export default async function Home() {
 
@@ -10,27 +9,27 @@ export default async function Home() {
   let initialRequest: testUtils.requestData;
 
   // Note, this can also be written as async function fetchTestFormat() {...}. It's called an arrow function here.
-    async function fetchInitialQuestions() {
-      // Fetch the test form data from the backend, with 'retrieveOneQuestion' as the action to take
-      //Make a default request for fetching the first question
-      initialRequest = {
-      questionId: [0],
-      pastId: [],
-      questionCategory: "Beginner I",
-      wasCorrect: [false]
-      }
-      console.log("ABOUT TO FETCH THE INITIAL STAGE!")
-      const fetchedQuestion = await testUtils.questionFetch('retrieveStage', initialRequest)
-      console.log("FETCH A NEW STAGE!")
-      if (fetchedQuestion) {
-        console.log("HERE IS THE RESULT OF THE FETCHED QUESTION")
-        console.log(fetchedQuestion)
-      }
-      else {
-        console.log("Error retrieving the initial questions.")
-      }
-      return fetchedQuestion;
+  async function fetchInitialQuestions() {
+    // Fetch the test form data from the backend, with 'retrieveOneQuestion' as the action to take
+    //Make a default request for fetching the first question
+    initialRequest = {
+    questionId: [0],
+    pastId: [],
+    questionCategory: "Beginner I",
+    wasCorrect: [false]
     }
+    console.log("ABOUT TO FETCH THE INITIAL STAGE!")
+    const fetchedQuestion = await testUtils.questionFetch('retrieveStage', initialRequest)
+    console.log("FETCH A NEW STAGE!")
+    if (fetchedQuestion) {
+      console.log("HERE IS THE RESULT OF THE FETCHED QUESTION")
+      console.log(fetchedQuestion)
+    }
+    else {
+      console.log("Error retrieving the initial questions.")
+    }
+    return fetchedQuestion;
+  }
     
   const initialQuestions = await fetchInitialQuestions();
   

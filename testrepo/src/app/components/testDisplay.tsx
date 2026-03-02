@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import TestStart from "./testStart/testStart";
 import TestTake from "./testTake/testTake";
-import { infoData } from "../components/testStart/startActions";
+import { infoData } from "./testStart/startActions";
 
 // This component receives a prop, which uses a type of string array, as the initial question data to be used
 export default function TestDisplay({initialQuestions} : {initialQuestions: string[]}) {
