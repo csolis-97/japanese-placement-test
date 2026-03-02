@@ -59,7 +59,7 @@ mysql = MySQL(app)
 bcrypt = Bcrypt(app)
 
 ####//// Route for the home ////####
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def home():
     return jsonify("Backend is running!")
 
