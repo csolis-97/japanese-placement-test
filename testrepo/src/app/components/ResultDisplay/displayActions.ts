@@ -7,6 +7,8 @@ const getURL = () => {
     return `${process.env.FRONTEND_URL}` || "http://localhost:3000";
 }
 
+console.log(`"HERE IS THE URL BEING USED!" ${getURL}`)
+
 //Define a type for storing the test form data
 export type answerData = {
     questionId: number;
