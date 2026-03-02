@@ -7,7 +7,7 @@ const getURL = () => {
     return `${process.env.FRONTEND_URL}` || "http://localhost:3000";
 }
 
-console.log(`"HERE IS THE URL BEING USED!" ${getURL}`)
+console.log(`"HERE IS THE URL BEING USED!" ${getURL()}`)
 
 //Define a type that will be used to store and send necessary background info for the current test.
 export type infoData = {

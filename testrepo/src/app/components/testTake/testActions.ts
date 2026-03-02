@@ -7,7 +7,7 @@ const getURL = () => {
     return `${process.env.FRONTEND_URL}` || "http://localhost:3000";
 }
 
-console.log(`"HERE IS THE URL BEING USED!" ${getURL}`)
+console.log(`"HERE IS THE URL BEING USED!" ${getURL()}`)
 
 //Type defined below will be used for tracking each stage's info, including each stage's difficulty,
 //The current stage number, the current question of the stage, and the current stage's question_ids.
