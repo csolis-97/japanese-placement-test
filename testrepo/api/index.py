@@ -59,12 +59,12 @@ mysql = MySQL(app)
 bcrypt = Bcrypt(app)
 
 ####//// Route for the home ////####
-@app.route('/api/flask/')
+@app.route('/')
 def home():
     return jsonify("Backend is running!")
 
 ####//// Route for the test form ////####
-@app.route('/api/flask/testform', methods=['GET', 'POST'])
+@app.route('/testform', methods=['GET', 'POST'])
 def testForm():
     data = request.json
     cursor = mysql.get_db().cursor(MySQLdb.cursors.DictCursor)
@@ -327,7 +327,7 @@ def testForm():
 
 
 ####//// Route for the results ////####
-@app.route('/api/flask/results', methods=['GET', 'POST'])
+@app.route('/results', methods=['GET', 'POST'])
 def resultDisplay():
     # Get the data from the request and make the MySQL cursor and declare variables that will be used across all actions
     data = request.json
@@ -430,5 +430,6 @@ def resultDisplay():
 
 # Once the app is running, it will use the port 5000 and communicate to the localhost. It will also be in debug mode
 # After the app is out of development, debug mode should be set to False and the host to the appropriate domain/IP address
-if __name__ == '__main__':
-    app.run(debug=True, host="localhost", port=int("5000"))
+# if __name__ == '__main__':
+    # Not needed in production
+    # app.run(debug=True, host="localhost", port=int("5000"))
