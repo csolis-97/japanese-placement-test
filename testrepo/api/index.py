@@ -61,6 +61,7 @@ bcrypt = Bcrypt(app)
 ####//// Route for the home ////####
 @app.route('/', methods=['GET', 'POST'])
 def home():
+    print("CAN YOU SEE THIS? BACKEND IS RUNNING!")
     return jsonify("Backend is running!")
 
 ####//// Route for the test form ////####
