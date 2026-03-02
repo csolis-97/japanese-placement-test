@@ -1,5 +1,6 @@
 "use server";
 
+import { Suspense } from "react";
 import ResultsDisplay from "@/app/components/ResultDisplay/ResultDisplay";
 
 export default async function Home() {
@@ -18,6 +19,10 @@ export default async function Home() {
 
   //HTML return for the test form page
   return (
-    <><ResultsDisplay/></>
+    <>
+    <Suspense fallback= {<div>Loading Results...</div>}>
+      <ResultsDisplay/>
+    </Suspense>
+    </>
   );
 }

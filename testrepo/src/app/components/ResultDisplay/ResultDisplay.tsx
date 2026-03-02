@@ -149,37 +149,33 @@ export default function ResultsDisplay() {
         <div className="flex flex-col items-center gap-6 p-12 text-center sm:items-start sm:text-left">
           {
             questions && questions.length > 0 && results && (
-              <Suspense fallback= {<div>Loading Results...</div>}>
-                <ResultDisplay
-                attemptId = {attemptNum}
-                totalScore = { // The total_score stored is actually the percentage of overall correct questions, so calculate the correct number here
-                  (results.total_score / 100) * questions.length}
-                entranceLevel = {results.entrance_level}
-                testDate = {results.test_date}
-                totalQuestions = {questions.length}
-              />
-            </Suspense>)
+              <ResultDisplay
+              attemptId = {attemptNum}
+              totalScore = { // The total_score stored is actually the percentage of overall correct questions, so calculate the correct number here
+                (results.total_score / 100) * questions.length}
+              entranceLevel = {results.entrance_level}
+              testDate = {results.test_date}
+              totalQuestions = {questions.length}
+            />)
           }
           </div>
           <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
             {
               questions.map((question) =>
-                <Suspense fallback= {<div>Loading Answers...</div>}>
-                  <QuestionDisplay
-                  key = {question.response_order}
-                  questionId = {question.response_order}
-                  questionText = {question.question_text}
-                  questionBody = {question.question_body}
-                  questionCategory = {question.question_level}
-                  answerId = {question.answer_id}
-                  answerText = {question.answer_text}
-                  correctAnswer = {question.correct_answer}
-                  wasCorrect = {question.user_was_correct}
-                  //selectedAnswer is used to track which radio option the user has chosen
-                  selectedAnswer = {question.user_answer_text}
-                  alreadyAnswered = {true}
-                  />
-                </Suspense>)
+                <QuestionDisplay
+                key = {question.response_order}
+                questionId = {question.response_order}
+                questionText = {question.question_text}
+                questionBody = {question.question_body}
+                questionCategory = {question.question_level}
+                answerId = {question.answer_id}
+                answerText = {question.answer_text}
+                correctAnswer = {question.correct_answer}
+                wasCorrect = {question.user_was_correct}
+                //selectedAnswer is used to track which radio option the user has chosen
+                selectedAnswer = {question.user_answer_text}
+                alreadyAnswered = {true}
+                />)
             }
          </div>
       </main>
