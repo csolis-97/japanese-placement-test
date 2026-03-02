@@ -30,7 +30,7 @@ export async function createRecord(action: string, givenFields: infoData) {
     console.log("CREATE A RECORD IN THE SCORES DATABASE ALONGSIDE FETCHING CURRENT ATTEMPT ID");
     try {
         console.log("Attempting to create the score record and fetch the proper info...")
-        const response = await fetch('/api/flask/testform', {
+        const response = await fetch(`${process.env.FRONTEND_URL}/testform`, {
             method: 'POST',
             headers: {
                 'Content-Type' : 'application/json',
