@@ -2,7 +2,7 @@
 
 import ResultsDisplay from "@/app/components/ResultDisplay/ResultDisplay";
 
-export default function Home() {
+export default async function Home() {
 
 
   //Although not needed, here is a sample of a constant being defined to map results from one table to another
