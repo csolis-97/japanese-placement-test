@@ -78,7 +78,7 @@ def catch_all(path):
     })
 
 ####//// Route for the home ////####
-@app.route('/api/', methods=['GET', 'POST'])
+@app.route('/api', methods=['GET', 'POST'])
 def home():
     print("CAN YOU SEE THIS? BACKEND IS RUNNING!")
     return jsonify("Backend is running!")
