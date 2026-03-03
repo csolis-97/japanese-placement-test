@@ -1,5 +1,7 @@
 "use server";
 
+import { request } from "http";
+
 const getURL = () => {
     if (process.env.VERCEL_URL) {
         return `https://${process.env.VERCEL_URL}`;
@@ -117,6 +119,7 @@ export async function questionFetch(action: string, givenFields: requestData) {
                 'question_category' : questionCategory, 'was_correct' : wasCorrect})
         });
 
+        console.log(`RESPONSE STATUS CODE: ${response.status}`)
         if (!response.ok) {
             const errorMessage = await response.text();
             console.log(`FULL ERROR RETURNED BY VERCEL: ${errorMessage}`)
