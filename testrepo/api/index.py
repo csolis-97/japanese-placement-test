@@ -1,6 +1,4 @@
 from flask import Flask, jsonify, request, session, redirect, url_for, render_template, make_response
-# from flask_mysql import MySQL
-# from flaskext.mysql import MySQL
 from dotenv import load_dotenv
 from flask_bcrypt import Bcrypt
 from flask_cors import CORS
@@ -8,7 +6,7 @@ import pymysql
 import os
 import datetime
 
-# Import all the functions defined elsewhere in the backend
+# Import all the functions defined elsewhere in the backend. Remove the dot when running locally.
 from .test_data_functions import *
 from .question_retrieval_fuctions import *
 from .answer_storage_functions import *
@@ -29,20 +27,9 @@ try:
     load_dotenv()
 
     # Get the path for the CA certificate so that SSL can be used to connect to the database.
-    # caPath = os.path.join(os.getcwd(), "ca.pem")
     caPath = os.path.join(os.path.dirname(__file__), "ca.pem")
 
-    # The syntax when using flaskext.mysql is slightly different
-    #app.config['MYSQL_DATABASE_HOST'] = os.getenv('TIDB_HOST')
-    #app.config['MYSQL_DATABASE_PORT'] = int(os.getenv('TIDB_PORT'))
-    #app.config['MYSQL_DATABASE_USER'] = os.getenv('TIDB_USER')
-    #app.config['MYSQL_DATABASE_PASSWORD'] = os.getenv('TIDB_PASSWORD')
-    #app.config['MYSQL_DATABASE_DB'] = os.getenv('TIDB_DATABASE')
-
-    #app.config['MYSQL_DATABASE_SSL_CA'] = caPath
-    #app.config['MYSQL_DATABASE_SSL_VERIFY_CERT'] = os.getenv('TIDB_SSL_VERIFY_CERT')
-    #app.config['MYSQL_DATABASE_SSL_VERIFY_IDENTITY'] = os.getenv('TIDB_SSL_VERIFY_IDENTITY')
-
+    # This function when called will return a connection to the TiDB Cloud database using the environmental variables provided
     def getDB():
         print("ABOUT TO RETURN THE DATABASE CONNECTION!")
         return (pymysql.connect(
@@ -54,15 +41,20 @@ try:
             ssl_verify_cert = os.getenv('TIDB_SSL_VERIFY_CERT'),
             ssl_verify_identity = os.getenv('TIDB_SSL_VERIFY_IDENTITY'),
             ssl_ca = caPath,
-            cursorclass = pymysql.cursors.DictCursor)
-    )
+            cursorclass = pymysql.cursors.DictCursor
+        ))
 
-    # Use the below locally with mySQL workbench
-
-    #app.config['MYSQL_DATABASE_HOST'] = os.getenv('DB_HOST')
-    #app.config['MYSQL_DATABASE_USER'] = os.getenv('DB_USER')
-    #app.config['MYSQL_DATABASE_PASSWORD'] = os.getenv('DB_PASSWORD')
-    #app.config['MYSQL_DATABASE_DB'] = os.getenv('DB_NAME')
+    # Included a local function for the database connection as well. Not sure if port is needed, remove it if not
+    '''def getDBLocal():
+        print("ABOUT TO RETURN LOCAL DATABASE CONNECTION!")
+        return (pymysql.connect(
+            host = os.getenv('DB_HOST'),
+            port = os.getenv('DB_PORT'),
+            user = os.getenv('DB_USER'),
+            password = os.getenv('DB_PASSWORD'),
+            database = os.getenv('DB_NAME'),
+            cursorclass = pymysql.cursors.DictCursor
+        ))'''
 
     # Initialize Bcrypt for password hashing
     bcrypt = Bcrypt(app)
@@ -84,6 +76,7 @@ def testForm():
     if not data:
         return jsonify({"Backend error" : "No data provided for the testform route!"}), 400
     mysql = getDB()
+    # mysql = getDBLocal()
 
     # Test print to see data
     print("HERE IS WHAT IS IN THE DATA!")
@@ -348,9 +341,11 @@ def resultDisplay():
     data = request.get_json(force=True, silent=True)
     if not data:
         return jsonify({"Backend error" : "No data provided for the results route!"}), 400
+    
     mysql = getDB()
-    action = data['action']
+    # mysql = getDBLocal()
 
+    action = data['action']
     # First, get the proper result data by using the attempt_id in the data
     attemptId = data['attempt_id']
     scoreId = data['score_id']
