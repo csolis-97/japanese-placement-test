@@ -117,6 +117,12 @@ export async function questionFetch(action: string, givenFields: requestData) {
                 'question_category' : questionCategory, 'was_correct' : wasCorrect})
         });
 
+        if (!response.ok) {
+            const errorMessage = await response.text();
+            console.log(`FULL ERROR RETURNED BY VERCEL: ${errorMessage}`)
+            return errorMessage
+        }
+
         const data = await response.json();
         console.log("Here is the response from the database after sending the current level, question ID, and correct boolean:");
         console.log(data);
