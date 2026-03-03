@@ -86,7 +86,8 @@ def home():
 ####//// Route for the test form ////####
 @app.route('/flask_api/testform', methods=['GET', 'POST'])
 def testForm():
-    data = request.json
+    # data = request.json
+    data = request.get_json(force=True, silent=True)
     cursor = mysql.get_db().cursor(MySQLdb.cursors.DictCursor)
     # This is the version used with flask_mysql, but the wheel fails to build so I used the flaskext.mysql version above
     # cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
@@ -350,7 +351,8 @@ def testForm():
 @app.route('/flask_api/results', methods=['GET', 'POST'])
 def resultDisplay():
     # Get the data from the request and make the MySQL cursor and declare variables that will be used across all actions
-    data = request.json
+    #data = request.json
+    data = request.get_json(force=True, silent=True)
     cursor = mysql.get_db().cursor(MySQLdb.cursors.DictCursor)
     action = data['action']
 
