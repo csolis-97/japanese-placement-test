@@ -16,7 +16,7 @@ export default function Home() {
             responses. The test is divided into four different stages, and the difficulty will adjust depending on your results from the previous stage. Once all of
             the questions are answered, you will receive the results alongside your recommended placement.
           </p>
-          <Link href = "/testform">
+          <Link href = "/testFormPage">
               <button className = {buttonStyle} type = "button">Start</button>
           </Link>
         </div>
