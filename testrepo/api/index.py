@@ -89,17 +89,13 @@ except:
 #    })
 
 ####//// Route for the home ////####
-@app.route('/flask_api', methods=['GET', 'POST'])
 @app.route('/api', methods=['GET', 'POST'])
-@app.route('/', methods=['GET', 'POST'])
 def home():
     print("CAN YOU SEE THIS? BACKEND IS RUNNING!")
     return jsonify("Backend is running!")
 
 ####//// Route for the test form ////####
-@app.route('/flask_api/testform', methods=['GET', 'POST'])
 @app.route('/api/testform', methods=['GET', 'POST'])
-@app.route('/testform', methods=['GET', 'POST'])
 def testForm():
     # data = request.json
     data = request.get_json(force=True, silent=True)
@@ -266,8 +262,9 @@ def testForm():
                     # This is the version used with flask_mysql, but the wheel fails to build so I used the flaskext.mysql version above
                     # mysql.connection.commit()
                     # Commit the change so that it appears in the database
-                    commitChange = mysql.get_db()
-                    commitChange.commit()
+                    #commitChange = mysql.get_db()
+                    #commitChange.commit()
+                    mysql.commit()
                     print("SUCCESSFULLY STORED THE ANSWERS!")
                 else:
                     print("USER SUBMITTED NO ANSWERS, SO THERE IS NOTHING TO STORE.")
@@ -351,8 +348,9 @@ def testForm():
                 # This is the version used with flask_mysql, but the wheel fails to build so I used the flaskext.mysql version above
                 # mysql.connection.commit()
                 # Commit the change so that it appears in the database
-                commitChange = mysql.get_db()
-                commitChange.commit()
+                #commitChange = mysql.get_db()
+                #commitChange.commit()
+                mysql.commit()
                 print("SUCCESSFULLY STORED THE SCORES!")
                 # Finally, close the cursor
                 cursor.close()
@@ -370,9 +368,7 @@ def testForm():
 
 
 ####//// Route for the results ////####
-@app.route('/flask_api/results', methods=['GET', 'POST'])
 @app.route('/api/results', methods=['GET', 'POST'])
-@app.route('/results', methods=['GET', 'POST'])
 def resultDisplay():
     # Get the data from the request and make the MySQL cursor and declare variables that will be used across all actions
     #data = request.json
