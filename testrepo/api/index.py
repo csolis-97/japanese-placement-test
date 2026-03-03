@@ -78,16 +78,6 @@ except:
     setupError = "CRASHED WHILE SETTING UP THE BACKEND!"
     print(setupError)
 
-########## DEBUG
-#@app.route('/', defaults={'path': ''})
-#@app.route('/<path:path>')
-#def catch_all(path):
-#    return jsonify({
-#        "message": "Backend is reachable!",
-#        "requested_path": path,
-#        "full_url": request.url
-#    })
-
 ####//// Route for the home ////####
 @app.route('/api', methods=['GET', 'POST'])
 def home():
@@ -388,21 +378,22 @@ def resultDisplay():
     with mysql.cursor() as cursor:
 
         # Next, get the correct user_id based on the result id and the attempt id
-        paramList = [scoreId, attemptId]
-        getUserQuery = "SELECT U.id, U.email, U.fullname FROM users U, user_answers UA, scores S WHERE U.id = S.user_id AND S.score_id = UA.score_id " \
-        "AND UA.score_id = %s AND UA.attempt_id = %s"
-        cursor.execute(getUserQuery, tuple(paramList))
+        #paramList = [scoreId, attemptId]
+        #getUserQuery = "SELECT U.id, U.email, U.fullname FROM users U, user_answers UA, scores S WHERE U.id = S.user_id AND S.score_id = UA.score_id " \
+        #"AND UA.score_id = %s AND UA.attempt_id = %s"
+        #cursor.execute(getUserQuery, tuple(paramList))
         # Do something with this later
-        userInfo = cursor.fetchone()
-        print(f"USER INFO THAT WAS RETRIEVED! {userInfo}")
-        userId = userInfo['id']
+        #userInfo = cursor.fetchone()
+        #print(f"USER INFO THAT WAS RETRIEVED! {userInfo}")
+        #userId = userInfo['id']
 
         # If the action is "retrieveResults", fetch the correct result record from the database based on the current user's user_id and attempt_id.
         if action == 'retrieveResults':
             try: 
-                paramList = [userId, attemptId]
-                resultQuery = "SELECT S.score_id, S.total_score, S.entrance_level, S.test_date FROM scores S, user_answers U WHERE " \
-                "S.user_id = %s AND S.score_id = U.score_id AND U.attempt_id = %s"
+                #paramList = [userId, attemptId]
+                paramList = [scoreId]
+                resultQuery = "SELECT S.total_score, S.entrance_level, S.test_date FROM scores S, user_answers U WHERE " \
+                "S.score_id = U.score_id AND S.score_id = %s"
 
                 #Execute the query with the parameters, store the first entry, close the cursor, and return
                 cursor.execute(resultQuery, tuple(paramList))
@@ -440,13 +431,14 @@ def resultDisplay():
         # Else if the action is "retrieveAnswers", fetch the correct question, answer, and user response info based on provided attempt_id and user_id
         elif action == 'retrieveAnswers':
             try:
-                paramList = [attemptId, userId]
+                #paramList = [attemptId, userId]
+                paramList = [scoreId]
                 # This simple query will select all question and answer info only for the questions the user answered on their current attempt.
                 # The DISTINCT keyword is used so that duplicate records are not obtained.
                 answersQuery = "SELECT DISTINCT Q.question_id, Q.question_text, Q.question_body, Q.question_level, A.answer_id, A.answer_text, " \
                 "A.correct_answer, U.user_answer_text, U.user_was_correct, U.response_order FROM questions Q, answers A, user_answers U, scores S " \
-                "WHERE Q.question_id = A.question_id AND A.question_id = U.question_id AND U.score_id = S.score_id AND U.attempt_id = %s AND " \
-                "S.user_id = %s ORDER BY U.response_order"
+                "WHERE Q.question_id = A.question_id AND A.question_id = U.question_id AND U.score_id = S.score_id AND " \
+                "S.score_id = %s ORDER BY U.response_order"
 
                 cursor.execute(answersQuery, paramList)
                 answerData = cursor.fetchall()

@@ -5,6 +5,7 @@ def checkEmail(cursor, mysql, email, name, finalTime):
     cursor.execute(userQuery, email)
     emailExists = cursor.fetchone()
     if emailExists == None:
+        print("THIS IS A NEW USER, INSERT THEM INTO THE DATABASE!")
         # Set the paramList needed to insert a new user
         paramList = [email, name, finalTime]
         newUserQuery = "INSERT INTO users(email, fullname, created_at) VALUES (%s, %s, %s)"
@@ -14,10 +15,10 @@ def checkEmail(cursor, mysql, email, name, finalTime):
         # This is the version used with flask_mysql, but the wheel fails to build so I used the flaskext.mysql version above
         # mysql.connection.commit()
         # Commit the change so that it appears in the database
-        print("COMMITED!")
         #commitChange = mysql.get_db()
         #commitChange.commit()
         mysql.commit()
+        print("COMMITED!")
         # Set userId to the last row that was inserted after committing
         userId = cursor.lastrowid
     # If emailExists did not return None, then use this instead
@@ -25,7 +26,7 @@ def checkEmail(cursor, mysql, email, name, finalTime):
         userId = emailExists['id']
     return userId
 
-
+# A function for creating a new score record so that the test results can be stored once the user finishes the test.
 def createScoreRecord(cursor, mysql, initialScoreId, userId, finalTime):
     print("ENTER THE IF STATEMENT")
     if initialScoreId == 0:
@@ -37,10 +38,10 @@ def createScoreRecord(cursor, mysql, initialScoreId, userId, finalTime):
         # This is the version used with flask_mysql, but the wheel fails to build so I used the flaskext.mysql version above
         # mysql.connection.commit()
         # Commit the change so that it appears in the database
-        print("COMMITED!")
         #commitChange = mysql.get_db()
         #commitChange.commit()
         mysql.commit()
+        print("COMMITED!")
         # This will be used when inserting values into the user_answer table. It takes the id value inserted for the auto_incremented
         # score_id column and returns it
         scoreId = cursor.lastrowid
@@ -57,14 +58,17 @@ def getAttemptNum(cursor, attemptNum, userId):
     print(attemptNum)
     if attemptNum == 0:
         #Execute the query to find the current attempt number using score_id
-        attemptQuery = "SELECT DISTINCT U.attempt_id FROM user_answers U, scores S WHERE S.user_id = %s AND S.score_id = U.score_id"
+        # attemptQuery = "SELECT DISTINCT U.attempt_id FROM user_answers U, scores S WHERE S.user_id = %s AND S.score_id = U.score_id "
+        attemptQuery = "SELECT MAX(U.attempt_id) FROM user_answers U, scores S WHERE S.user_id = %s AND S.score_id = U.score_id"
         cursor.execute(attemptQuery, userId)
-        attemptCheck = cursor.fetchall()
-        print("HERE ARE THE RESULTS OF ATTEMPTCHECK:")
+        attemptCheck = cursor.fetchone()
+        print("HERE ARE THE RESULTS OF THE MAXIMUM VALUE FROM ATTEMPTCHECK:")
         print(attemptCheck)
         # Check the last attempt_id value that was used, and set attemptNum to that number + 1. Else set it to 1.
         if attemptCheck:
-            lastId = attemptCheck[len(attemptCheck) - 1]['attempt_id']
+            #lastId = attemptCheck[len(attemptCheck) - 1]['attempt_id']
+            lastId = attemptCheck[0]['attempt_id']
+            #attemptNum = lastId + 1
             attemptNum = lastId + 1
         else:
             attemptNum = 1
