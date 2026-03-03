@@ -234,7 +234,7 @@ export default function TestTake({currentTestInfo, setCurrentTestInfo, initialQu
         console.log("ABOUT TO PUSH THROUGH ROUTE WITH THIS ATTEMPT NUMBER AND THIS RECORD NUMBER!")
         console.log(currentAttempt)
         console.log(currentRecord)
-        router.push(`/results?${urlParams.toString()}`);
+        router.push(`/resultsPage?${urlParams.toString()}`);
       }
       // If there is an error, set the error useState and log to console.
       else {
