@@ -2,7 +2,7 @@
 
 import * as resultsUtils from "./displayActions";
 import { useSearchParams } from "next/navigation";
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect } from "react";
 import QuestionDisplay from "../QuestionDisplay";
 import ResultDisplay from "../ResultInfo";
 
@@ -43,12 +43,6 @@ export default function ResultsDisplay() {
     test_date: Date;
   }
 
-  //Although not needed, here is a sample of a constant being defined to map results from one table to another
-  /*const mapNewTestForm = (question: any): testForm => {
-    questionId: question.new_question_id
-  }
-  */
-
   // This useState is used to store the questions received from the database
   const [questions, setQuestions] = useState<testQuestion[]>([]);
 
@@ -83,11 +77,6 @@ export default function ResultsDisplay() {
   const [error, setError] = useState<string | undefined>('');
 
   //Fetch the user's graded responses from the test page
-
-  // Use useEffect to fetch the test data when the component mounts.
-  async function fetchResults() {
-    
-  }
   console.log("ABOUT TO ENTER THE USEFFECT IN THE RESULTS!")
   useEffect(() => {
     if (attemptParam !== null && resultParam !== null && resultsFormat.attemptId !== attemptNum && resultsFormat.resultId !== resultNum) {
@@ -113,7 +102,6 @@ export default function ResultsDisplay() {
             console.log(fetchedAnswerFormat)
             setQuestions(fetchedAnswerFormat);
             console.log("Question and answer data fetched and set in useEffect.")
-            console.log(questions)
           }
           else {
             console.log("An error occured fetching the question and answer data in useEffect.")
@@ -139,7 +127,6 @@ export default function ResultsDisplay() {
   console.log(questions)
   console.log("QUESTIONS.LENGTH")
   console.log(questions.length)
-  //console.log(gradedResults)
   
 
   //HTML return for the test form page

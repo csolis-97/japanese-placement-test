@@ -1,5 +1,4 @@
 "use client"
-import Image from "next/image";
 import Link from "next/link";
 
 //This variable will apply the styling for the button
@@ -16,7 +15,7 @@ export default function Home() {
             responses. The test is divided into four different stages, and the difficulty will adjust depending on your results from the previous stage. Once all of
             the questions are answered, you will receive the results alongside your recommended placement.
           </p>
-          <Link href = "/testFormPage">
+          <Link href = "/testform">
               <button className = {buttonStyle} type = "button">Start</button>
           </Link>
         </div>

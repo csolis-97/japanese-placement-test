@@ -1,4 +1,5 @@
 "use client";
+
 import Link from "next/link";
 
 //Define the props used for displaying results
@@ -21,7 +22,7 @@ export default function resultDisplay(props: resultDisplayProps) {
             <p className = "text-gray-600">Test Date: {props.testDate.toString()}</p>
             <p className = "text-gray-600">Total Score: {Math.round(props.totalScore)} / {props.totalQuestions}</p>
             <p className = "text-gray-600">Your Suggested Entrance Level: {props.entranceLevel}</p>
-            <Link href = "/testFormPage">
+            <Link href = "/testform">
                 <button className = {buttonStyle} type = "button">Click here to retake the test.</button>
             </Link>
         </div>

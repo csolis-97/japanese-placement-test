@@ -1,7 +1,5 @@
 "use server";
 
-import { request } from "http";
-
 const getURL = () => {
     if (process.env.VERCEL_URL) {
         return `https://${process.env.VERCEL_URL}`;

@@ -39,9 +39,9 @@ export default function TestStart({initialTestInfo, setInitialTestInfo, currentD
     event.preventDefault();
     console.log("BEFORE PROCEEDING WITH THE TEST");
     const getRecord = async () => {
-    const fetchedInfo = await infoUtils.createRecord('createRecord', initialTestInfo);
-    // If the current result's ID in the database was successfully retrieved, set the value to resultId. Otherwise log an error.
-    if (fetchedInfo) {
+      const fetchedInfo = await infoUtils.createRecord('createRecord', initialTestInfo);
+      // If the current result's ID in the database was successfully retrieved, set the value to resultId. Otherwise log an error.
+      if (fetchedInfo) {
         console.log("HERE IS THE ID OF THE RESULTS AND ATTEMPT ID THAT WILL BE STORED WHEN SUBMITTED");
         console.log(fetchedInfo);
 
@@ -52,19 +52,13 @@ export default function TestStart({initialTestInfo, setInitialTestInfo, currentD
         ['userAttempt']: fetchedInfo[1]
         }))
         console.log("Current resultId and userAttempt fetched and set.");
+      }
+      else {
+          console.log("Error creating the record.")
+      }
     }
-    else {
-        console.log("Error creating the record.")
-    }
-  }
-  // Call the function to fetch the resultId to be used
-  getRecord();
-  // Here, the test data will be fetched from the database
-  // If the data is successfully retrieved, log the data, assign it to questionsData, then set the testFormat useState
-      // use a useEffect to fetch the ID to be used for the scores alongside the attempt number for the user when 
-  // the component mounts
-
-  //if (initialTestInfo.resultId !== 0 || initialTestInfo.userAttempt !== 0) {
+    // Call the function to fetch the resultId to be used
+    getRecord();
     console.log("RECORD WAS CREATED!")
     console.log("PLEASE CHECK HERE FOR FINALIZED USER INFO BEFORE STARTING")
     console.log(initialTestInfo)
@@ -74,35 +68,24 @@ export default function TestStart({initialTestInfo, setInitialTestInfo, currentD
       const currentAttempt = initialTestInfo.userAttempt
       console.log("ABOUT TO ENTER THE TEST WITH THIS ATTEMPT NUMBER!")
       console.log(currentAttempt)
-      //
     }
-    // If there is an error, set the error useState and log to console.
+    // If there is an error, log to console.
     else {
-      //setError(answerArray);
       console.log("An error occured while attempting to start the test.");
     }
   }
 
-    //Here the change in the user's input is tracked and handled.
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      // This line refers to the name and value fields of an HTML input tag, and uses object destructuring to assign them values from
-      // event.target, which itself refers to the HTML element that triggered the event in the first place.
-      const {name, value} = event.target;
-      /* the set UseState function is called with an updater function that uses prevData as its argument. An updater function is used
-      in order to update the data of an object and then set the new object as the state of testFormat. For this reason, prevData ensures 
-      that it  receives the most updated information and that if there are other fields that won't be updated within the function, the 
-      information is passed on and not lost.
-        /*...prevData is a copy of the current useState and its values. The next line replaces the current value with the value
-        that was assigned from event.target based on the name that was also assigned. Since the name field is assigned dynamically,
-        if you wanted to replace more than one field, you would have to hardcode the keys, but you can still dynamically assign new
-        values. If there are other fields that you do not wish to replace, however, remember to use ...prevData to carry them over*/
-
-      //Set the test info based off of the previous data, if there are any changes.
-      setInitialTestInfo((prevData) => ({
-          ...prevData,
-          [name] : value
-      }))
-    }
+  //Here the change in the user's input is tracked and handled.
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    // This line refers to the name and value fields of an HTML input tag, and uses object destructuring to assign them values from
+    // event.target, which itself refers to the HTML element that triggered the event in the first place.
+    const {name, value} = event.target;
+    //Set the test info based off of the previous data, if there are any changes.
+    setInitialTestInfo((prevData) => ({
+        ...prevData,
+        [name] : value
+    }))
+  }
     
   //HTML return for the test start
   return (
@@ -113,13 +96,6 @@ export default function TestStart({initialTestInfo, setInitialTestInfo, currentD
             <input type = "text" name = "name" id = "namefield" placeholder = "Enter your full name." className = "mt-2 shadow-md border-2 border-gray-300 rounded-sm p-1" onChange = {handleChange} required/>
             <label htmlFor = "emailfield" className = "mt-2">Email</label>
             <input type = "text" name = "email" id = "emailfield" placeholder = "Enter your email address." className = "mt-2 shadow-md border-2 border-gray-300 rounded-sm p-1" onChange = {handleChange} required/>
-        {
-            /* Below I used shorthand for an if-else statement in Typescript. It first has the condition, then it uses "?" to check if
-            it is true or not. If it is true, run the code in the first set of paranthesis. If not, it will go to the ":" and run
-            the code in the second set of paranthesis. Additional conditions require another condition followed by "?" and "()".
-            For the Submit and Next buttons below, the CSS styling is determined by the result of the if statement.
-            */
-        }
         </form>
         <div className = "text-xs text-gray-500 p-2 bg-gray-100 rounded-lg text-center justify-center">
           <p className = "font-semibold">Important! For record-keeping purposes, please ensure that your name and email address are correct!</p>

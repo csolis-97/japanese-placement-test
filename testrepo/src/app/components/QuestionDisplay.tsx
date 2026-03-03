@@ -1,6 +1,5 @@
 "use client";
 
-//Define the props for the questions being displayed
 interface questionDisplayProps {
     questionId: number;
     questionText: string;
@@ -15,26 +14,18 @@ interface questionDisplayProps {
     /* Since I've never used this syntax before, I'll explain it right now. onChangeValue is the name of the function,
     event: React.ChangeEvent<HTMLInputElement> is the argument, the arrow is part of the arrow function declaration,
     and void is the return type. Since this function will only be used to set the answer selected by the user in the form,
-    it does not need to return anything, hence void. I'm curious on the syntax of React.ChangeEvent itself, but I'll leave
-    that for later.
+    it does not need to return anything, hence void.
     */
 
     onChangeValue?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
-
-//These variables will be used for checking when to use the styles defined below
 
 // These strings will be used for determining the className styling for the radio buttons
 const regularRadio = "ml-2 text-gray-600"
 const correctRadio = "ml-2 text-green-600"
 const wrongRadio = "ml-2 text-red-600"
 
-/* Below, I learned a new syntax for string interpolation in React components using Typescript. While variables are inserted alone by enclosing
-them within {}, when combining them with strings, use backticks `` and preface each variable with a $ before enclosing them with {}. This
-works similar to how f is used for string literals in Python, the backticks I mean. */
 export default function questionDisplay(props: questionDisplayProps) {
-    //console.log("MESSAGE FROM QUESTIONDISPLAY!");
-    //console.log(props);
     console.log("ALREADY ANSWERED?");
     console.log(props.alreadyAnswered);
     console.log("LOG THE CORRECT ANSWERS IF ANY!!")
