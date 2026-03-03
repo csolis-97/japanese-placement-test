@@ -30,11 +30,21 @@ try:
     # Load the environment variables from the .env file, which will then be used to configure the database connection
     load_dotenv()
 
-    # app.secret_key = os.getenv('SESSION_SECRET')
-
     # Get the path for the CA certificate so that SSL can be used to connect to the database.
     # caPath = os.path.join(os.getcwd(), "ca.pem")
     caPath = os.path.join(os.path.dirname(__file__), "ca.pem")
+
+
+    # app.secret_key = os.getenv('SESSION_SECRET')
+
+        # 1. Define the SSL dictionary
+    ssl_args = {
+        'ca': caPath
+    }
+
+    # 2. Add verification if enabled in your .env
+    if os.getenv('TIDB_SSL_VERIFY_IDENTITY') == 'true':
+        ssl_args['check_hostname'] = True
 
     # The syntax when using flaskext.mysql is slightly different
     app.config['MYSQL_DATABASE_HOST'] = os.getenv('TIDB_HOST')
@@ -42,6 +52,10 @@ try:
     app.config['MYSQL_DATABASE_USER'] = os.getenv('TIDB_USER')
     app.config['MYSQL_DATABASE_PASSWORD'] = os.getenv('TIDB_PASSWORD')
     app.config['MYSQL_DATABASE_DB'] = os.getenv('TIDB_DATABASE')
+
+    # IMPORTANT: This must be a dictionary, not individual CA/Verify strings
+    app.config['MYSQL_DATABASE_SSL'] = ssl_args
+
     app.config['MYSQL_DATABASE_SSL_CA'] = caPath
     app.config['MYSQL_DATABASE_SSL_VERIFY_CERT'] = os.getenv('TIDB_SSL_VERIFY_CERT')
     app.config['MYSQL_DATABASE_SSL_VERIFY_IDENTITY'] = os.getenv('TIDB_SSL_VERIFY_IDENTITY')
