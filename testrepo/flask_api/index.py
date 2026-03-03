@@ -64,6 +64,16 @@ app.config['MYSQL_DB'] = os.getenv('DB_NAME')
 mysql = MySQL(app)
 bcrypt = Bcrypt(app)
 
+########## DEBUG
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def catch_all(path):
+    return jsonify({
+        "message": "Backend is reachable!",
+        "requested_path": path,
+        "full_url": request.url
+    })
+
 ####//// Route for the home ////####
 @app.route('/flask_api/', methods=['GET', 'POST'])
 def home():
