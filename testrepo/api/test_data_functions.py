@@ -15,8 +15,9 @@ def checkEmail(cursor, mysql, email, name, finalTime):
         # mysql.connection.commit()
         # Commit the change so that it appears in the database
         print("COMMITED!")
-        commitChange = mysql.get_db()
-        commitChange.commit()
+        #commitChange = mysql.get_db()
+        #commitChange.commit()
+        mysql.commit()
         # Set userId to the last row that was inserted after committing
         userId = cursor.lastrowid
     # If emailExists did not return None, then use this instead
@@ -37,8 +38,9 @@ def createScoreRecord(cursor, mysql, initialScoreId, userId, finalTime):
         # mysql.connection.commit()
         # Commit the change so that it appears in the database
         print("COMMITED!")
-        commitChange = mysql.get_db()
-        commitChange.commit()
+        #commitChange = mysql.get_db()
+        #commitChange.commit()
+        mysql.commit()
         # This will be used when inserting values into the user_answer table. It takes the id value inserted for the auto_incremented
         # score_id column and returns it
         scoreId = cursor.lastrowid
