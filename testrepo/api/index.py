@@ -10,59 +10,63 @@ import MySQLdb.cursors
 import os
 import datetime
 
-# Import all the functions defined elsewhere in the backend
-from .test_data_functions import *
-from .question_retrieval_fuctions import *
-from .answer_storage_functions import *
-from .test_submission_functions import *
+try:
+    # Import all the functions defined elsewhere in the backend
+    from .test_data_functions import *
+    from .question_retrieval_fuctions import *
+    from .answer_storage_functions import *
+    from .test_submission_functions import *
 
 
-app = Flask(__name__)
+    app = Flask(__name__)
 
-if os.getenv('VERCEL_URL'):
-    frontURL = os.getenv('VERCEL_URL')
-else:
-    frontURL = os.getenv('FRONTEND_URL')
+    if os.getenv('VERCEL_URL'):
+        frontURL = os.getenv('VERCEL_URL')
+    else:
+        frontURL = os.getenv('FRONTEND_URL')
 
-# Enables CORS for the app so that it can accept requests from the frontend running on localhost:3000
-CORS(app, resources={r"/*" : {"origins" : frontURL}})
+    # Enables CORS for the app so that it can accept requests from the frontend running on localhost:3000
+    CORS(app, resources={r"/*" : {"origins" : frontURL}})
 
-# Load the environment variables from the .env file, which will then be used to configure the database connection
-load_dotenv()
+    # Load the environment variables from the .env file, which will then be used to configure the database connection
+    load_dotenv()
 
-# app.secret_key = os.getenv('SESSION_SECRET')
+    # app.secret_key = os.getenv('SESSION_SECRET')
 
-# Get the path for the CA certificate so that SSL can be used to connect to the database.
-# caPath = os.path.join(os.getcwd(), "ca.pem")
-caPath = os.path.join(os.path.dirname(__file__), "ca.pem")
+    # Get the path for the CA certificate so that SSL can be used to connect to the database.
+    # caPath = os.path.join(os.getcwd(), "ca.pem")
+    caPath = os.path.join(os.path.dirname(__file__), "ca.pem")
 
-# The syntax when using flaskext.mysql is slightly different
-app.config['MYSQL_DATABASE_HOST'] = os.getenv('TIDB_HOST')
-app.config['MYSQL_DATABASE_PORT'] = int(os.getenv('TIDB_PORT'))
-app.config['MYSQL_DATABASE_USER'] = os.getenv('TIDB_USER')
-app.config['MYSQL_DATABASE_PASSWORD'] = os.getenv('TIDB_PASSWORD')
-app.config['MYSQL_DATABASE_DB'] = os.getenv('TIDB_DATABASE')
-app.config['MYSQL_DATABASE_SSL_CA'] = caPath
-app.config['MYSQL_DATABASE_SSL_VERIFY_CERT'] = os.getenv('TIDB_SSL_VERIFY_CERT')
-app.config['MYSQL_DATABASE_SSL_VERIFY_IDENTITY'] = os.getenv('TIDB_SSL_VERIFY_IDENTITY')
+    # The syntax when using flaskext.mysql is slightly different
+    app.config['MYSQL_DATABASE_HOST'] = os.getenv('TIDB_HOST')
+    app.config['MYSQL_DATABASE_PORT'] = int(os.getenv('TIDB_PORT'))
+    app.config['MYSQL_DATABASE_USER'] = os.getenv('TIDB_USER')
+    app.config['MYSQL_DATABASE_PASSWORD'] = os.getenv('TIDB_PASSWORD')
+    app.config['MYSQL_DATABASE_DB'] = os.getenv('TIDB_DATABASE')
+    app.config['MYSQL_DATABASE_SSL_CA'] = caPath
+    app.config['MYSQL_DATABASE_SSL_VERIFY_CERT'] = os.getenv('TIDB_SSL_VERIFY_CERT')
+    app.config['MYSQL_DATABASE_SSL_VERIFY_IDENTITY'] = os.getenv('TIDB_SSL_VERIFY_IDENTITY')
 
-# Use the below locally with mySQL workbench
+    # Use the below locally with mySQL workbench
 
-#app.config['MYSQL_DATABASE_HOST'] = os.getenv('DB_HOST')
-#app.config['MYSQL_DATABASE_USER'] = os.getenv('DB_USER')
-#app.config['MYSQL_DATABASE_PASSWORD'] = os.getenv('DB_PASSWORD')
-#app.config['MYSQL_DATABASE_DB'] = os.getenv('DB_NAME')
+    #app.config['MYSQL_DATABASE_HOST'] = os.getenv('DB_HOST')
+    #app.config['MYSQL_DATABASE_USER'] = os.getenv('DB_USER')
+    #app.config['MYSQL_DATABASE_PASSWORD'] = os.getenv('DB_PASSWORD')
+    #app.config['MYSQL_DATABASE_DB'] = os.getenv('DB_NAME')
 
-"""Use this if importing from flask_mysql
-app.config['MYSQL_HOST'] = os.getenv('DB_HOST')
-app.config['MYSQL_USER'] = os.getenv('DB_USER')
-app.config['MYSQL_PASSWORD'] = os.getenv('DB_PASSWORD')
-app.config['MYSQL_DB'] = os.getenv('DB_NAME')
-"""
+    """Use this if importing from flask_mysql
+    app.config['MYSQL_HOST'] = os.getenv('DB_HOST')
+    app.config['MYSQL_USER'] = os.getenv('DB_USER')
+    app.config['MYSQL_PASSWORD'] = os.getenv('DB_PASSWORD')
+    app.config['MYSQL_DB'] = os.getenv('DB_NAME')
+    """
 
-# Initialize MySQL for database access and Bcrypt for password hashing
-mysql = MySQL(app)
-bcrypt = Bcrypt(app)
+    # Initialize MySQL for database access and Bcrypt for password hashing
+    mysql = MySQL(app)
+    bcrypt = Bcrypt(app)
+except:
+    setupError = "CRASHED WHILE SETTING UP THE BACKEND!"
+    print(setupError)
 
 ########## DEBUG
 @app.route('/', defaults={'path': ''})
