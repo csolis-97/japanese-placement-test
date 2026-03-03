@@ -71,8 +71,8 @@ def home():
 ####//// Route for the test form ////####
 @app.route('/api/testform', methods=['GET', 'POST'])
 def testForm():
-    # data = request.json
-    data = request.get_json(force=True, silent=True)
+    data = request.json
+    # data = request.get_json(force=True, silent=True)
     if not data:
         return jsonify({"Backend error" : "No data provided for the testform route!"}), 400
     mysql = getDB()
@@ -286,9 +286,6 @@ def testForm():
                 # and the percentage correct for each stage will be returned to the two variables.
                 totalScore, levelPercent = calculateScore(levelList, questionTrack, isCorrect)
 
-                # Using the percentage correct for each stage alongside the level of difficulty for each stage, decide placement
-                ###entranceLevel = decidePlacement(levelPercent, stageArray)
-
                 # Set entranceLevel to the last difficulty value in stageArray
                 print(f"THE USER WENT THROUGH THE FOLLOWING STAGES: {stageArray}")
                 entranceLevel = stageArray[len(stageArray) - 1]
@@ -311,11 +308,6 @@ def testForm():
                 scoreQuery = "UPDATE scores SET total_score = %s, entrance_level = %s, test_status = 'COMPLETED', test_date = %s WHERE user_id = %s AND score_id = %s"
 
                 cursor.execute(scoreQuery, tuple(paramList))
-                # This is the version used with flask_mysql, but the wheel fails to build so I used the flaskext.mysql version above
-                # mysql.connection.commit()
-                # Commit the change so that it appears in the database
-                #commitChange = mysql.get_db()
-                #commitChange.commit()
                 mysql.commit()
                 print("SUCCESSFULLY STORED THE SCORES!")
                 # Finally, close the cursor
@@ -337,8 +329,8 @@ def testForm():
 @app.route('/api/results', methods=['GET', 'POST'])
 def resultDisplay():
     # Get the data from the request and make the MySQL cursor and declare variables that will be used across all actions
-    #data = request.json
-    data = request.get_json(force=True, silent=True)
+    data = request.json
+    # data = request.get_json(force=True, silent=True)
     if not data:
         return jsonify({"Backend error" : "No data provided for the results route!"}), 400
     
@@ -437,5 +429,5 @@ def resultDisplay():
 
 # Once the app is running, it will use the port 5000 and communicate to the localhost. It will also be in debug mode
 # After the app is out of development, not needed in production
-# if __name__ == '__main__':
-    # app.run(debug=True, host="localhost", port=int("5000"))
+if __name__ == '__main__':
+    app.run(debug=True, host="localhost", port=int("5000"))
