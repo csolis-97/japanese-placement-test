@@ -131,41 +131,39 @@ export default function ResultsDisplay() {
 
   //HTML return for the test form page
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#d1190d] font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <div className="flex flex-col items-center gap-6 p-12 text-center sm:items-start sm:text-left">
+    <>
+      <div className="flex flex-col items-center gap-6 p-12 text-center sm:items-start sm:text-left">
+        {
+          questions && questions.length > 0 && results && (
+            <ResultDisplay
+            attemptId = {attemptNum}
+            totalScore = { // The total_score stored is actually the percentage of overall correct questions, so calculate the correct number here
+              (results.total_score / 100) * questions.length}
+            entranceLevel = {results.entrance_level}
+            testDate = {results.test_date}
+            totalQuestions = {questions.length}
+          />)
+        }
+        </div>
+        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
           {
-            questions && questions.length > 0 && results && (
-              <ResultDisplay
-              attemptId = {attemptNum}
-              totalScore = { // The total_score stored is actually the percentage of overall correct questions, so calculate the correct number here
-                (results.total_score / 100) * questions.length}
-              entranceLevel = {results.entrance_level}
-              testDate = {results.test_date}
-              totalQuestions = {questions.length}
-            />)
+            questions.map((question) =>
+              <QuestionDisplay
+              key = {question.response_order}
+              questionId = {question.response_order}
+              questionText = {question.question_text}
+              questionBody = {question.question_body}
+              questionCategory = {question.question_level}
+              answerId = {question.answer_id}
+              answerText = {question.answer_text}
+              correctAnswer = {question.correct_answer}
+              wasCorrect = {question.user_was_correct}
+              //selectedAnswer is used to track which radio option the user has chosen
+              selectedAnswer = {question.user_answer_text}
+              alreadyAnswered = {true}
+              />)
           }
-          </div>
-          <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-            {
-              questions.map((question) =>
-                <QuestionDisplay
-                key = {question.response_order}
-                questionId = {question.response_order}
-                questionText = {question.question_text}
-                questionBody = {question.question_body}
-                questionCategory = {question.question_level}
-                answerId = {question.answer_id}
-                answerText = {question.answer_text}
-                correctAnswer = {question.correct_answer}
-                wasCorrect = {question.user_was_correct}
-                //selectedAnswer is used to track which radio option the user has chosen
-                selectedAnswer = {question.user_answer_text}
-                alreadyAnswered = {true}
-                />)
-            }
-         </div>
-      </main>
-    </div>
+      </div>
+    </>
   );
 }
