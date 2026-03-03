@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request, session, redirect, url_for, render_template, make_response
-#from flask_mysql import MySQL
-from flaskext.mysql import MySQL
+# from flask_mysql import MySQL
+# from flaskext.mysql import MySQL
 from dotenv import load_dotenv
 from flask_bcrypt import Bcrypt
 from flask_cors import CORS
@@ -99,6 +99,8 @@ def home():
 def testForm():
     # data = request.json
     data = request.get_json(force=True, silent=True)
+    if not data:
+        return jsonify({"Backend error" : "No data provided for the testform route!"}), 400
     # cursor = mysql.get_db().cursor(pymysql.cursors.DictCursor)
     mysql = getDB()
     
@@ -369,6 +371,8 @@ def resultDisplay():
     # Get the data from the request and make the MySQL cursor and declare variables that will be used across all actions
     #data = request.json
     data = request.get_json(force=True, silent=True)
+    if not data:
+        return jsonify({"Backend error" : "No data provided for the results route!"}), 400
     #cursor = mysql.get_db().cursor(pymysql.cursors.DictCursor)
     mysql = getDB()
     action = data['action']
