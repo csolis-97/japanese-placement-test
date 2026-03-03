@@ -65,7 +65,7 @@ def getAttemptNum(cursor, attemptNum, userId):
         print("HERE ARE THE RESULTS OF THE MAXIMUM VALUE FROM ATTEMPTCHECK:")
         print(attemptCheck)
         # Check the last attempt_id value that was used, and set attemptNum to that number + 1. Else set it to 1.
-        if attemptCheck:
+        if attemptCheck['max_attempt'] != None:
             #lastId = attemptCheck[len(attemptCheck) - 1]['attempt_id']
             lastId = attemptCheck['max_attempt']
             #attemptNum = lastId + 1
