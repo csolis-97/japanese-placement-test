@@ -78,13 +78,13 @@ def catch_all(path):
     })
 
 ####//// Route for the home ////####
-@app.route('/api', methods=['GET', 'POST'])
+@app.route('/flask_api', methods=['GET', 'POST'])
 def home():
     print("CAN YOU SEE THIS? BACKEND IS RUNNING!")
     return jsonify("Backend is running!")
 
 ####//// Route for the test form ////####
-@app.route('/api/testform', methods=['GET', 'POST'])
+@app.route('/flask_api/testform', methods=['GET', 'POST'])
 def testForm():
     data = request.json
     cursor = mysql.get_db().cursor(MySQLdb.cursors.DictCursor)
@@ -347,7 +347,7 @@ def testForm():
 
 
 ####//// Route for the results ////####
-@app.route('/api/results', methods=['GET', 'POST'])
+@app.route('/flask_api/results', methods=['GET', 'POST'])
 def resultDisplay():
     # Get the data from the request and make the MySQL cursor and declare variables that will be used across all actions
     data = request.json
