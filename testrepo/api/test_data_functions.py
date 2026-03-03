@@ -59,7 +59,7 @@ def getAttemptNum(cursor, attemptNum, userId):
     if attemptNum == 0:
         #Execute the query to find the current attempt number using score_id
         # attemptQuery = "SELECT DISTINCT U.attempt_id FROM user_answers U, scores S WHERE S.user_id = %s AND S.score_id = U.score_id "
-        attemptQuery = "SELECT MAX(U.attempt_id) AS attempt_id FROM user_answers U, scores S WHERE S.user_id = %s AND S.score_id = U.score_id"
+        attemptQuery = "SELECT MAX(U.attempt_id) AS max_attempt FROM user_answers U, scores S WHERE S.user_id = %s AND S.score_id = U.score_id"
         cursor.execute(attemptQuery, userId)
         attemptCheck = cursor.fetchone()
         print("HERE ARE THE RESULTS OF THE MAXIMUM VALUE FROM ATTEMPTCHECK:")
@@ -67,7 +67,7 @@ def getAttemptNum(cursor, attemptNum, userId):
         # Check the last attempt_id value that was used, and set attemptNum to that number + 1. Else set it to 1.
         if attemptCheck:
             #lastId = attemptCheck[len(attemptCheck) - 1]['attempt_id']
-            lastId = attemptCheck[0]['attempt_id']
+            lastId = attemptCheck['max_attempt']
             #attemptNum = lastId + 1
             attemptNum = lastId + 1
         else:
