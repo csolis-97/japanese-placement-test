@@ -33,15 +33,15 @@ try:
     caPath = os.path.join(os.path.dirname(__file__), "ca.pem")
 
     # The syntax when using flaskext.mysql is slightly different
-    app.config['MYSQL_DATABASE_HOST'] = os.getenv('TIDB_HOST')
-    app.config['MYSQL_DATABASE_PORT'] = int(os.getenv('TIDB_PORT'))
-    app.config['MYSQL_DATABASE_USER'] = os.getenv('TIDB_USER')
-    app.config['MYSQL_DATABASE_PASSWORD'] = os.getenv('TIDB_PASSWORD')
-    app.config['MYSQL_DATABASE_DB'] = os.getenv('TIDB_DATABASE')
+    #app.config['MYSQL_DATABASE_HOST'] = os.getenv('TIDB_HOST')
+    #app.config['MYSQL_DATABASE_PORT'] = int(os.getenv('TIDB_PORT'))
+    #app.config['MYSQL_DATABASE_USER'] = os.getenv('TIDB_USER')
+    #app.config['MYSQL_DATABASE_PASSWORD'] = os.getenv('TIDB_PASSWORD')
+    #app.config['MYSQL_DATABASE_DB'] = os.getenv('TIDB_DATABASE')
 
-    app.config['MYSQL_DATABASE_SSL_CA'] = caPath
-    app.config['MYSQL_DATABASE_SSL_VERIFY_CERT'] = os.getenv('TIDB_SSL_VERIFY_CERT')
-    app.config['MYSQL_DATABASE_SSL_VERIFY_IDENTITY'] = os.getenv('TIDB_SSL_VERIFY_IDENTITY')
+    #app.config['MYSQL_DATABASE_SSL_CA'] = caPath
+    #app.config['MYSQL_DATABASE_SSL_VERIFY_CERT'] = os.getenv('TIDB_SSL_VERIFY_CERT')
+    #app.config['MYSQL_DATABASE_SSL_VERIFY_IDENTITY'] = os.getenv('TIDB_SSL_VERIFY_IDENTITY')
 
     def getDB():
         print("ABOUT TO RETURN THE DATABASE CONNECTION!")
@@ -64,15 +64,7 @@ try:
     #app.config['MYSQL_DATABASE_PASSWORD'] = os.getenv('DB_PASSWORD')
     #app.config['MYSQL_DATABASE_DB'] = os.getenv('DB_NAME')
 
-    """Use this if importing from flask_mysql
-    app.config['MYSQL_HOST'] = os.getenv('DB_HOST')
-    app.config['MYSQL_USER'] = os.getenv('DB_USER')
-    app.config['MYSQL_PASSWORD'] = os.getenv('DB_PASSWORD')
-    app.config['MYSQL_DB'] = os.getenv('DB_NAME')
-    """
-
-    # Initialize MySQL for database access and Bcrypt for password hashing
-    # mysql = MySQL(app)
+    # Initialize Bcrypt for password hashing
     bcrypt = Bcrypt(app)
 except:
     setupError = "CRASHED WHILE SETTING UP THE BACKEND!"
@@ -91,11 +83,8 @@ def testForm():
     data = request.get_json(force=True, silent=True)
     if not data:
         return jsonify({"Backend error" : "No data provided for the testform route!"}), 400
-    # cursor = mysql.get_db().cursor(pymysql.cursors.DictCursor)
     mysql = getDB()
-    
-    # This is the version used with flask_mysql, but the wheel fails to build so I used the flaskext.mysql version above
-    # cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
     # Test print to see data
     print("HERE IS WHAT IS IN THE DATA!")
     print(data)
@@ -244,16 +233,10 @@ def testForm():
                     valueQuery = buildValueQuery(answerData)
                     # Then assign paramList to the array that was built in the function
                     paramList = buildAnswerData(answerData, scoreId, attemptNum, questionId, isCorrect, questionTrack, currentStage)
-
                     # Build the query using valueQuery, with paramList as its values
                     storeQuery = f"INSERT INTO user_answers(score_id, attempt_id, question_id, response_order, stage_answered, user_answer_text, user_was_correct) VALUES {" ".join(valueQuery)}"
 
                     cursor.execute(storeQuery, tuple(paramList))
-                    # This is the version used with flask_mysql, but the wheel fails to build so I used the flaskext.mysql version above
-                    # mysql.connection.commit()
-                    # Commit the change so that it appears in the database
-                    #commitChange = mysql.get_db()
-                    #commitChange.commit()
                     mysql.commit()
                     print("SUCCESSFULLY STORED THE ANSWERS!")
                 else:
@@ -365,7 +348,6 @@ def resultDisplay():
     data = request.get_json(force=True, silent=True)
     if not data:
         return jsonify({"Backend error" : "No data provided for the results route!"}), 400
-    #cursor = mysql.get_db().cursor(pymysql.cursors.DictCursor)
     mysql = getDB()
     action = data['action']
 
@@ -376,21 +358,9 @@ def resultDisplay():
     print(attemptId)
 
     with mysql.cursor() as cursor:
-
-        # Next, get the correct user_id based on the result id and the attempt id
-        #paramList = [scoreId, attemptId]
-        #getUserQuery = "SELECT U.id, U.email, U.fullname FROM users U, user_answers UA, scores S WHERE U.id = S.user_id AND S.score_id = UA.score_id " \
-        #"AND UA.score_id = %s AND UA.attempt_id = %s"
-        #cursor.execute(getUserQuery, tuple(paramList))
-        # Do something with this later
-        #userInfo = cursor.fetchone()
-        #print(f"USER INFO THAT WAS RETRIEVED! {userInfo}")
-        #userId = userInfo['id']
-
         # If the action is "retrieveResults", fetch the correct result record from the database based on the current user's user_id and attempt_id.
         if action == 'retrieveResults':
             try: 
-                #paramList = [userId, attemptId]
                 paramList = [scoreId]
                 resultQuery = "SELECT S.total_score, S.entrance_level, S.test_date FROM scores S, user_answers U WHERE " \
                 "S.score_id = U.score_id AND S.score_id = %s"
@@ -405,15 +375,16 @@ def resultDisplay():
                 print("CURRENT RESULT RECORD DATA")
                 print(resultData)
 
-                oldDate = str(resultData['test_date'])
+                #oldDate = str(resultData['test_date'])
                 # DEBUG Check the format of old date
-                print("OLDDATE")
-                print(oldDate)
+                #print("OLDDATE")
+                #print(oldDate)
+
                 # Use isoformat as it is the quickest way to format the date in the proper manner, add Z for UTC timezone
                 finalDate = f"{resultData['test_date'].isoformat()}Z"
                 # DEBUG Check the updated date
-                print("FINALDATE")
-                print(finalDate)
+                #print("FINALDATE")
+                #print(finalDate)
                 # Set the new date in the resultData before sending
                 resultData['test_date'] = finalDate
 
@@ -470,7 +441,6 @@ def resultDisplay():
     
 
 # Once the app is running, it will use the port 5000 and communicate to the localhost. It will also be in debug mode
-# After the app is out of development, debug mode should be set to False and the host to the appropriate domain/IP address
+# After the app is out of development, not needed in production
 # if __name__ == '__main__':
-    # Not needed in production
     # app.run(debug=True, host="localhost", port=int("5000"))
