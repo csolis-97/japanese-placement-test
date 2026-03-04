@@ -1,7 +1,16 @@
 "use server";
 
+const getURL = () => {
+    if (process.env.VERCEL_URL) {
+        return `https://${process.env.VERCEL_URL}`;
+    }
+    return `${process.env.FRONTEND_URL}` || "http://localhost:3000";
+}
+
+console.log(`"HERE IS THE URL BEING USED!" ${getURL()}`)
+
 //Define a type for storing the test form data
-type answerData = {
+export type answerData = {
     questionId: number;
     questionText: string;
     questionBody: string;
@@ -15,7 +24,7 @@ type answerData = {
     wasCorrect: boolean;
 }
 
-type resultData = {
+export type resultData = {
     resultId:  number;
     attemptId: number;
     totalScore: number;
@@ -23,7 +32,7 @@ type resultData = {
     testDate: Date;
 }
 
-export async function answerData(action: string, givenFields: answerData) {
+export async function answersData(action: string, givenFields: answerData) {
 
     //Divide the form data into separate variables
     const questionId = givenFields.questionId;
@@ -45,7 +54,7 @@ export async function answerData(action: string, givenFields: answerData) {
     
     try {
         console.log("Attempt to retrieve test data...");
-        const response = await fetch('http://localhost:5000/results', {
+        const response = await fetch(`${getURL()}/api/results`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -84,7 +93,7 @@ export async function resultsData(action: string, givenFields: resultData) {
     
     try {
         console.log("Attempt to retrieve test data...");
-        const response = await fetch('http://localhost:5000/results', {
+        const response = await fetch(`${getURL()}/api/results`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -112,5 +121,3 @@ export async function resultsData(action: string, givenFields: resultData) {
     }
 }
 //Only async functions are allowed to be exported in a "use server" file.
-//I was getting the above error trying to export both of these functions, apparently it works if removed.
-//export default {answerData, results};

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import TestStart from "./testStart/testStart";
 import TestTake from "./testTake/testTake";
-import { infoData } from "@/app/components/testStart/startActions";
+import { infoData } from "./testStart/startActions";
 
 // This component receives a prop, which uses a type of string array, as the initial question data to be used
 export default function TestDisplay({initialQuestions} : {initialQuestions: string[]}) {
@@ -27,18 +27,27 @@ export default function TestDisplay({initialQuestions} : {initialQuestions: stri
     console.log(testInfo)
   }, [])
 
-  return ( 
-    <div className="flex flex-col items-center">
-    {
-        currentDisplay === "start" && (
-        //LOGIC FOR SWITCHING BETWEEN COMPONENTS GOES HERE
-        <TestStart initialTestInfo = {testInfo} setInitialTestInfo = {setTestInfo} currentDisplay = {currentDisplay} setCurrentDisplay = {setCurrentDisplay}/>
-        )
+  if(initialQuestions!) {
+    return (
+      <div className="flex flex-col items-center">
+      {
+          currentDisplay === "start" && (
+          //LOGIC FOR SWITCHING BETWEEN COMPONENTS GOES HERE
+          <TestStart initialTestInfo = {testInfo} setInitialTestInfo = {setTestInfo} currentDisplay = {currentDisplay} setCurrentDisplay = {setCurrentDisplay}/>
+          )
+      }
+      {
+          currentDisplay === "test" && (
+          <TestTake currentTestInfo = {testInfo} setCurrentTestInfo = {setTestInfo} initialQuestions = {initialQuestions}/>
+          )
+      }
+      </div>)
     }
-    {
-        currentDisplay === "test" && (
-        <TestTake currentTestInfo = {testInfo} setCurrentTestInfo = {setTestInfo} initialQuestions = {initialQuestions}/>
-        )
-    }
-    </div>)
+  else {
+    return (
+      <div className="flex flex-col items-center">
+        <p>Failed to retrieve the initial questions!</p>
+      </div>
+    )
+  }
 }

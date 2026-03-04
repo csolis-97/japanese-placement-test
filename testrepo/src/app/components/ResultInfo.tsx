@@ -1,4 +1,5 @@
 "use client";
+
 import Link from "next/link";
 
 //Define the props used for displaying results

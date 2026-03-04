@@ -7,7 +7,6 @@ import QuestionDisplay from "../QuestionDisplay";
 import StageComplete from "../StageComplete";
 import { infoData } from "../testStart/startActions";
 import { stageData } from "./testActions";
-import test from "node:test";
 
 //Type defined below will be used for setting the test questions and answers
 type questionType = {
@@ -210,9 +209,7 @@ export default function TestTake({currentTestInfo, setCurrentTestInfo, initialQu
     // Here, the test data will be fetched from the database
     // If the data is successfully retrieved, log the data, assign it to questionsData, then set the testFormat useState
     if (answerArray) {
-      console.log("TEST WAS SUBMITTED!")
-      console.log("PLEASE CHECK HERE")
-      console.log(answerArray)
+      console.log("TEST WILL BE SUBMITTED!")
       let submitInfo: testUtils.submitData = {
         resultId: currentTestInfo.resultId,
         pastId: questionIdTrack.current,
@@ -220,8 +217,6 @@ export default function TestTake({currentTestInfo, setCurrentTestInfo, initialQu
         isCorrect: gradedAnswers.current,
         stageArray: stageInfo.current.stageDifficulty
       }
-      console.log("HERE IS THE FINALANSWERS");
-      console.log(gradedAnswers)
       if (currentTestInfo.userAttempt !== 0) {
         const fetchedResponse = await testUtils.submitTest('submitTest', submitInfo);
         console.log(fetchedResponse)
@@ -237,10 +232,9 @@ export default function TestTake({currentTestInfo, setCurrentTestInfo, initialQu
         console.log(currentRecord)
         router.push(`/results?${urlParams.toString()}`);
       }
-      // If there is an error, set the error useState and log to console.
+      // If there is an error, log to console.
       else {
-        //setError(answerArray);
-        console.log("An error occured while retrieving the test form data from the backend.");
+        console.log("An error occured while sending the test form data to the backend.");
       }
     }
   }
@@ -376,7 +370,6 @@ export default function TestTake({currentTestInfo, setCurrentTestInfo, initialQu
 
       //Set submitted to true so that the modal can be displayed
       setIsSubmitted(true);
-      //await handleNextStage(event);
     }
     // Logic for the Next button
     else {
@@ -404,7 +397,6 @@ export default function TestTake({currentTestInfo, setCurrentTestInfo, initialQu
         <form name = "placeTest" onSubmit = {handleTestForm} className = "flex flex-col space-y-4 items-start justify-start">
           {
             //If questions exists and its length is greater than 0, or currentQuestion is less than the length, display the current question
-            // questions && questions.length > 0 && currentQuestion <= questions.length && (
             questions && questions[stageInfo.current.stageQuestion] && answerArray[currentQuestion] && (
               <QuestionDisplay
                 questionId = {currentQuestion + 1}
@@ -418,13 +410,6 @@ export default function TestTake({currentTestInfo, setCurrentTestInfo, initialQu
                 //Send the handleChange const as the value for onChangeValue so that the onChange field can be properly handled
                 onChangeValue = {handleChange}
               />)
-          }
-          {
-            /* Below I used shorthand for an if-else statement in Typescript. It first has the condition, then it uses "?" to check if
-            it is true or not. If it is true, run the code in the first set of paranthesis. If not, it will go to the ":" and run
-            the code in the second set of paranthesis. Additional conditions require another condition followed by "?" and "()".
-            For the Submit and Next buttons below, the CSS styling is determined by the result of the if statement.
-            */
           }
           <div className = "flex w-full justify-end">
             {isLastQuestion  ? (

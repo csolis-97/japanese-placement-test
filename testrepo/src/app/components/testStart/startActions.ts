@@ -1,5 +1,14 @@
 "use server";
 
+const getURL = () => {
+    if (process.env.VERCEL_URL) {
+        return `https://${process.env.VERCEL_URL}`;
+    }
+    return `${process.env.FRONTEND_URL}` || "http://localhost:3000";
+}
+
+console.log(`"HERE IS THE URL BEING USED!" ${getURL()}`)
+
 //Define a type that will be used to store and send necessary background info for the current test.
 export type infoData = {
     resultId: number;
@@ -30,7 +39,7 @@ export async function createRecord(action: string, givenFields: infoData) {
     console.log("CREATE A RECORD IN THE SCORES DATABASE ALONGSIDE FETCHING CURRENT ATTEMPT ID");
     try {
         console.log("Attempting to create the score record and fetch the proper info...")
-        const response = await fetch('http://localhost:5000/testform', {
+        const response = await fetch(`${getURL()}/api/testform`, {
             method: 'POST',
             headers: {
                 'Content-Type' : 'application/json',

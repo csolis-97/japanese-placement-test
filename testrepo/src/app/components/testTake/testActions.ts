@@ -1,5 +1,14 @@
 "use server";
 
+const getURL = () => {
+    if (process.env.VERCEL_URL) {
+        return `https://${process.env.VERCEL_URL}`;
+    }
+    return `${process.env.FRONTEND_URL}` || "http://localhost:3000";
+}
+
+console.log(`"HERE IS THE URL BEING USED!" ${getURL()}`)
+
 //Type defined below will be used for tracking each stage's info, including each stage's difficulty,
 //The current stage number, the current question of the stage, and the current stage's question_ids.
 export type stageData = {
@@ -65,7 +74,7 @@ export async function submitTest(action: string, givenFields: submitData) {
     console.log("SEND THE ANSWERS TO THE BACKEND");
     try {
         console.log("Attempt to submit the test...")
-        const response = await fetch('http://localhost:5000/testform', {
+        const response = await fetch(`${getURL()}/api/testform`, {
             method: 'POST',
             headers: {
                 'Content-Type' : 'application/json',
@@ -99,7 +108,7 @@ export async function questionFetch(action: string, givenFields: requestData) {
     console.log("SEND THIS INFO TO THE BACKEND")
         try {
         console.log("Attempt to retrieve a new question...")
-        const response = await fetch('http://localhost:5000/testform', {
+        const response = await fetch(`${getURL()}/api/testform`, {
             method: 'POST',
             headers: {
                 'Content-Type' : 'application/json',
@@ -107,6 +116,13 @@ export async function questionFetch(action: string, givenFields: requestData) {
             body: JSON.stringify({'action' : action, 'question_id' : questionId, 'past_id' : pastId, 
                 'question_category' : questionCategory, 'was_correct' : wasCorrect})
         });
+
+        console.log(`RESPONSE STATUS CODE: ${response.status}`)
+        if (!response.ok) {
+            const errorMessage = await response.text();
+            console.log(`FULL ERROR RETURNED BY VERCEL: ${errorMessage}`)
+            return errorMessage
+        }
 
         const data = await response.json();
         console.log("Here is the response from the database after sending the current level, question ID, and correct boolean:");
@@ -148,7 +164,7 @@ export async function questionCheck(action: string, givenFields: responseData) {
     console.log("SEND THE ANSWERS TO THE BACKEND");
     try {
         console.log("Attempt to send the answers...")
-        const response = await fetch('http://localhost:5000/testform', {
+        const response = await fetch(`${getURL()}/api/testform`, {
             method: 'POST',
             headers: {
                 'Content-Type' : 'application/json',
