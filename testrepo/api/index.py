@@ -72,7 +72,6 @@ def home():
 @app.route('/api/testform', methods=['GET', 'POST'])
 def testForm():
     data = request.json
-    # data = request.get_json(force=True, silent=True)
     if not data:
         return jsonify({"Backend error" : "No data provided for the testform route!"}), 400
     mysql = getDB()
@@ -330,7 +329,6 @@ def testForm():
 def resultDisplay():
     # Get the data from the request and make the MySQL cursor and declare variables that will be used across all actions
     data = request.json
-    # data = request.get_json(force=True, silent=True)
     if not data:
         return jsonify({"Backend error" : "No data provided for the results route!"}), 400
     
@@ -362,16 +360,16 @@ def resultDisplay():
                 print("CURRENT RESULT RECORD DATA")
                 print(resultData)
 
-                #oldDate = str(resultData['test_date'])
+                # oldDate = str(resultData['test_date'])
                 # DEBUG Check the format of old date
-                #print("OLDDATE")
-                #print(oldDate)
+                # print("OLDDATE")
+                # print(oldDate)
 
                 # Use isoformat as it is the quickest way to format the date in the proper manner, add Z for UTC timezone
                 finalDate = f"{resultData['test_date'].isoformat()}Z"
                 # DEBUG Check the updated date
-                #print("FINALDATE")
-                #print(finalDate)
+                # print("FINALDATE")
+                # print(finalDate)
                 # Set the new date in the resultData before sending
                 resultData['test_date'] = finalDate
 
@@ -389,7 +387,6 @@ def resultDisplay():
         # Else if the action is "retrieveAnswers", fetch the correct question, answer, and user response info based on provided attempt_id and user_id
         elif action == 'retrieveAnswers':
             try:
-                #paramList = [attemptId, userId]
                 paramList = [scoreId]
                 # This simple query will select all question and answer info only for the questions the user answered on their current attempt.
                 # The DISTINCT keyword is used so that duplicate records are not obtained.
@@ -405,7 +402,7 @@ def resultDisplay():
 
                 # DEBUG PRINT THE RESULT OF FETCHING FROM THE DATABASE
                 print("BEFORE THE FOR LOOP!")
-                #print(answerData)
+                # print(answerData)
 
                 # Create the necessary fields to be passed to the function so that the answers can be properly mapped to each question
                 questionKey = 'question_id'
@@ -429,5 +426,5 @@ def resultDisplay():
 
 # Once the app is running, it will use the port 5000 and communicate to the localhost. It will also be in debug mode
 # After the app is out of development, not needed in production
-if __name__ == '__main__':
-    app.run(debug=True, host="localhost", port=int("5000"))
+# if __name__ == '__main__':
+#    app.run(debug=True, host="localhost", port=int("5000"))
