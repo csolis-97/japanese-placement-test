@@ -1,5 +1,6 @@
 "use client";
 
+import { checkEmail, checkName } from "@/app/utils/utilFunctions";
 import * as infoUtils from "./startActions";
 import { useState, useEffect } from "react";
 import { Dispatch, SetStateAction } from "react";
@@ -20,8 +21,11 @@ interface testProps {
 // The parameters will be the testInfo useState alongside its setter function. Since I am using an interface, add a colon and assign it to testProps
 export default function TestStart({initialTestInfo, setInitialTestInfo, currentDisplay, setCurrentDisplay} : testProps) {
 
-  //Here's a useState to ensure that the record is only created and stored AFTER the user presses the submit button
+  // Here's a useState to ensure that the record is only created and stored AFTER the user presses the submit button
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
+
+  // Here's a useState to track user input errors
+  const [inputErrors, setInputErrors] = useState<String>("");
 
   // FOR DEBUG. This useEffect will track all current relevant info needed
   useEffect(() => {
@@ -37,12 +41,25 @@ export default function TestStart({initialTestInfo, setInitialTestInfo, currentD
   async function handleSubmission(event: React.FormEvent) {
     // Default behavior of form submission, to send data and reload the page, is prevented here.
     event.preventDefault();
-    console.log("BEFORE PROCEEDING WITH THE TEST");
+    console.log("BEFORE PROCEEDING WITH THE TEST, CHECK THE EMAIL AND NAME FIELDS.");
+
+
+    if (emailTest) {
+      setInputErrors(emailTest);
+      return;
+    }
+
+    if (nameTest) {
+      setInputErrors(nameTest);
+      return;
+    }
+
+    console.log("NO ERRORS IN THE USER INPUT, MOVE ONTO THE CREATION OF THE SCORE RECORD.")
     const getRecord = async () => {
       const fetchedInfo = await infoUtils.createRecord('createRecord', initialTestInfo);
       // If the current result's ID in the database was successfully retrieved, set the value to resultId. Otherwise log an error.
       if (fetchedInfo) {
-        console.log("HERE IS THE ID OF THE RESULTS AND ATTEMPT ID THAT WILL BE STORED WHEN SUBMITTED");
+        console.log("HERE IS THE ID OF THE RESULTS AND ATTEMPT ID THAT WILL BE STORED WHEN SUBMITTED.");
         console.log(fetchedInfo);
 
         //This will set the result ID (index 0) and attempt ID (index 1) for the current test.
@@ -86,6 +103,9 @@ export default function TestStart({initialTestInfo, setInitialTestInfo, currentD
         [name] : value
     }))
   }
+
+    const emailTest = checkEmail(initialTestInfo.email);
+    const nameTest = checkName(initialTestInfo.name);
     
   //HTML return for the test start
   return (
@@ -97,6 +117,13 @@ export default function TestStart({initialTestInfo, setInitialTestInfo, currentD
             <label htmlFor = "emailfield" className = "mt-2">Email</label>
             <input type = "text" name = "email" id = "emailfield" placeholder = "Enter your email address." className = "mt-2 shadow-md border-2 border-gray-300 rounded-sm p-1" onChange = {handleChange} required/>
         </form>
+        {
+          (emailTest || nameTest) && (
+            <>
+              <p>{inputErrors}</p>
+            </>
+          )
+        }
         <div className = "text-xs text-gray-500 p-2 bg-gray-100 rounded-lg text-center justify-center">
           <p className = "font-semibold">Important! For record-keeping purposes, please ensure that your name and email address are correct!</p>
         </div>

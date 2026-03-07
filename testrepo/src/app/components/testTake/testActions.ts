@@ -1,11 +1,6 @@
 "use server";
 
-const getURL = () => {
-    if (process.env.VERCEL_URL) {
-        return `https://${process.env.VERCEL_URL}`;
-    }
-    return `${process.env.FRONTEND_URL}` || "http://localhost:3000";
-}
+import { getURL } from "@/app/utils/utilFunctions";
 
 console.log(`"HERE IS THE URL BEING USED!" ${getURL()}`)
 
