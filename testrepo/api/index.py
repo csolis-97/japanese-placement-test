@@ -7,10 +7,16 @@ import os
 import datetime
 
 # Import all the functions defined elsewhere in the backend. Remove the dot when running locally.
-from .test_data_functions import *
-from .question_retrieval_fuctions import *
-from .answer_storage_functions import *
-from .test_submission_functions import *
+#from .test_data_functions import *
+#from .question_retrieval_fuctions import *
+#from .answer_storage_functions import *
+#from .test_submission_functions import *
+
+# Import all the functions defined elsewhere in the backend. Remove the dot when running locally.
+from test_data_functions import *
+from question_retrieval_fuctions import *
+from answer_storage_functions import *
+from test_submission_functions import *
 
 app = Flask(__name__)
 
@@ -29,6 +35,8 @@ try:
     # Get the path for the CA certificate so that SSL can be used to connect to the database.
     caPath = os.path.join(os.path.dirname(__file__), "ca.pem")
 
+    print("AFTER CAPATH!")
+
     # This function when called will return a connection to the TiDB Cloud database using the environmental variables provided
     def getDB():
         print("ABOUT TO RETURN THE DATABASE CONNECTION!")
@@ -44,17 +52,17 @@ try:
             cursorclass = pymysql.cursors.DictCursor
         ))
 
-    # Included a local function for the database connection as well. Not sure if port is needed, remove it if not
-    '''def getDBLocal():
+    # Included a local function for the database connection as well.
+    def getDBLocal():
         print("ABOUT TO RETURN LOCAL DATABASE CONNECTION!")
         return (pymysql.connect(
             host = os.getenv('DB_HOST'),
-            port = os.getenv('DB_PORT'),
+            port = int(os.getenv('DB_PORT')),
             user = os.getenv('DB_USER'),
             password = os.getenv('DB_PASSWORD'),
             database = os.getenv('DB_NAME'),
             cursorclass = pymysql.cursors.DictCursor
-        ))'''
+        ))
 
     # Initialize Bcrypt for password hashing
     bcrypt = Bcrypt(app)
@@ -64,18 +72,22 @@ except:
 
 ####//// Route for the home ////####
 @app.route('/api', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
 def home():
     print("CAN YOU SEE THIS? BACKEND IS RUNNING!")
     return jsonify("Backend is running!")
 
 ####//// Route for the test form ////####
+@app.route('/frontURL/api/testform', methods=['GET', 'POST'])
 @app.route('/api/testform', methods=['GET', 'POST'])
+@app.route('/testform', methods=['GET', 'POST'])
 def testForm():
+    print("HELLO!!!!")
     data = request.json
     if not data:
         return jsonify({"Backend error" : "No data provided for the testform route!"}), 400
-    mysql = getDB()
-    # mysql = getDBLocal()
+    # mysql = getDB()
+    mysql = getDBLocal()
 
     # Test print to see data
     print("HERE IS WHAT IS IN THE DATA!")
@@ -332,8 +344,8 @@ def resultDisplay():
     if not data:
         return jsonify({"Backend error" : "No data provided for the results route!"}), 400
     
-    mysql = getDB()
-    # mysql = getDBLocal()
+    # mysql = getDB()
+    mysql = getDBLocal()
 
     action = data['action']
     # First, get the proper result data by using the attempt_id in the data
@@ -426,5 +438,5 @@ def resultDisplay():
 
 # Once the app is running, it will use the port 5000 and communicate to the localhost. It will also be in debug mode
 # After the app is out of development, not needed in production
-# if __name__ == '__main__':
-#    app.run(debug=True, host="localhost", port=int("5000"))
+if __name__ == '__main__':
+   app.run(debug=True, host="localhost", port=int("5000"))

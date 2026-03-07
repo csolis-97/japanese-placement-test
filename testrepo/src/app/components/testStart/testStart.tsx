@@ -18,6 +18,11 @@ interface testProps {
   setCurrentDisplay: Dispatch<SetStateAction<string>>;
 }
 
+interface inputErrors {
+  nameError: string;
+  emailError: string;
+}
+
 // The parameters will be the testInfo useState alongside its setter function. Since I am using an interface, add a colon and assign it to testProps
 export default function TestStart({initialTestInfo, setInitialTestInfo, currentDisplay, setCurrentDisplay} : testProps) {
 
@@ -25,7 +30,10 @@ export default function TestStart({initialTestInfo, setInitialTestInfo, currentD
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
 
   // Here's a useState to track user input errors
-  const [inputErrors, setInputErrors] = useState<String>("");
+  const [inputErrors, setInputErrors] = useState<inputErrors>({
+    nameError: '',
+    emailError: ''
+  });
 
   // FOR DEBUG. This useEffect will track all current relevant info needed
   useEffect(() => {
@@ -38,19 +46,20 @@ export default function TestStart({initialTestInfo, setInitialTestInfo, currentD
   }, [initialTestInfo, isSubmitted])
 
   //Function to handle the submission form itself, once the user presses the submit button
-  async function handleSubmission(event: React.FormEvent) {
+  async function handleSubmission(event: React.SubmitEvent) {
     // Default behavior of form submission, to send data and reload the page, is prevented here.
     event.preventDefault();
+    const {name, value} = event.target;
     console.log("BEFORE PROCEEDING WITH THE TEST, CHECK THE EMAIL AND NAME FIELDS.");
 
-
-    if (emailTest) {
-      setInputErrors(emailTest);
-      return;
-    }
-
-    if (nameTest) {
-      setInputErrors(nameTest);
+    if (emailTest || nameTest) {
+      //setInputErrors(emailTest);
+      setInputErrors((prevData) => ({
+        ...prevData,
+        nameError : value,
+        emailError : value
+      }))
+      console.log("THERE WAS AN ERROR WITH THE PROVIDED FIELDS.")
       return;
     }
 
@@ -114,16 +123,19 @@ export default function TestStart({initialTestInfo, setInitialTestInfo, currentD
         <form id = "userInfo" name = "userInfo" onSubmit = {handleSubmission} className = "flex flex-col space-y-2 items-center justify-center">
             <label htmlFor = "namefield" className = "mt-2">Full Name</label>
             <input type = "text" name = "name" id = "namefield" placeholder = "Enter your full name." className = "mt-2 shadow-md border-2 border-gray-300 rounded-sm p-1" onChange = {handleChange} required/>
+            { // Display any errors for the name check here
+              nameTest && (
+                  <p className = "text-xs text-red-500 font-semibold">{inputErrors.nameError}</p>
+              )
+            }
             <label htmlFor = "emailfield" className = "mt-2">Email</label>
             <input type = "text" name = "email" id = "emailfield" placeholder = "Enter your email address." className = "mt-2 shadow-md border-2 border-gray-300 rounded-sm p-1" onChange = {handleChange} required/>
+            { // Display any errors for the email check here
+              emailTest && (
+                  <p className = "text-xs text-red-500 font-semibold">{inputErrors.emailError}</p>
+              )
+            }
         </form>
-        {
-          (emailTest || nameTest) && (
-            <>
-              <p>{inputErrors}</p>
-            </>
-          )
-        }
         <div className = "text-xs text-gray-500 p-2 bg-gray-100 rounded-lg text-center justify-center">
           <p className = "font-semibold">Important! For record-keeping purposes, please ensure that your name and email address are correct!</p>
         </div>
