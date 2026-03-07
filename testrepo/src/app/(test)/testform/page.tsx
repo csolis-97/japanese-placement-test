@@ -35,8 +35,8 @@ export default async function Home() {
   
   //HTML return for the test form page
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#d1190d] font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between px-16 bg-white dark:bg-black ">
+    <div className="flex sm:min-h-screen items-center justify-center bg-[#d1190d] font-sans dark:bg-black">
+      <main className="flex sm:min-h-screen sm:w-full sm:max-w-3xl flex-col items-center justify-between px-16 bg-white dark:bg-black ">
         {
           // Send the initial questions as a prop to testDisplay component
           <TestDisplay initialQuestions = {initialQuestions}/>

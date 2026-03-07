@@ -53,7 +53,7 @@ export default function StageComplete(props: messageProps) {
     return createPortal(
         <div className = "fixed inset-0 w-screen h-screen flex items-center text-center justify-center bg-black/40">
         {
-            <div className = "inset-0 items-center justify-center gap-6 text-center opacity-100 transition-opacity duration-300 sm:items-start sm:text-left border-8 border-gray-400 shadow-lg rounded-lg bg-white p-4">
+            <div className = "inset-0 items-center justify-center gap-6 text-center opacity-100 transition-opacity duration-300 sm:items-start sm:text-left border-8 border-gray-400 shadow-lg rounded-lg bg-white p-4 dark:text-gray-400">
                 <h1>Stage {props.stageNum + 1}: {props.difficultyLevel}</h1>
                 <h2>{stageMessage}</h2>
                 <p>{props.totalCorrect} out of {props.totalQuestions} correct!</p>

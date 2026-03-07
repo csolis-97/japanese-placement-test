@@ -36,17 +36,17 @@ export default function questionDisplay(props: questionDisplayProps) {
     console.log(props.wasCorrect)
 
     return (
-        // Here, min-h-[650px] is used to ensure that the height is a minimum of 650, but will grow if content is bigger than that using h-fit.
-        <div className = "flex flex-col shrink-0 grow-0 bg-gray-100 rounded-lg sm:w-full sm:min-w-[650px] sm:min-h-[650px] sm:h-fit shadow-md">
+        // Here, min-h-[40.625rem] is used to ensure that the height is a minimum of 650px, but will grow if content is bigger than that using h-fit.
+        <div className = "flex flex-col shrink-0 grow-0 bg-gray-100 rounded-lg sm:w-full sm:min-w-[40.625rem] sm:min-h-[40.625rem] sm:h-fit shadow-md">
             <div className = "flex flex-col min-w-0 min-h-0 divide-y-2 divide-gray-400">
                 <div className = "">
-                    <h1 className = "text-gray-600 font-semibold text-3xl p-4">Question #{props.questionId}</h1>
-                    <h1 className = "text-gray-600 font-semibold text-xl px-4">Level: {props.questionCategory}</h1>
+                    <h1 className = "text-gray-600 font-semibold sm:text-3xl p-4">Question #{props.questionId}</h1>
+                    <h1 className = "text-gray-600 font-semibold sm:text-xl px-4">Level: {props.questionCategory}</h1>
                     <h2 className = "text-gray-800 font-semibold divide-y-2 px-4">{props.questionText}</h2>
-                    <p className = "text-gray-600 font-semibold text-2xl p-4">{props.questionBody}</p>
+                    <p className = "text-gray-600 font-semibold sm:text-2xl p-4">{props.questionBody}</p>
                 </div>
                 <div className = "p-4 pt-10">
-                    <fieldset disabled = {props.alreadyAnswered} className = "text-xl" >
+                    <fieldset disabled = {props.alreadyAnswered} className = "sm:text-xl" >
                         {props.answerText?.map((answer, index) => (
                         //fieldset should only be disabled if the question has already been answered.
                         //checked tracks which radio option the user has selected by setting selectedAnswer to the value of answer
@@ -56,7 +56,7 @@ export default function questionDisplay(props: questionDisplayProps) {
                         //If the user chose the wrong option, color only that radio red.
 
                         //flex items-start is used to properly algin the radio buttons and the answer text
-                        <div key={index} className = "mt-2 flex items-start">
+                        <div key={index} className = "mt-2 flex items-start text-sm sm:text-base">
                             <input type = "radio" id = {`answer-${props.answerId[index]}`} name = {`question-${props.questionId}`} value = {answer || props.selectedAnswer}
                                 className = {`shrink-0 mt-2 ${props.selectedAnswer === props.answerText[index] && Number(props.wasCorrect) === 1 || Number(props.correctAnswer?.[index]) === 1 ? 
                                 (correctRadio) : (regularRadio)} `}
