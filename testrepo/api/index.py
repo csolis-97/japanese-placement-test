@@ -35,8 +35,6 @@ try:
     # Get the path for the CA certificate so that SSL can be used to connect to the database.
     caPath = os.path.join(os.path.dirname(__file__), "ca.pem")
 
-    print("AFTER CAPATH!")
-
     # This function when called will return a connection to the TiDB Cloud database using the environmental variables provided
     def getDB():
         print("ABOUT TO RETURN THE DATABASE CONNECTION!")
@@ -72,17 +70,13 @@ except:
 
 ####//// Route for the home ////####
 @app.route('/api', methods=['GET', 'POST'])
-@app.route('/', methods=['GET', 'POST'])
 def home():
     print("CAN YOU SEE THIS? BACKEND IS RUNNING!")
     return jsonify("Backend is running!")
 
 ####//// Route for the test form ////####
-@app.route('/frontURL/api/testform', methods=['GET', 'POST'])
 @app.route('/api/testform', methods=['GET', 'POST'])
-@app.route('/testform', methods=['GET', 'POST'])
 def testForm():
-    print("HELLO!!!!")
     data = request.json
     if not data:
         return jsonify({"Backend error" : "No data provided for the testform route!"}), 400

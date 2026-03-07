@@ -35,6 +35,10 @@ export default function TestStart({initialTestInfo, setInitialTestInfo, currentD
     emailError: ''
   });
 
+  // These two variables will be used to store the error messages (if any) returned from checking the user's email and name
+  const emailTest = checkEmail(initialTestInfo.email);
+  const nameTest = checkName(initialTestInfo.name);
+
   // FOR DEBUG. This useEffect will track all current relevant info needed
   useEffect(() => {
       console.log("CURRENT TEST INFO")
@@ -53,11 +57,10 @@ export default function TestStart({initialTestInfo, setInitialTestInfo, currentD
     console.log("BEFORE PROCEEDING WITH THE TEST, CHECK THE EMAIL AND NAME FIELDS.");
 
     if (emailTest || nameTest) {
-      //setInputErrors(emailTest);
       setInputErrors((prevData) => ({
         ...prevData,
-        nameError : value,
-        emailError : value
+        nameError : nameTest || '',
+        emailError : emailTest || ''
       }))
       console.log("THERE WAS AN ERROR WITH THE PROVIDED FIELDS.")
       return;
@@ -112,9 +115,6 @@ export default function TestStart({initialTestInfo, setInitialTestInfo, currentD
         [name] : value
     }))
   }
-
-    const emailTest = checkEmail(initialTestInfo.email);
-    const nameTest = checkName(initialTestInfo.name);
     
   //HTML return for the test start
   return (

@@ -34,13 +34,13 @@ If you are interested in running this program locally, please ensure that the fo
 
 1. Node.js
 2. Next.js & React
-3. npm or yarn
-4. Python, pip, & the required dependencies (listed inside of the requirements.txt within the backend directory)
+3. pnpm
+4. Python, pip, & the required dependencies (listed inside of the requirements.txt)
 5. mySQL Server
 6. git
 
 Also, ensure that you have a .env file with credentials for the database as well. The flask application in the backend will search for the proper info
-in order to connect to the database instance which you create, which can be done through a tool like mySQL Workbench.
+in order to connect to the database instance which you create, which can be done through a tool like MySQL Workbench.
 
 ######                                  ######
 ######          RUNNING LOCALLY         ######
@@ -56,13 +56,13 @@ in order to connect to the database instance which you create, which can be done
 3. In order to run the front end, open a new terminal and enter the following:
 
 '''cd testrepo
-npm run dev
+pnpm dev
 '''
 
 4. In order to run the back end, open another new terminal and enter the following:
 
-'''cd backend
-python app.py
+'''cd testrepo/api
+python index.py
 '''
 
 

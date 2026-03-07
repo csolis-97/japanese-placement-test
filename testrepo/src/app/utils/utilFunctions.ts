@@ -12,15 +12,15 @@ export function getURL() {
 // a certain length, and that there is a @ and a . included in the email string.
 export function checkEmail(email: string) {
     const lengthLimit = 254;
-    // const emailRegex = RegExp('^[A-Za-z0-9._+-]+@[A-Za-z0-9._]+\.[A-Za-z]{2,}$');
-    const laxRegex = RegExp('^[\S]+@[\S]+\.[\S]+$');
+    // const emailRegex = RegExp('^[A-Za-z0-9._+-]+@[A-Za-z0-9._]+\.[A-Za-z]{2,}$', 'i');
+    const laxRegex = RegExp('^[\\S]+@[\\S]+\.[\\S]+$', 'i');
     // Check if the email length is above 254 characters and return the message below if it is.
     if (email.length > lengthLimit) {
         console.log("EMAIL LENGTH ERROR.")
         return "Email length cannot be more than 254 characters."
     }
     // Test if the email passes the test for the given regex. Swap out the regex if a different one is required.
-    if (laxRegex.test(email) === false) {
+    if (!laxRegex.test(email)) {
         console.log("EMAIL FORMAT ERROR.")
         return "Please ensure that the email address format is correct."
     }
