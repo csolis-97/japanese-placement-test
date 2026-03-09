@@ -56,7 +56,7 @@ export default function questionDisplay(props: questionDisplayProps) {
                         //If the user chose the wrong option, color only that radio red.
 
                         //flex items-start is used to properly algin the radio buttons and the answer text
-                        <div key={index} className = "mt-2 flex items-start text-sm sm:text-base">
+                        <div key={index} className = "mt-2 flex items-center text-sm sm:text-base">
                             <input type = "radio" id = {`answer-${props.answerId[index]}`} name = {`question-${props.questionId}`} value = {answer || props.selectedAnswer}
                                 className = {`shrink-0 mt-2 ${props.selectedAnswer === props.answerText[index] && Number(props.wasCorrect) === 1 || Number(props.correctAnswer?.[index]) === 1 ? 
                                 (correctRadio) : (regularRadio)} `}

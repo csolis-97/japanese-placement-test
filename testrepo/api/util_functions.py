@@ -34,6 +34,7 @@ def mapAnswerstoQuestion(newQuestion, questionKey, singleFields, nestedFields):
     # print(newQuestion)
     return newQuestion
 
+# This function is for handling different error types and returning the error alongside a status code.
 def handleErrors(error):
     # Errors related to the input data being invalid
     if isinstance(error, pymysql.err.DatabaseError):

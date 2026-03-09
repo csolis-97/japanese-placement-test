@@ -52,7 +52,7 @@ try:
             cursorclass = pymysql.cursors.DictCursor
         ))
 
-    # Included a local function for the database connection as well.
+    # Included a local function for the database connection as well. Use Port 3306 for mySQL
     def getDBLocal():
         print("ABOUT TO RETURN LOCAL DATABASE CONNECTION!")
         return (pymysql.connect(
@@ -66,15 +66,16 @@ try:
 
     # Initialize Bcrypt for password hashing
     bcrypt = Bcrypt(app)
-except:
-    setupError = "CRASHED WHILE SETTING UP THE BACKEND!"
-    print(setupError)
+
+# If there were any errors during the initial setup, go here
+except Exception as e:
+    print(f"Crashed while setting up the Flask application and database connection: {e}")
 
 ####//// Route for the home ////####
 @app.route('/api', methods=['GET', 'POST'])
 def home():
     print("CAN YOU SEE THIS? BACKEND IS RUNNING!")
-    return jsonify("Backend is running!")
+    return jsonify("Backend is running!"), 200
 
 ####//// Route for the test form ////####
 @app.route('/api/testform', methods=['GET', 'POST'])

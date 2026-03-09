@@ -4,7 +4,8 @@ import * as resultsUtils from "./displayActions";
 import { useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import QuestionDisplay from "../QuestionDisplay";
-import ResultDisplay from "../ResultInfo";
+import ResultInfo from "../ResultInfo";
+import * as skeletons from "../skeletons";
 
 export default function ResultsDisplay() {
 
@@ -133,9 +134,12 @@ export default function ResultsDisplay() {
   return (
     <>
       <div className="flex flex-col items-center gap-6 p-12 text-center sm:items-start sm:text-left">
-        {
+        { //DEBUG ONLY, TEST THE RESULTINFO SKELETON
+          <skeletons.ResultInfoSkeleton />
+        }
+        { /*
           questions && questions.length > 0 && results && (
-            <ResultDisplay
+            <ResultInfo
             attemptId = {attemptNum}
             totalScore = { // The total_score stored is actually the percentage of overall correct questions, so calculate the correct number here
               (results.total_score / 100) * questions.length}
@@ -143,10 +147,13 @@ export default function ResultsDisplay() {
             testDate = {results.test_date}
             totalQuestions = {questions.length}
           />)
-        }
+        */ }
         </div>
         <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          {
+          { // DEBUG ONLY, TEST THE QUESTIONDISPLAY SKELETON
+            <skeletons.QuestionDisplaySkeleton />
+          }
+          { /*
             questions.map((question) =>
               <QuestionDisplay
               key = {question.response_order}
@@ -162,7 +169,7 @@ export default function ResultsDisplay() {
               selectedAnswer = {question.user_answer_text}
               alreadyAnswered = {true}
               />)
-          }
+          */ }
       </div>
     </>
   );
