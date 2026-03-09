@@ -1,6 +1,6 @@
 "use server";
 
-import { getURL } from "@/app/utils/utilFunctions";
+import { getURL, responseMessage } from "@/app/utils/utilFunctions";
 
 console.log(`"HERE IS THE URL BEING USED!" ${getURL()}`)
 
@@ -60,6 +60,12 @@ export async function answersData(action: string, givenFields: answerData) {
                 'attempt_id' : attemptId, 'score_id' : resultId})
         });
 
+        // If there were any errors in the response, it will be stored in this const.
+        const errorMessage = await responseMessage(response);
+        if (errorMessage) {
+            console.log(`This is what the errorMessage contains after failing to get data from the backend: ${errorMessage}`);
+        }
+
         //Get the response from the database and return
         const data = await response.json();
         console.log("Here is the response from the database:");
@@ -67,9 +73,9 @@ export async function answersData(action: string, givenFields: answerData) {
         return data;
     }
     //If an error occured during retrieval, catch it and log it
-    catch (error) {
-        console.log(error);
-        return "Internal Server Error";
+    catch (errorMessage) {
+        console.log(errorMessage);
+        return "Internal Server Error: The user's answers could not be retrieved.";
     }
 }
 
@@ -97,6 +103,12 @@ export async function resultsData(action: string, givenFields: resultData) {
                 'entrance_level' : entranceLevel, 'test_date' : testDate})
         });
 
+        // If there were any errors in the response, it will be stored in this const.
+        const errorMessage = await responseMessage(response);
+        if (errorMessage) {
+            console.log(`This is what the errorMessage contains after failing to get data from the backend: ${errorMessage}`);
+        }
+
         //Get the response from the database and return
         const data = await response.json();
         console.log("Here is the response from the database:");
@@ -104,15 +116,14 @@ export async function resultsData(action: string, givenFields: resultData) {
 
         //Since the date was converted into a string after it was retrieved in the backend, convert it back to a Date object before
         //returning
-        const newTest = new Date(data['test_date'])
-        testDate = newTest
-        data['test_date'] = testDate
+        const newTest = new Date(data['test_date']);
+        testDate = newTest;
+        data['test_date'] = testDate;
         return data;
     }
     //If an error occured during retrieval, catch it and log it
-    catch (error) {
-        console.log(error);
-        return "Internal Server Error";
+    catch (errorMessage) {
+        console.log(errorMessage);
+        return "Internal Server Error: The record of the user's test results could not be retrieved.";
     }
 }
-//Only async functions are allowed to be exported in a "use server" file.

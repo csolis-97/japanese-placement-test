@@ -8,6 +8,17 @@ export function getURL() {
     return `${process.env.FRONTEND_URL}` || "http://localhost:5000";
 }
 
+// This function will be used in case an error occurs when attempting to request info from the backend.
+// If the response is not okay, call the text function and store it in a const. Then print and return.
+export async function responseMessage(response: Response) {
+    console.log(`HERE IS THE STATUS OF THE RESPONSE: ${response.status}`);
+    if (!response.ok) {
+        const errorMessage = await response.text();
+        console.log(`HERE IS THE FULL ERROR TAKEN FROM THE RESPONSE: ${errorMessage}`)
+        return errorMessage;
+    }
+}
+
 // This function will check if the email provided meets the bare minimum requirements. That being that it is under
 // a certain length, and that there is a @ and a . included in the email string.
 export function checkEmail(email: string) {
@@ -16,13 +27,13 @@ export function checkEmail(email: string) {
     const laxRegex = RegExp('^[\\S]+@[\\S]+\.[\\S]+$', 'i');
     // Check if the email length is above 254 characters and return the message below if it is.
     if (email.length > lengthLimit) {
-        console.log("EMAIL LENGTH ERROR.")
-        return "Email length cannot be more than 254 characters."
+        console.log("EMAIL LENGTH ERROR.");
+        return "Email length cannot be more than 254 characters.";
     }
     // Test if the email passes the test for the given regex. Swap out the regex if a different one is required.
     if (!laxRegex.test(email)) {
-        console.log("EMAIL FORMAT ERROR.")
-        return "Please ensure that the email address format is correct."
+        console.log("EMAIL FORMAT ERROR.");
+        return "Please ensure that the email address format is correct.";
     }
 }
 
@@ -30,7 +41,7 @@ export function checkEmail(email: string) {
 export function checkName(name: string) {
     const lengthLimit = 254;
     if (name.length > lengthLimit) {
-        console.log("NAME LENGTH ERROR.")
-        return "Name length cannot be more than 254 characters."
+        console.log("NAME LENGTH ERROR.");
+        return "Name length cannot be more than 254 characters.";
     } 
 }

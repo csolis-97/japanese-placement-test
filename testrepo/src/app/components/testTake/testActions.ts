@@ -1,6 +1,6 @@
 "use server";
 
-import { getURL } from "@/app/utils/utilFunctions";
+import { getURL, responseMessage } from "@/app/utils/utilFunctions";
 
 console.log(`"HERE IS THE URL BEING USED!" ${getURL()}`)
 
@@ -58,17 +58,17 @@ export async function submitTest(action: string, givenFields: submitData) {
     const stageArray = givenFields.stageArray;
 
     // This action will submit the test to the backend for processing
-    action = "submitTest"
+    action = "submitTest";
     // Create a snapshot of the submission time to send alongside the POST request
     let submittedTime = new Date();
-    console.log("HERE IS THE SUBMISSION TIMESTAP")
-    console.log(submittedTime)
-    console.log("USING RESULT ID OF:")
-    console.log(resultId)
-    console.log(isCorrect)
+    console.log("HERE IS THE SUBMISSION TIMESTAP");
+    console.log(submittedTime);
+    console.log("USING RESULT ID OF:");
+    console.log(resultId);
+    console.log(isCorrect);
     console.log("SEND THE ANSWERS TO THE BACKEND");
     try {
-        console.log("Attempt to submit the test...")
+        console.log("Attempt to submit the test...");
         const response = await fetch(`${getURL()}/api/testform`, {
             method: 'POST',
             headers: {
@@ -78,15 +78,21 @@ export async function submitTest(action: string, givenFields: submitData) {
                  'user_attempt' : userAttempt, 'past_id' : pastId, 'stage_array' : stageArray})
         });
 
+        // If there were any errors in the response, it will be stored in this const.
+        const errorMessage = await responseMessage(response);
+        if (errorMessage) {
+            console.log(`This is what the errorMessage contains after failing to get data from the backend: ${errorMessage}`);
+        }
+
         const data = await response.json();
-        console.log("Here is the response from the database in regards to submitting the scores:");
+        console.log("Here is the response from the database in regards to submitting the test:");
         console.log(data);
         return data;
     }
 
-    catch(error) {
-        console.log(error);
-        console.log("Internal Server Error: The score could not be calculated.")
+    catch(errorMessage) {
+        console.log(errorMessage);
+        console.log("Internal Server Error: An error occured while submitting the test results.");
     }
 }
 
@@ -97,12 +103,12 @@ export async function questionFetch(action: string, givenFields: requestData) {
     const questionCategory = givenFields.questionCategory;
     const wasCorrect = givenFields.wasCorrect;
 
-    action = "retrieveStage"
-    console.log("HERE IS THE USER'S CURRENT LEVEL AND QUESTION ID ALONGSIDE WHETHER THEY WERE CORRECT OR NOT AND ALL PAST ID's")
-    console.log(questionCategory, questionId, wasCorrect, pastId)
-    console.log("SEND THIS INFO TO THE BACKEND")
+    action = "retrieveStage";
+    console.log("HERE IS THE USER'S CURRENT LEVEL AND QUESTION ID ALONGSIDE WHETHER THEY WERE CORRECT OR NOT AND ALL PAST ID's");
+    console.log(questionCategory, questionId, wasCorrect, pastId);
+    console.log("SEND THIS INFO TO THE BACKEND");
         try {
-        console.log("Attempt to retrieve a new question...")
+        console.log("Attempt to retrieve the questions for the next stage...");
         const response = await fetch(`${getURL()}/api/testform`, {
             method: 'POST',
             headers: {
@@ -112,11 +118,10 @@ export async function questionFetch(action: string, givenFields: requestData) {
                 'question_category' : questionCategory, 'was_correct' : wasCorrect})
         });
 
-        console.log(`RESPONSE STATUS CODE: ${response.status}`)
-        if (!response.ok) {
-            const errorMessage = await response.text();
-            console.log(`FULL ERROR RETURNED BY VERCEL: ${errorMessage}`)
-            return errorMessage
+        // If there were any errors in the response, it will be stored in this const.
+        const errorMessage = await responseMessage(response);
+        if (errorMessage) {
+            console.log(`This is what the errorMessage contains after failing to get data from the backend: ${errorMessage}`);
         }
 
         const data = await response.json();
@@ -125,14 +130,13 @@ export async function questionFetch(action: string, givenFields: requestData) {
         return data;
     }
 
-    catch(error) {
-        console.log(error);
-        console.log("Internal Server Error: New question could not be fetched.")
+    catch(errorMessage) {
+        console.log(errorMessage);
+        console.log("Internal Server Error: The questions for the next stage could not be fetched.");
     }
 }
 
 export async function questionCheck(action: string, givenFields: responseData) {
-
     //Divide the form data into separate variables
     const questionId = givenFields.questionId;
     const pastId = givenFields.pastId;
@@ -142,23 +146,23 @@ export async function questionCheck(action: string, givenFields: responseData) {
     const currentStage = givenFields.currentStage;
 
     // This action will create the record that will be used to store the results and return the resultId to be used
-    action = "sendStage"
+    action = "sendStage";
     // Create a snapshot of the submission time to send alongside the POST request
     let submittedTime = new Date();
-    console.log("HERE IS THE SUBMISSION TIMESTAP")
-    console.log(submittedTime)
+    console.log("HERE IS THE SUBMISSION TIMESTAP");
+    console.log(submittedTime);
 
-    console.log("CURRENT ANSWER")
-    console.log(userText)
-    console.log("CURRENT ATTEMPT")
-    console.log(userAttempt)
-    console.log("RESULT ID")
-    console.log(resultId)
-    console.log("CURRENT QUESTION ID")
-    console.log(questionId)
+    console.log("CURRENT ANSWER");
+    console.log(userText);
+    console.log("CURRENT ATTEMPT");
+    console.log(userAttempt);
+    console.log("RESULT ID");
+    console.log(resultId);
+    console.log("CURRENT QUESTION ID");
+    console.log(questionId);
     console.log("SEND THE ANSWERS TO THE BACKEND");
     try {
-        console.log("Attempt to send the answers...")
+        console.log("Attempt to send the answers for the current stage...");
         const response = await fetch(`${getURL()}/api/testform`, {
             method: 'POST',
             headers: {
@@ -169,14 +173,20 @@ export async function questionCheck(action: string, givenFields: responseData) {
                 'current_stage' : currentStage})
         });
 
+        // If there were any errors in the response, it will be stored in this const.
+        const errorMessage = await responseMessage(response);
+        if (errorMessage) {
+            console.log(`This is what the errorMessage contains after failing to get data from the backend: ${errorMessage}`);
+        }
+
         const data = await response.json();
         console.log("Here is the response from the database after sending the current answer data:");
         console.log(data);
         return data;
     }
 
-    catch(error) {
-        console.log(error);
-        console.log("Internal Server Error: Answer could not be checked.")
+    catch(errorMessage) {
+        console.log(errorMessage);
+        console.log("Internal Server Error: The answers for the current stage could not be checked.");
     }
 }
