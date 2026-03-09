@@ -4,7 +4,7 @@ def checkEmail(cursor, mysql, email, name, finalTime):
     userQuery = "SELECT U.email, U.id FROM users U WHERE U.email = %s"
     cursor.execute(userQuery, email)
     emailExists = cursor.fetchone()
-    if emailExists == None:
+    if emailExists is None:
         print("THIS IS A NEW USER, INSERT THEM INTO THE DATABASE!")
         # Set the paramList needed to insert a new user
         paramList = [email, name, finalTime]
@@ -20,6 +20,7 @@ def checkEmail(cursor, mysql, email, name, finalTime):
     else:
         userId = emailExists['id']
     return userId
+
 
 # A function for creating a new score record so that the test results can be stored once the user finishes the test.
 def createScoreRecord(cursor, mysql, initialScoreId, userId, finalTime):
@@ -62,37 +63,3 @@ def getAttemptNum(cursor, attemptNum, userId):
     print("FINAL VALUE OF ATTEMPT NUM")
     print(attemptNum)
     return attemptNum
-
-
-# This function takes data from a database, and maps each four different entries for the same question info (single) but different answer info
-# (nested) to the same entry by mapping into a dictionary, then converting the result into a list of values before returning.
-def mapAnswerstoQuestion(newQuestion, questionKey, singleFields, nestedFields):
-    print(f"QUESTION KEY! {questionKey}")
-    print(f"SINGLE FIELDS! {singleFields}")
-    print(f"NESTED FIELDS! {nestedFields}")
-    groupedQuestions = {}
-    for row in newQuestion :
-        # Get the actual key for the current row
-        rowKey = row[questionKey]
-        if rowKey not in groupedQuestions: 
-            groupedQuestions[rowKey] = {
-                # I've never seen this syntax before, so allow me to explain. This will create an object in the dictionary with the current key, and it will be
-                # repeated for every field in singleFields
-                field : row[field] for field in singleFields
-            }
-            for nested in nestedFields:
-                groupedQuestions[rowKey][nested] = []
-        # Append the current nestedFields to the current row within the dictionary, regardless if questionKey was
-        # already in the dictionary or not.
-        for nested in nestedFields:
-                groupedQuestions[rowKey][nested].append(row[nested])
-
-    # DEBUG, ONCE THE GROUPING IS FINISHED PRINT THE RESULTS
-    print("GROUPED!")
-    # print(groupedQuestions)
-    # Set questions to groupedQuestions before returning. The keys are not needed, so just convert it to a list using the values.
-    newQuestion = list(groupedQuestions.values())
-    # DEBUG, PRINT THE FINAL VERSION OF THE DATA TO BE SENT TO THE FRONT END
-    print("NEW DATA!")
-    # print(newQuestion)
-    return newQuestion

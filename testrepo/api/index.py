@@ -11,12 +11,14 @@ import datetime
 #from .question_retrieval_fuctions import *
 #from .answer_storage_functions import *
 #from .test_submission_functions import *
+#from .util_functions import *
 
 # Import all the functions defined elsewhere in the backend. Remove the dot when running locally.
 from test_data_functions import *
 from question_retrieval_fuctions import *
 from answer_storage_functions import *
 from test_submission_functions import *
+from util_functions import *
 
 app = Flask(__name__)
 
@@ -79,7 +81,8 @@ def home():
 def testForm():
     data = request.json
     if not data:
-        return jsonify({"Backend error" : "No data provided for the testform route!"}), 400
+        dataError = "Backend error: No data provided for the testform route!"
+        return jsonify(dataError), 400
     # mysql = getDB()
     mysql = getDBLocal()
 
@@ -139,11 +142,12 @@ def testForm():
                 # Now put the score_id and attempt_id into a list and return the values
                 testInfo = [scoreId, attemptNum]
                 print("Before the return")
-                return jsonify(testInfo)
-            except:
-                recordError = "AN ERROR OCCURED WHILE CREATING THE TEST RECORD!"
-                print(recordError)
-                return jsonify(recordError)
+                return jsonify(testInfo), 200
+            
+            # The except statement will call a function that handles errors and returns JSON
+            except Exception as error:
+                print("An error occured, see below for more details.")
+                return handleErrors(error)
 
 
         # If the action is retrieveStage, retrieve the questions for the next stage and all of the associated info
@@ -184,12 +188,12 @@ def testForm():
                 newQuestion = mapAnswerstoQuestion(newQuestion, questionKey, singleFields, nestedFields)
 
                 print("Before the return")
-                return jsonify(newQuestion)
-                # Add return statuses if needed
-            except:
-                receiveError = "AN ERROR OCCURED WHILE RETREIEVING THE NEXT STAGE!"
-                print(receiveError)
-                return jsonify(receiveError)
+                return jsonify(newQuestion), 200
+
+            # The except statement will call a function that handles errors and returns JSON
+            except Exception as error:
+                print("An error occured, see below for more details.")
+                return handleErrors(error)
 
 
         # Else if the action is "sendStage" then get the JSON data info, check if the answer was correct, and store
@@ -243,11 +247,12 @@ def testForm():
                 # Finally, close the cursor and return the data
                 cursor.close()
                 mysql.close()
-                return jsonify(isCorrect)
-            except:
-                storeError = "AN ERROR OCCURED WHILE GRADING AND STORING THE ANSWERS!"
-                print(storeError)
-                return jsonify(storeError)
+                return jsonify(isCorrect), 200
+            
+            # The except statement will call a function that handles errors and returns JSON
+            except Exception as error:
+                print("An error occured, see below for more details.")
+                return handleErrors(error)
 
 
         # If the action is submitTest, check the user's answers, score the test, then finally update the record given the correct score_id
@@ -318,16 +323,17 @@ def testForm():
                 # Finally, close the cursor
                 cursor.close()
                 mysql.close()
-                return jsonify("Test submitted!")
-            except:
-                submitError = "AN ERROR OCCURED WHILE SUBMITTING THE TEST!"
-                print(submitError)
-                return jsonify(submitError)
+                return jsonify("Test submitted!"), 201
+            
+            # The except statement will call a function that handles errors and returns JSON
+            except Exception as error:
+                print("An error occured, see below for more details.")
+                return handleErrors(error)
         
 
         # A default case just in case
         else:
-            return jsonify("No proper action was specified in the results page!")
+            return jsonify("No proper action was specified in the results page!"), 400
 
 
 ####//// Route for the results ////####
@@ -336,7 +342,8 @@ def resultDisplay():
     # Get the data from the request and make the MySQL cursor and declare variables that will be used across all actions
     data = request.json
     if not data:
-        return jsonify({"Backend error" : "No data provided for the results route!"}), 400
+        dataError = "Backend error: No data provided for the results route!"
+        return jsonify(dataError), 400
     
     # mysql = getDB()
     mysql = getDBLocal()
@@ -384,11 +391,12 @@ def resultDisplay():
                 # print(resultData)
 
                 print("Before the return")
-                return jsonify(resultData)
-            except:
-                recordRetrieveError = "AN ERROR OCCURED WHILE RETRIEVING THE TEST RESULTS RECORD!"
-                print(recordRetrieveError)
-                return jsonify(recordRetrieveError)
+                return jsonify(resultData), 200
+            
+            # The except statement will call a function that handles errors and returns JSON
+            except Exception as error:
+                print("An error occured, see below for more details.")
+                return handleErrors(error)
 
         # Else if the action is "retrieveAnswers", fetch the correct question, answer, and user response info based on provided attempt_id and user_id
         elif action == 'retrieveAnswers':
@@ -418,16 +426,17 @@ def resultDisplay():
 
                 # Return the retrieved answers
                 print("Before the return")
-                return jsonify(answerData)
-            except:
-                answerRetrieveError = "AN ERROR OCCURED WHILE RETRIEVING THE RESULTS OF THE TEST!"
-                print(answerRetrieveError)
-                return jsonify(answerRetrieveError)
+                return jsonify(answerData), 200
+            
+            # The except statement will call a function that handles errors and returns JSON
+            except Exception as error:
+                print("An error occured, see below for more details.")
+                return handleErrors(error)
         
 
         # A default case just in case
         else:
-            return jsonify("No proper action was specified in the results page!")
+            return jsonify("No proper action was specified in the results page!"), 400
     
 
 # Once the app is running, it will use the port 5000 and communicate to the localhost. It will also be in debug mode
