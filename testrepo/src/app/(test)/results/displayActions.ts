@@ -64,6 +64,7 @@ export async function answersData(action: string, givenFields: answerData) {
         const errorMessage = await responseMessage(response);
         if (errorMessage) {
             console.log(`This is what the errorMessage contains after failing to get data from the backend: ${errorMessage}`);
+            throw(errorMessage);
         }
 
         //Get the response from the database and return
@@ -107,6 +108,7 @@ export async function resultsData(action: string, givenFields: resultData) {
         const errorMessage = await responseMessage(response);
         if (errorMessage) {
             console.log(`This is what the errorMessage contains after failing to get data from the backend: ${errorMessage}`);
+            throw(errorMessage);
         }
 
         //Get the response from the database and return
