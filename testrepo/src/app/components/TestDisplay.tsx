@@ -1,15 +1,19 @@
 "use client";
 
-import { useState, useEffect } from "react"
+import Link from "next/link";
+import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import TestStart from "./testStart/testStart";
 import TestTake from "./testTake/testTake";
 import { infoData } from "./testStart/startActions";
 
+//This variable will apply the styling for the button
+const buttonStyle = "mt-4 px-8 py-4 font-semibold text-sm text-white position:sticky top:0 bg-[#d1190d] hover:bg-[#700f09]";
+
 // This component receives a prop, which uses a type of string array, as the initial question data to be used
 export default function TestDisplay( {initialQuestions} : {initialQuestions: string[]} ) {
-  console.log("HERE IS WHAT WAS RECEIVED FROM THE SERVER!")
-  console.log(initialQuestions)
+  console.log("HERE IS WHAT WAS RECEIVED FROM THE SERVER!");
+  console.log(initialQuestions);
   
   //This useState will be used to set which component to display.
   const [currentDisplay, setCurrentDisplay] = useState<string>('start');
@@ -26,9 +30,9 @@ export default function TestDisplay( {initialQuestions} : {initialQuestions: str
   useEffect(() => {
     console.log("HERE IS THE CURRENT VALUES OF TESTINFO")
     console.log(testInfo)
-  }, [])
+  }, []);
 
-  if(initialQuestions!) {
+  if(initialQuestions) {
     return (
       <div className="flex flex-col items-center">
       {
@@ -49,6 +53,9 @@ export default function TestDisplay( {initialQuestions} : {initialQuestions: str
         {
             <div className = "inset-0 items-center justify-center gap-6 text-center opacity-100 transition-opacity duration-300 sm:items-start sm:text-left border-8 border-gray-400 shadow-lg rounded-lg bg-white p-4 dark:text-gray-400">
                 <h1>Failed to retrieve the intial questions! Please reload the page and try again.</h1>
+                <Link href = "/">
+                  <button className = {buttonStyle} type = "button">Back to Home</button>
+                </Link>
             </div>
         }
         </div>, document.body
