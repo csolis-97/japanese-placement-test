@@ -89,7 +89,7 @@ export async function submitTest(action: string, givenFields: submitData) {
     //If an error occured during retrieval, catch it and log it
     catch (errorMessage) {
         console.log(errorMessage);
-        throw new Error ("Internal Server Error: The record of the user's test results could not be retrieved.");
+        throw new Error ("Internal Server Error: An error occured while submitting the test results.");
     }
 }
 
@@ -126,7 +126,7 @@ export async function questionFetch(action: string, givenFields: requestData) {
     //If an error occured during retrieval, catch it and log it
     catch (errorMessage) {
         console.log(errorMessage);
-        throw new Error ("Internal Server Error: The record of the user's test results could not be retrieved.");
+        throw new Error ("Internal Server Error: The questions for the next stage could not be fetched.");
     }
 }
 
@@ -178,6 +178,6 @@ export async function questionCheck(action: string, givenFields: responseData) {
     //If an error occured during retrieval, catch it and log it
     catch (errorMessage) {
         console.log(errorMessage);
-        throw new Error ("Internal Server Error: The record of the user's test results could not be retrieved.");
+        throw new Error ("Internal Server Error: The answers for the current stage could not be checked.");
     }
 }

@@ -28,24 +28,17 @@ export default function TestDisplay( {initialQuestions} : {initialQuestions: str
     console.log(testInfo)
   }, []);
 
-  if(initialQuestions) {
-    return (
-      <div className="flex flex-col items-center">
-      {
-          currentDisplay === "start" && (
-          <TestStart initialTestInfo = {testInfo} setInitialTestInfo = {setTestInfo} currentDisplay = {currentDisplay} setCurrentDisplay = {setCurrentDisplay}/>
-          )
-      }
-      {
-          currentDisplay === "test" && (
-          <TestTake currentTestInfo = {testInfo} setCurrentTestInfo = {setTestInfo} initialQuestions = {initialQuestions}/>
-          )
-      }
-      </div>)
+  return (
+    <div className="flex flex-col items-center">
+    {
+        currentDisplay === "start" && (
+        <TestStart initialTestInfo = {testInfo} setInitialTestInfo = {setTestInfo} currentDisplay = {currentDisplay} setCurrentDisplay = {setCurrentDisplay}/>
+        )
     }
-  else {
-    return (
-      <MessageModal messageText = "Failed to retrieve the intial questions! Please reload the page and try again." buttonText = "Back to Home"/>
-    );
-  }
+    {
+        currentDisplay === "test" && (
+        <TestTake currentTestInfo = {testInfo} setCurrentTestInfo = {setTestInfo} initialQuestions = {initialQuestions}/>
+        )
+    }
+    </div>)
 }

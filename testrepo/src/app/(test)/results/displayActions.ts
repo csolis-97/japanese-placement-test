@@ -118,6 +118,6 @@ export async function resultsData(action: string, givenFields: resultData) {
     //If an error occured during retrieval, catch it and log it
     catch (errorMessage) {
         console.log(errorMessage);
-        throw new Error ("Internal Server Error: The record of the user's test results could not be retrieved.");
+        throw new Error ("Internal Server Error: The user's answers could not be retrieved.");
     }
 }
