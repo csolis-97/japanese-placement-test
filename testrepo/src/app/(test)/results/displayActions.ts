@@ -47,7 +47,7 @@ export async function answersData(action: string, givenFields: answerData) {
 
     //Try to retrieve the test data from the database
     
-    try {
+    //try {
         console.log("Attempt to retrieve test data...");
         const response = await fetch(`${getURL()}/api/results`, {
             method: 'POST',
@@ -72,12 +72,12 @@ export async function answersData(action: string, givenFields: answerData) {
         console.log("Here is the response from the database:");
         console.log(data);
         return data;
-    }
+    //}
     //If an error occured during retrieval, catch it and log it
-    catch (errorMessage) {
+    /*catch (errorMessage) {
         console.log(errorMessage);
         return "Internal Server Error: The user's answers could not be retrieved.";
-    }
+    }*/
 }
 
 export async function resultsData(action: string, givenFields: resultData) {
@@ -93,7 +93,7 @@ export async function resultsData(action: string, givenFields: resultData) {
 
     //Try to retrieve the test data from the database
     
-    try {
+    //try {
         console.log("Attempt to retrieve test data...");
         const response = await fetch(`${getURL()}/api/results`, {
             method: 'POST',
@@ -122,10 +122,10 @@ export async function resultsData(action: string, givenFields: resultData) {
         testDate = newTest;
         data['test_date'] = testDate;
         return data;
-    }
+    //}
     //If an error occured during retrieval, catch it and log it
-    catch (errorMessage) {
+    /* catch (errorMessage) {
         console.log(errorMessage);
         return "Internal Server Error: The record of the user's test results could not be retrieved.";
-    }
+    } */
 }
