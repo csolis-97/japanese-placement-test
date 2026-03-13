@@ -96,7 +96,7 @@ export default function TestTake({currentTestInfo, setCurrentTestInfo, initialQu
     console.log(isLastQuestion)
 
     //These variables will apply the styling for the regular and disabled buttons
-    const buttonStyle = "mt-4 px-8 py-4 font-semibold text-sm text-white position:sticky top:0";
+    const buttonStyle = "mt-4 px-8 py-4 font-semibold text-sm text-white";
     const regularButton = "bg-[#d1190d] hover:bg-[#700f09]";
     const disabledButton = "bg-gray-500";
 

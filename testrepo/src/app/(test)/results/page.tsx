@@ -2,7 +2,7 @@ export const dynamic = 'force-dynamic';
 
 import { Suspense } from "react";
 import * as resultUtils from "./displayActions";
-import ResultsDisplay from "@/app/components/ResultDisplay/ResultDisplay";
+import ResultsDisplay from "@/app/components/ResultDisplay";
 import * as skeletons from "@/app/components/skeletons";
 
 export default async function Results({ searchParams } : { searchParams: Promise<{ [key : string] : string | string[] | undefined }> }) {

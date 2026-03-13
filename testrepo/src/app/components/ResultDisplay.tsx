@@ -1,11 +1,9 @@
 "use client";
 
-import Link from "next/link"
-import { useState, Suspense, use } from "react";
-import { createPortal } from "react-dom";
-import QuestionDisplay from "../QuestionDisplay";
-import ResultInfo from "../ResultInfo";
-import * as skeletons from "../skeletons";
+import { Suspense, use } from "react";
+import QuestionDisplay from "./QuestionDisplay";
+import ResultInfo from "./ResultInfo";
+import * as skeletons from "./skeletons";
 
 //Interface below will be used for when each question itself is displayed. Fields should be the exact same as the ones in
 //the database in order to be properly displayed.

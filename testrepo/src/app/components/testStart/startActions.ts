@@ -51,8 +51,9 @@ export async function createRecord(action: string, givenFields: infoData) {
         console.log(data);
         return data;
     }
-    catch(errorMessage) {
+    //If an error occured during retrieval, catch it and log it
+    catch (errorMessage) {
         console.log(errorMessage);
-        console.log("Internal Server Error: Record could not be created. Result ID and attempt ID could not be fetched.");
+        throw new Error ("Internal Server Error: The record of the user's test results could not be retrieved.");
     }
 }

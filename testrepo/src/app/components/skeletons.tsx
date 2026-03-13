@@ -2,9 +2,6 @@
 
 import Link from "next/link";
 
-// This variable will apply the styling for the button
-const buttonStyle = "mt-4 px-4 sm:px-8 py-4 font-semibold text-sm text-white position:sticky top:0 bg-[#d1190d] hover:bg-[#700f09]";
-
 // Loading animation, taken from the one provided by Vercel
 const shimmer = "before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/40 before:to-transparent";
 

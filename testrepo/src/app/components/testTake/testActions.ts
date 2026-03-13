@@ -86,10 +86,10 @@ export async function submitTest(action: string, givenFields: submitData) {
         console.log(data);
         return data;
     }
-
-    catch(errorMessage) {
+    //If an error occured during retrieval, catch it and log it
+    catch (errorMessage) {
         console.log(errorMessage);
-        console.log("Internal Server Error: An error occured while submitting the test results.");
+        throw new Error ("Internal Server Error: The record of the user's test results could not be retrieved.");
     }
 }
 
@@ -123,10 +123,10 @@ export async function questionFetch(action: string, givenFields: requestData) {
         console.log(data);
         return data;
     }
-
-    catch(errorMessage) {
+    //If an error occured during retrieval, catch it and log it
+    catch (errorMessage) {
         console.log(errorMessage);
-        console.log("Internal Server Error: The questions for the next stage could not be fetched.");
+        throw new Error ("Internal Server Error: The record of the user's test results could not be retrieved.");
     }
 }
 
@@ -175,9 +175,9 @@ export async function questionCheck(action: string, givenFields: responseData) {
         console.log(data);
         return data;
     }
-
-    catch(errorMessage) {
+    //If an error occured during retrieval, catch it and log it
+    catch (errorMessage) {
         console.log(errorMessage);
-        console.log("Internal Server Error: The answers for the current stage could not be checked.");
+        throw new Error ("Internal Server Error: The record of the user's test results could not be retrieved.");
     }
 }

@@ -5,18 +5,16 @@ import TestDisplay from "@/app/components/TestDisplay";
 
 export default async function Home() {
 
-  //This const will hold the initial question info
-  let initialRequest: testUtils.requestData;
-
-  async function fetchInitialQuestions() {
-    // Fetch the test form data from the backend, with 'retrieveOneQuestion' as the action to take
-    //Make a default request for fetching the first question
-    initialRequest = {
+  //Make a default request for fetching the first question
+  let initialRequest: testUtils.requestData = {
     questionId: [0],
     pastId: [],
     questionCategory: "Beginner I",
     wasCorrect: [false]
-    }
+  };
+
+  async function fetchInitialQuestions() {
+    // Fetch the test form data from the backend, with 'retrieveOneQuestion' as the action to take
     console.log("ABOUT TO FETCH THE INITIAL STAGE!")
     const fetchedQuestion = await testUtils.questionFetch('retrieveStage', initialRequest)
     console.log("FETCH A NEW STAGE!")

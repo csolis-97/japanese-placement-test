@@ -14,10 +14,6 @@ interface messageProps {
     onButtonChange?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 }
 
-//These variables will apply the styling for the regular and disabled buttons
-const buttonStyle = "mt-4 px-8 py-4 font-semibold text-sm text-white position:sticky top:0 bg-[#d1190d] hover:bg-[#700f09]";
-
-
 export default function StageComplete(props: messageProps) {
 
     console.log(`CURRENT STAGE: ${props.stageNum}`);
@@ -58,7 +54,7 @@ export default function StageComplete(props: messageProps) {
                 <h2>{stageMessage}</h2>
                 <p>{props.totalCorrect} out of {props.totalQuestions} correct!</p>
                 <button type = "submit" name = "submitButton" data-dismiss = "modal" 
-                className = {buttonStyle} onClick = {props.onButtonChange}>{buttonText}</button>
+                className = {"buttonStyle"} onClick = {props.onButtonChange}>{buttonText}</button>
             </div>
         }
         </div>, document.body

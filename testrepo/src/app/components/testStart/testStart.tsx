@@ -1,12 +1,11 @@
 "use client";
 
-import { checkEmail, checkName } from "@/app/utils/utilFunctions";
+import { useState, useEffect, Dispatch, SetStateAction } from "react";
 import * as infoUtils from "./startActions";
-import { useState, useEffect } from "react";
-import { Dispatch, SetStateAction } from "react";
+import { checkEmail, checkName } from "@/app/utils/utilFunctions";
 
 //These variables will apply the styling for the regular and disabled buttons
-const buttonStyle = "mt-4 px-8 py-4 font-semibold text-sm text-white position:sticky top:0";
+const buttonStyle = "mt-4 px-8 py-4 font-semibold text-sm text-whites";
 const regularButton = "bg-[#d1190d] hover:bg-[#700f09]";
 const disabledButton = "bg-gray-500";
 

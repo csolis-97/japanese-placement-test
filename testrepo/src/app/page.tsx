@@ -1,8 +1,4 @@
-"use client"
 import Link from "next/link";
-
-//This variable will apply the styling for the button
-const buttonStyle = "mt-4 px-8 py-4 font-semibold text-sm text-white position:sticky top:0 bg-[#d1190d] hover:bg-[#700f09]";
 
 export default function Home() {
   return (
@@ -16,7 +12,7 @@ export default function Home() {
             the questions are answered, you will receive the results alongside your recommended placement.
           </p>
           <Link href = "/testform">
-              <button className = {buttonStyle} type = "button">Start</button>
+              <button className = {"buttonStyle"} type = "button">Start</button>
           </Link>
         </div>
       </main>

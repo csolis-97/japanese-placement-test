@@ -11,9 +11,6 @@ interface resultDisplayProps {
     testDate: Date;
 }
 
-//This variable will apply the styling for the button
-const buttonStyle = "mt-4 px-4 sm:px-8 py-4 font-semibold text-sm text-white position:sticky top:0 bg-[#d1190d] hover:bg-[#700f09]";
-
 // Component to display the results of the test
 export default function resultinfo(props: resultDisplayProps) {
     return (
@@ -23,7 +20,7 @@ export default function resultinfo(props: resultDisplayProps) {
             <p className = "text-gray-600">Total Score: {Math.round(props.totalScore)} / {props.totalQuestions}</p>
             <p className = "text-gray-600">Your Suggested Entrance Level: {props.entranceLevel}</p>
             <Link href = "/testform">
-                <button className = {buttonStyle} type = "button">Click here to retake the test.</button>
+                <button className = {"buttonStyle"} type = "button">Click here to retake the test.</button>
             </Link>
         </div>
     )
