@@ -58,7 +58,7 @@ export default function questionDisplay(props: questionDisplayProps) {
                         //flex items-start is used to properly algin the radio buttons and the answer text
                         <div key={index} className = "mt-2 flex items-center text-sm sm:text-base">
                             <input type = "radio" id = {`answer-${props.answerId[index]}`} name = {`question-${props.questionId}`} value = {answer || props.selectedAnswer}
-                                className = {`shrink-0 mt-2 ${props.selectedAnswer === props.answerText[index] && Number(props.wasCorrect) === 1 || Number(props.correctAnswer?.[index]) === 1 ? 
+                                className = {`${props.selectedAnswer === props.answerText[index] && Number(props.wasCorrect) === 1 || Number(props.correctAnswer?.[index]) === 1 ? 
                                 (correctRadio) : (regularRadio)} `}
                                 onChange = {props.onChangeValue} checked = { props.selectedAnswer === answer}
                             readOnly = {props.alreadyAnswered} />

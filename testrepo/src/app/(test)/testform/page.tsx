@@ -8,7 +8,6 @@ export default async function Home() {
   //This const will hold the initial question info
   let initialRequest: testUtils.requestData;
 
-  // Note, this can also be written as async function fetchTestFormat() {...}. It's called an arrow function here.
   async function fetchInitialQuestions() {
     // Fetch the test form data from the backend, with 'retrieveOneQuestion' as the action to take
     //Make a default request for fetching the first question

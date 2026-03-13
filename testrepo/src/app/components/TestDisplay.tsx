@@ -6,7 +6,7 @@ import TestTake from "./testTake/testTake";
 import { infoData } from "./testStart/startActions";
 
 // This component receives a prop, which uses a type of string array, as the initial question data to be used
-export default function TestDisplay({initialQuestions} : {initialQuestions: string[]}) {
+export default function TestDisplay( {initialQuestions} : {initialQuestions: string[]} ) {
   console.log("HERE IS WHAT WAS RECEIVED FROM THE SERVER!")
   console.log(initialQuestions)
   
