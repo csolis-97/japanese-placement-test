@@ -47,15 +47,16 @@ export default function ResultsDisplay( { attemptNum, resultNum, answersPromise,
   const results = use(resultsPromise) as testResult;
 
   //Fetch the user's graded responses from the test page
-  console.log("ABOUT TO ENTER THE HTML!")
-  console.log("HERE IS THE QUESTION AND ANSWER INFORMATION")
+  console.log("ABOUT TO ENTER THE HTML!");
+  console.log("HERE IS THE QUESTION AND ANSWER INFORMATION");
   //console.log(questions)
-  console.log("QUESTIONS.LENGTH")
+  console.log("QUESTIONS.LENGTH");
   //console.log(questions.length)
   
 
   //HTML return for the results page
   if (questions && questions.length > 0 && results) {
+    console.log("MISTAKENLY ENTERING THE IF STATEMENT!");
     return (
       <>
         <div className="flex flex-col items-center gap-6 p-12 text-center sm:items-start sm:text-left">
