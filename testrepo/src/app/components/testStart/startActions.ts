@@ -43,11 +43,8 @@ export async function createRecord(action: string, givenFields: infoData) {
                 'email' : email, 'name' : name, 'submit_time' : submittedTime})
         });
 
-        // If there were any errors in the response, it will be stored in this const.
+        // If there were any errors in the response, it will be stored in this const and caught.
         const errorMessage = await responseMessage(response);
-        if (errorMessage) {
-            console.log(`This is what the errorMessage contains after failing to get data from the backend: ${errorMessage}`);
-        }
 
         const data = await response.json();
         console.log("Here is the response from the database after requesting the current result ID and attempt ID:");

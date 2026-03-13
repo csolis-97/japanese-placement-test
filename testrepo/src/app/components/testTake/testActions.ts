@@ -78,11 +78,8 @@ export async function submitTest(action: string, givenFields: submitData) {
                  'user_attempt' : userAttempt, 'past_id' : pastId, 'stage_array' : stageArray})
         });
 
-        // If there were any errors in the response, it will be stored in this const.
+        // If there were any errors in the response, it will be stored in this const and caught.
         const errorMessage = await responseMessage(response);
-        if (errorMessage) {
-            console.log(`This is what the errorMessage contains after failing to get data from the backend: ${errorMessage}`);
-        }
 
         const data = await response.json();
         console.log("Here is the response from the database in regards to submitting the test:");
@@ -118,11 +115,8 @@ export async function questionFetch(action: string, givenFields: requestData) {
                 'question_category' : questionCategory, 'was_correct' : wasCorrect})
         });
 
-        // If there were any errors in the response, it will be stored in this const.
+        // If there were any errors in the response, it will be stored in this const and caught.
         const errorMessage = await responseMessage(response);
-        if (errorMessage) {
-            console.log(`This is what the errorMessage contains after failing to get data from the backend: ${errorMessage}`);
-        }
 
         const data = await response.json();
         console.log("Here is the response from the database after sending the current level, question ID, and correct boolean:");
@@ -173,11 +167,8 @@ export async function questionCheck(action: string, givenFields: responseData) {
                 'current_stage' : currentStage})
         });
 
-        // If there were any errors in the response, it will be stored in this const.
+        // If there were any errors in the response, it will be stored in this const and caught.
         const errorMessage = await responseMessage(response);
-        if (errorMessage) {
-            console.log(`This is what the errorMessage contains after failing to get data from the backend: ${errorMessage}`);
-        }
 
         const data = await response.json();
         console.log("Here is the response from the database after sending the current answer data:");

@@ -47,7 +47,7 @@ export async function answersData(action: string, givenFields: answerData) {
 
     //Try to retrieve the test data from the database
     
-    //try {
+    try {
         console.log("Attempt to retrieve test data...");
         const response = await fetch(`${getURL()}/api/results`, {
             method: 'POST',
@@ -60,24 +60,20 @@ export async function answersData(action: string, givenFields: answerData) {
                 'attempt_id' : attemptId, 'score_id' : resultId})
         });
 
-        // If there were any errors in the response, it will be stored in this const.
+        // If there were any errors in the response, it will be stored in this const and caught.
         const errorMessage = await responseMessage(response);
-        if (errorMessage) {
-            console.log(`This is what the errorMessage contains after failing to get data from the backend: ${errorMessage}`);
-            throw(errorMessage);
-        }
 
         //Get the response from the database and return
         const data = await response.json();
         console.log("Here is the response from the database:");
         console.log(data);
         return data;
-    //}
+    }
     //If an error occured during retrieval, catch it and log it
-    /*catch (errorMessage) {
+    catch (errorMessage) {
         console.log(errorMessage);
-        return "Internal Server Error: The user's answers could not be retrieved.";
-    }*/
+        throw new Error ("Internal Server Error: The record of the user's test results could not be retrieved.");
+    }
 }
 
 export async function resultsData(action: string, givenFields: resultData) {
@@ -93,7 +89,7 @@ export async function resultsData(action: string, givenFields: resultData) {
 
     //Try to retrieve the test data from the database
     
-    //try {
+    try {
         console.log("Attempt to retrieve test data...");
         const response = await fetch(`${getURL()}/api/results`, {
             method: 'POST',
@@ -104,12 +100,8 @@ export async function resultsData(action: string, givenFields: resultData) {
                 'entrance_level' : entranceLevel, 'test_date' : testDate})
         });
 
-        // If there were any errors in the response, it will be stored in this const.
+        // If there were any errors in the response, it will be stored in this const and caught.
         const errorMessage = await responseMessage(response);
-        if (errorMessage) {
-            console.log(`This is what the errorMessage contains after failing to get data from the backend: ${errorMessage}`);
-            throw(errorMessage);
-        }
 
         //Get the response from the database and return
         const data = await response.json();
@@ -122,10 +114,10 @@ export async function resultsData(action: string, givenFields: resultData) {
         testDate = newTest;
         data['test_date'] = testDate;
         return data;
-    //}
+    }
     //If an error occured during retrieval, catch it and log it
-    /* catch (errorMessage) {
+    catch (errorMessage) {
         console.log(errorMessage);
-        return "Internal Server Error: The record of the user's test results could not be retrieved.";
-    } */
+        throw new Error ("Internal Server Error: The record of the user's test results could not be retrieved.");
+    }
 }

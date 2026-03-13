@@ -13,9 +13,10 @@ export function getURL() {
 export async function responseMessage(response: Response) {
     console.log(`HERE IS THE STATUS OF THE RESPONSE: ${response.status}`);
     if (!response.ok) {
-        const errorMessage = await response.text();
-        console.log(`HERE IS THE FULL ERROR TAKEN FROM THE RESPONSE: ${errorMessage}`)
-        return errorMessage;
+        const errorText = await response.text();
+        console.log(`HERE IS THE FULL ERROR TAKEN FROM THE RESPONSE: ${errorText}`);
+        const errorMessage = `Error with a status code of ${response.status}. Full details are as follows: ${errorText}`;
+        throw new Error(errorMessage);
     }
 }
 
