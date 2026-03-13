@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react"
+import { createPortal } from "react-dom";
 import TestStart from "./testStart/testStart";
 import TestTake from "./testTake/testTake";
 import { infoData } from "./testStart/startActions";
@@ -27,12 +28,11 @@ export default function TestDisplay( {initialQuestions} : {initialQuestions: str
     console.log(testInfo)
   }, [])
 
-  if(initialQuestions!) {
+  if(!initialQuestions) {
     return (
       <div className="flex flex-col items-center">
       {
           currentDisplay === "start" && (
-          //LOGIC FOR SWITCHING BETWEEN COMPONENTS GOES HERE
           <TestStart initialTestInfo = {testInfo} setInitialTestInfo = {setTestInfo} currentDisplay = {currentDisplay} setCurrentDisplay = {setCurrentDisplay}/>
           )
       }
@@ -44,10 +44,14 @@ export default function TestDisplay( {initialQuestions} : {initialQuestions: str
       </div>)
     }
   else {
-    return (
-      <div className="flex flex-col items-center">
-        <p>Failed to retrieve the initial questions!</p>
-      </div>
-    )
+    return createPortal(
+        <div className = "fixed inset-0 w-screen h-screen flex items-center text-center justify-center bg-black/40">
+        {
+            <div className = "inset-0 items-center justify-center gap-6 text-center opacity-100 transition-opacity duration-300 sm:items-start sm:text-left border-8 border-gray-400 shadow-lg rounded-lg bg-white p-4 dark:text-gray-400">
+                <h1>Failed to retrieve the intial questions! Please reload the page and try again.</h1>
+            </div>
+        }
+        </div>, document.body
+    );
   }
 }
