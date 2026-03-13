@@ -28,7 +28,7 @@ export default function TestDisplay( {initialQuestions} : {initialQuestions: str
     console.log(testInfo)
   }, [])
 
-  if(!initialQuestions) {
+  if(initialQuestions!) {
     return (
       <div className="flex flex-col items-center">
       {
