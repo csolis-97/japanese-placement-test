@@ -55,7 +55,7 @@ export default function ResultsDisplay( { attemptNum, resultNum, answersPromise,
   
 
   //HTML return for the results page
-  if (questions && results) {
+  if (questions && questions.length > 0 && results) {
     return (
       <>
         <div className="flex flex-col items-center gap-6 p-12 text-center sm:items-start sm:text-left">
@@ -63,15 +63,14 @@ export default function ResultsDisplay( { attemptNum, resultNum, answersPromise,
             // <skeletons.ResultInfoSkeleton />
           }
           {
-            questions.length > 0 && (
-                <ResultInfo
-                attemptId = {attemptNum}
-                totalScore = { // The total_score stored is actually the percentage of overall correct questions, so calculate the correct number here
-                  (results.total_score / 100) * questions.length}
-                entranceLevel = {results.entrance_level}
-                testDate = {results.test_date}
-                totalQuestions = {questions.length}
-              />)
+            <ResultInfo
+              attemptId = {attemptNum}
+              totalScore = { // The total_score stored is actually the percentage of overall correct questions, so calculate the correct number here
+                (results.total_score / 100) * questions.length}
+              entranceLevel = {results.entrance_level}
+              testDate = {results.test_date}
+              totalQuestions = {questions.length}
+            />
           }
           </div>
           <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
