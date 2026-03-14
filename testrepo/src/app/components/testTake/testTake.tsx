@@ -1,12 +1,11 @@
 "use client";
 
-import * as testUtils from "./testActions";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef, useTransition, Dispatch, SetStateAction } from "react";
+import * as testUtils from "./testActions";
 import QuestionDisplay from "../QuestionDisplay";
 import StageComplete from "../StageComplete";
 import { infoData } from "../testStart/startActions";
-import { stageData } from "./testActions";
 
 //Type defined below will be used for setting the test questions and answers
 type questionType = {
@@ -63,7 +62,7 @@ export default function TestTake({currentTestInfo, setCurrentTestInfo, initialQu
 
     //This useRef will be used to track all info of the stages of the test. Since the number of questions asked is
     //dynamic, use the current question number modulus 5 to determine the current question index.
-    let stageInfo = useRef<stageData>({
+    let stageInfo = useRef<testUtils.stageData>({
     'stageDifficulty': [initialQuestions[0].question_level],
     'stageNum' : 0,
     'stageQuestion' : currentQuestion % 5,
