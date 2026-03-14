@@ -48,12 +48,9 @@ export default function ResultsDisplay( { attemptNum, resultNum, answersPromise,
   console.log("QUESTIONS.LENGTH");
   //console.log(questions.length)
   
-
-  //HTML return for the results page
-  console.log("MISTAKENLY ENTERING THE IF STATEMENT!");
   return (
     <>
-      <div className="flex flex-col items-center gap-6 p-12 text-center sm:items-start sm:text-left">
+      <div className = "p-12">
         { //DEBUG ONLY, TEST THE RESULTINFO SKELETON
           // <skeletons.ResultInfoSkeleton />
         }
@@ -68,7 +65,7 @@ export default function ResultsDisplay( { attemptNum, resultNum, answersPromise,
           />
         }
         </div>
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
+        <div className = "flex flex-col gap-6">
           { // DEBUG ONLY, TEST THE QUESTIONDISPLAY SKELETON
             // <skeletons.QuestionDisplaySkeleton />
           }

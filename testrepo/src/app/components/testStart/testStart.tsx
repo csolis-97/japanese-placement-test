@@ -5,7 +5,7 @@ import * as infoUtils from "./startActions";
 import { checkEmail, checkName } from "@/app/utils/utilFunctions";
 
 //These variables will apply the styling for the regular and disabled buttons
-const buttonStyle = "mt-4 px-8 py-4 font-semibold text-sm text-whites";
+const buttonDefaults = "mt-4 px-8 py-4 font-semibold text-sm text-white";
 const regularButton = "bg-[#d1190d] hover:bg-[#700f09]";
 const disabledButton = "bg-gray-500";
 
@@ -118,8 +118,8 @@ export default function TestStart({initialTestInfo, setInitialTestInfo, currentD
   //HTML return for the test start
   return (
     <div className="flex flex-col min-h-screen items-center justify-center gap-6">
-      <h1 className = "text-3xl font-semibold leading-10 text-black dark:text-zinc-50">Japanese Placement Test</h1>
-        <form id = "userInfo" name = "userInfo" onSubmit = {handleSubmission} className = "flex flex-col space-y-2 items-center justify-center">
+      <h1 className = "text-2xl sm:text-3xl font-semibold text-black text-center dark:text-zinc-50">Japanese Placement Test</h1>
+        <form id = "userInfo" name = "userInfo" onSubmit = {handleSubmission} className = "flex flex-col space-y-2 items-center">
             <label htmlFor = "namefield" className = "mt-2">Full Name</label>
             <input type = "text" name = "name" id = "namefield" placeholder = "Enter your full name." className = "mt-2 shadow-md border-2 border-gray-300 rounded-sm p-1" onChange = {handleChange} required/>
             { // Display any errors for the name check here
@@ -139,7 +139,7 @@ export default function TestStart({initialTestInfo, setInitialTestInfo, currentD
           <p className = "font-semibold">Important! For record-keeping purposes, please ensure that your name and email address are correct!</p>
         </div>
         <div className = "flex items-center justify-center">
-            <button type = "submit" form = "userInfo" name = "submitButton" className = {` ${buttonStyle}
+            <button type = "submit" form = "userInfo" name = "submitButton" className = {` ${buttonDefaults}
             // If the user has not input an email or a name, use the disabled style. Otherwise use regular.
              ${!initialTestInfo.email || !initialTestInfo.name ? (disabledButton) : (regularButton)}`}
             disabled = { // If it is not the last question, or if the user has not typed in an email or name

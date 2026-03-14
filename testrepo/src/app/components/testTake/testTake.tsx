@@ -96,7 +96,7 @@ export default function TestTake({currentTestInfo, setCurrentTestInfo, initialQu
     console.log(isLastQuestion)
 
     //These variables will apply the styling for the regular and disabled buttons
-    const buttonStyle = "mt-4 px-8 py-4 font-semibold text-sm text-white";
+    const buttonDefaults = "mt-4 px-8 py-4 font-semibold text-sm text-white";
     const regularButton = "bg-[#d1190d] hover:bg-[#700f09]";
     const disabledButton = "bg-gray-500";
 
@@ -413,7 +413,7 @@ export default function TestTake({currentTestInfo, setCurrentTestInfo, initialQu
           }
           <div className = "flex w-full justify-end">
             {isLastQuestion  ? (
-              <button type = "submit" form = "placeTest" name = "submitButton" className = {`${buttonStyle} 
+              <button type = "submit" form = "placeTest" name = "submitButton" className = {`${buttonDefaults} 
                 // If it is not the last question, the stage was submitted, or if the user has not selected an answer, used the disabled style. Otherwise use regular.
                 ${!isLastQuestion || isSubmitted || !answerArray[currentQuestion]?.userText ? (disabledButton) : (regularButton)}`}
               disabled = { // If it is not the last question, the stage was submitted, or if the user has not selected an answer
@@ -421,7 +421,7 @@ export default function TestTake({currentTestInfo, setCurrentTestInfo, initialQu
               onClick = {handleButtonChange}>Submit Answers</button>
             ) : (
               <button 
-              type = "button" form = "placeTest" name = "next" className = {`${buttonStyle} 
+              type = "button" form = "placeTest" name = "next" className = {`${buttonDefaults} 
                 // If the user has not selected an answer, used the disabled style. Otherwise use regular.
                 ${!answerArray[currentQuestion]?.userText ? (disabledButton) : (regularButton)}`}
               disabled = { // If the user has not selected an answer

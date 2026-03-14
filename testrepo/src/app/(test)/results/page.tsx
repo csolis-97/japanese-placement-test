@@ -41,8 +41,8 @@ export default async function Results({ searchParams } : { searchParams: Promise
   const resultsPromise = resultUtils.resultsData('retrieveResults', resultsFormat)
   //HTML return for the results page
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#d1190d] font-sans dark:bg-black">
-      <main className="flex sm:min-h-screen sm:w-full sm:max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
+    <div className="flex sm:min-h-screen items-center justify-center bg-[#d1190d] font-sans dark:bg-black">
+      <main className="flex sm:min-h-screen w-full sm:max-w-3xl flex-col items-center justify-between py-16 sm:py-32 px-16 bg-white dark:bg-black sm:items-start">
         <Suspense fallback = {
           <>
             <div className="flex flex-col items-center gap-6 p-12 text-center sm:items-start sm:text-left">

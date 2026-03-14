@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import TestStart from "./testStart/testStart";
 import TestTake from "./testTake/testTake";
 import { infoData } from "./testStart/startActions";
-import MessageModal from "./MessageModal";
 
 // This component receives a prop, which uses a type of string array, as the initial question data to be used
 export default function TestDisplay( {initialQuestions} : {initialQuestions: string[]} ) {
@@ -29,7 +28,7 @@ export default function TestDisplay( {initialQuestions} : {initialQuestions: str
   }, []);
 
   return (
-    <div className="flex flex-col items-center">
+    <>
     {
         currentDisplay === "start" && (
         <TestStart initialTestInfo = {testInfo} setInitialTestInfo = {setTestInfo} currentDisplay = {currentDisplay} setCurrentDisplay = {setCurrentDisplay}/>
@@ -40,5 +39,5 @@ export default function TestDisplay( {initialQuestions} : {initialQuestions: str
         <TestTake currentTestInfo = {testInfo} setCurrentTestInfo = {setTestInfo} initialQuestions = {initialQuestions}/>
         )
     }
-    </div>)
+    </>)
 }
