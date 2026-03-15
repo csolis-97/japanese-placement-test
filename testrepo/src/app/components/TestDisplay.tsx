@@ -5,10 +5,22 @@ import TestStart from "./testStart/testStart";
 import TestTake from "./testTake/testTake";
 import { infoData } from "./testStart/startActions";
 
+//Interface below will be used for when each question itself is displayed. Fields should be the exact same as the ones in
+//the database in order to be properly displayed.
+export interface testQuestion {
+  question_id: number;
+  question_text: string;
+  question_body: string;
+  question_level: string;
+  answer_id: number[];
+  answer_text: string[];
+  already_answered?: boolean;
+  correct_answer?: boolean[];
+  is_correct?: boolean;
+}
+
 // This component receives a prop, which uses a type of string array, as the initial question data to be used
-export default function TestDisplay( {initialQuestions} : {initialQuestions: string[]} ) {
-  console.log("HERE IS WHAT WAS RECEIVED FROM THE SERVER!");
-  console.log(initialQuestions);
+export default function TestDisplay( {initialQuestions} : {initialQuestions: testQuestion[]} ) {
   
   //This useState will be used to set which component to display.
   const [currentDisplay, setCurrentDisplay] = useState<string>('start');
@@ -23,8 +35,8 @@ export default function TestDisplay( {initialQuestions} : {initialQuestions: str
   });
 
   useEffect(() => {
-    console.log("HERE IS THE CURRENT VALUES OF TESTINFO")
-    console.log(testInfo)
+    console.log(`HERE IS WHAT WAS RECEIVED FROM THE SERVER: ${initialQuestions}`);
+    console.log(`HERE IS THE CURRENT VALUES OF TESTINFO: ${testInfo}`);
   }, []);
 
   return (

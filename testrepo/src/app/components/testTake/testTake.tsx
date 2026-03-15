@@ -6,6 +6,12 @@ import * as testUtils from "./testActions";
 import QuestionDisplay from "../QuestionDisplay";
 import StageComplete from "../StageComplete";
 import { infoData } from "../testStart/startActions";
+import { testQuestion } from "../TestDisplay";
+import { shuffleQuestion, seedShuffle } from "@/app/utils/utilFunctions";
+
+//const shuffleSeed = (Math.floor(Math.random() * 10000000));
+const shuffleSeed = 1234;
+console.log(`CURRENT SEED TO BE USED: ${shuffleSeed}`);
 
 //Type defined below will be used for setting the test questions and answers
 type questionType = {
@@ -19,30 +25,29 @@ type questionType = {
   alreadyAnswered: boolean;
 }
 
-//Interface below will be used for when each question itself is displayed. Fields should be the exact same as the ones in
-//the database in order to be properly displayed.
-interface testQuestion {
-  question_id: number;
-  question_text: string;
-  question_body: string;
-  question_level: string;
-  answer_id: number[];
-  answer_text: string[];
-  already_answered?: boolean;
-  is_correct?: boolean;
-}
-
 // This interface will be used to properly receive the useState and data which are passed to the component
 interface testProps {
   currentTestInfo: infoData;
   setCurrentTestInfo: Dispatch<SetStateAction<infoData>>;
-  initialQuestions: any;
+  initialQuestions: testQuestion[];
 }
 
 
 export default function TestTake({currentTestInfo, setCurrentTestInfo, initialQuestions} : testProps) {
+
     // This useState is used to store the questions received from the database
-    const [questions, setQuestions] = useState<testQuestion[]>(initialQuestions);
+    const [questions, setQuestions] = useState<testQuestion[]>(() => {
+      let shuffleInitial = JSON.parse(JSON.stringify(initialQuestions));
+      seedShuffle(shuffleInitial, shuffleSeed);
+
+      console.log("INITIAL QUESTION ANSWER OPTIONS HAVE BEEN SHUFFLED!");
+      for (let i = shuffleInitial.length - 1; i > -1; i--) {
+        console.log(`HERE IS THE QUESTION ID FOR THE CURRENT QUESTION: ${shuffleInitial[i].question_id}`)
+        console.log(`HERE ARE THE ANSWER IDS FOR THE CURRENT QUESTION: ${shuffleInitial[i].answer_id}`)
+        console.log(`HERE ARE THE ANSWER TEXTS FOR THE CURRENT QUESTION: ${shuffleInitial[i].answer_text}`)
+      }
+      return shuffleInitial;
+    });
 
     // This useState is used to track the current question
     const [currentQuestion, setCurrentQuestion] = useState<number>(0);
@@ -67,23 +72,23 @@ export default function TestTake({currentTestInfo, setCurrentTestInfo, initialQu
     'stageNum' : 0,
     'stageQuestion' : currentQuestion % 5,
     'stageQuestionId' : initialQuestions.map((question: any) => question.question_id)
-    })
+    });
 
     //This useRef will track the user's graded answers
-    const gradedAnswers = useRef<boolean[]>([])
+    const gradedAnswers = useRef<boolean[]>([]);
 
     //This useRef is used for storing the total number of answers correct per stage
     const correctTotal = useRef<number>(0);
 
     //This useRef will track all of the question IDs used, regardless of stage
-    const questionIdTrack = useRef<number[]>([])
+    const questionIdTrack = useRef<number[]>([]);
 
     //This useTransition will be used when new questions are being fetched, to display a loading state
     const [isPending, startTransition] = useTransition();
 
     // RIGHT NOW EACH STAGE IS HARDCODED TO BE JUST 5 QUESTIONS, SO CHECK HERE IF THAT EVER CHANGES!
     const stageSize = questions.length;
-    const startStage = stageInfo.current.stageNum * stageSize
+    const startStage = stageInfo.current.stageNum * stageSize;
 
     //These variables will be used for checking when to disable and enable certain buttons
     const isFirstQuestion = stageInfo.current.stageQuestion === 0;
@@ -99,12 +104,11 @@ export default function TestTake({currentTestInfo, setCurrentTestInfo, initialQu
     const regularButton = "bg-[#d1190d] hover:bg-[#700f09]";
     const disabledButton = "bg-gray-500";
 
-    let currentRequest: testUtils.requestData
-    let currentAnswer: testUtils.responseData
+    let currentRequest: testUtils.requestData;
+    let currentAnswer: testUtils.responseData;
 
     //Router will be used to push certain info when routed to the results page
     const router = useRouter();
-
 
     async function handleQuestionRetrieve(event: React.FormEvent) {
       event.preventDefault();
@@ -124,8 +128,18 @@ export default function TestTake({currentTestInfo, setCurrentTestInfo, initialQu
         const fetchedQuestion = await testUtils.questionFetch('retrieveStage', currentRequest)
         console.log("FETCHED THE NEXT STAGE!")
         if (fetchedQuestion) {
-          console.log("HERE IS THE RESULT OF THE FETCHED QUESTION")
-          setQuestions(fetchedQuestion)
+          console.log("HERE IS THE RESULT OF THE FETCHED QUESTION");
+
+          let shuffleQuestions = JSON.parse(JSON.stringify(fetchedQuestion));
+          seedShuffle(shuffleQuestions, shuffleSeed);
+          console.log("NEW QUESTION ANSWER OPTIONS HAVE BEEN SHUFFLED!");
+
+          for (let i = shuffleQuestions.length - 1; i > -1; i--) {
+            console.log(`HERE IS THE QUESTION ID FOR THE CURRENT QUESTION: ${shuffleQuestions[i].question_id}`)
+            console.log(`HERE ARE THE ANSWER IDS FOR THE CURRENT QUESTION: ${shuffleQuestions[i].answer_id}`)
+            console.log(`HERE ARE THE ANSWER TEXTS FOR THE CURRENT QUESTION: ${shuffleQuestions[i].answer_text}`)
+          }
+          setQuestions(shuffleQuestions);
 
           // If the questions were fetched, combine the previous answerData with new indices to be used, depending on how many questions
           // were received. Just for my own reference, ({...}) after the arrow in an arrow function is shorthand for {...return x;}
@@ -144,16 +158,16 @@ export default function TestTake({currentTestInfo, setCurrentTestInfo, initialQu
             return stageInfo.current.stageNum === 0 ? newArray : [...prevData, ...newArray]
           })
 
-          console.log("SET THE CURRENT QUESTION TO THIS")
-          console.log(fetchedQuestion)
+          console.log("SET THE CURRENT QUESTION TO THIS");
+          console.log(fetchedQuestion);
 
-          console.log("INCREMENT THE CURRENT STAGE NUMBER AND RESET THE STAGE QUESTION COUNTER BACK TO 0!")
+          console.log("INCREMENT THE CURRENT STAGE NUMBER AND RESET THE STAGE QUESTION COUNTER BACK TO 0!");
           stageInfo.current.stageNum = stageInfo.current.stageNum + 1;
           stageInfo.current.stageQuestion = 0;
-          console.log("SET THE CURRENT STAGE USING THE CURRENT STAGE NUM")
-          stageInfo.current.stageDifficulty[stageInfo.current.stageNum] = fetchedQuestion[0].question_level
-          console.log("SET THE CURRENT STAGE QUESTION IDS")
-          stageInfo.current.stageQuestionId = fetchedQuestion.map((question: any) => question.question_id)
+          console.log("SET THE CURRENT STAGE USING THE CURRENT STAGE NUM");
+          stageInfo.current.stageDifficulty[stageInfo.current.stageNum] = fetchedQuestion[0].question_level;
+          console.log("SET THE CURRENT STAGE QUESTION IDS");
+          stageInfo.current.stageQuestionId = fetchedQuestion.map((question: any) => question.question_id);
         }
         else {
           console.log("Error retrieving the next question.")
@@ -225,10 +239,12 @@ export default function TestTake({currentTestInfo, setCurrentTestInfo, initialQu
         const urlParams = new URLSearchParams();
         urlParams.set('attempt', currentAttempt.toString());
         urlParams.set('r', currentRecord.toString());
+        urlParams.set('s', shuffleSeed.toString());
 
-        console.log("ABOUT TO PUSH THROUGH ROUTE WITH THIS ATTEMPT NUMBER AND THIS RECORD NUMBER!")
-        console.log(currentAttempt)
-        console.log(currentRecord)
+        console.log("ABOUT TO PUSH THROUGH ROUTE WITH THIS ATTEMPT NUMBER, THIS RECORD NUMBER, AND THIS SEED!");
+        console.log(currentAttempt);
+        console.log(currentRecord);
+        console.log(shuffleSeed);
         router.push(`/results?${urlParams.toString()}`);
       }
       // If there is an error, log to console.
@@ -296,7 +312,6 @@ export default function TestTake({currentTestInfo, setCurrentTestInfo, initialQu
     console.log(isSubmitted)
   }, [selectedAnswer, questions, currentQuestion, answerArray, isSubmitted])
   
-
   //Here the change in the selection of an answer for the current question will be handled
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     // This line refers to the name and value fields of an HTML input tag, and uses object destructuring to assign them values from

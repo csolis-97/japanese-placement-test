@@ -40,12 +40,9 @@ export default function TestStart({initialTestInfo, setInitialTestInfo, currentD
 
   // FOR DEBUG. This useEffect will track all current relevant info needed
   useEffect(() => {
-      console.log("CURRENT TEST INFO")
-      console.log(initialTestInfo)
-      console.log("CURRENT DISPLAY VALUE?")
-      console.log(currentDisplay)
-      console.log("USER INFO SUBMITTED?")
-      console.log(isSubmitted)
+      console.log(`CURRENT TEST INFO: ${initialTestInfo}`)
+      console.log(`CURRENT DISPLAY VALUE?: ${currentDisplay}`)
+      console.log(`USER INFO SUBMITTED?: ${isSubmitted}`)
   }, [initialTestInfo, isSubmitted])
 
   //Function to handle the submission form itself, once the user presses the submit button

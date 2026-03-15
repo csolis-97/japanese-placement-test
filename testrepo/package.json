@@ -11,6 +11,7 @@
   "dependencies": {
     "next": "^16.1.1",
     "pnpm": "^10.30.3",
+    "random-seedable": "^1.0.8",
     "react": "19.2.3",
     "react-dom": "19.2.3"
   },

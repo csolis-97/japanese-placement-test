@@ -1,9 +1,10 @@
 "use client";
 
-import { Suspense, use } from "react";
+import { Suspense, use, useEffect } from "react";
 import QuestionDisplay from "./QuestionDisplay";
 import ResultInfo from "./ResultInfo";
 import * as skeletons from "./skeletons";
+import { seedShuffle } from "../utils/utilFunctions";
 
 //Interface below will be used for when each question itself is displayed. Fields should be the exact same as the ones in
 //the database in order to be properly displayed.
@@ -33,13 +34,26 @@ interface testResult {
 interface resultsProps {
   attemptNum: number;
   resultNum: number;
+  seed: number;
   answersPromise: Promise<testQuestion[]>;
   resultsPromise: Promise<testResult>;
 }
 
-export default function ResultsDisplay( { attemptNum, resultNum, answersPromise, resultsPromise } : resultsProps) {
-  const questions = use(answersPromise) as testQuestion[];
+export default function ResultsDisplay( { attemptNum, resultNum, seed, answersPromise, resultsPromise } : resultsProps) {
+  //const questions = use(answersPromise) as testQuestion[];
+  const questions = use(answersPromise);
   const results = use(resultsPromise) as testResult;
+
+  /* useEffect(() => {
+    seedShuffle(questions, seed);
+
+    console.log("QUESTION ANSWER OPTIONS HAVE BEEN SHUFFLED!");
+    for (let i = questions.length - 1; i > -1; i--) {
+      console.log(`HERE IS THE QUESTION ID FOR THE CURRENT QUESTION: ${questions[i].question_id}`)
+      console.log(`HERE ARE THE ANSWER IDS FOR THE CURRENT QUESTION: ${questions[i].answer_id}`)
+      console.log(`HERE ARE THE ANSWER TEXTS FOR THE CURRENT QUESTION: ${questions[i].answer_text}`)
+    }
+  }, []); */
 
   //Fetch the user's graded responses from the test page
   console.log("ABOUT TO ENTER THE HTML!");

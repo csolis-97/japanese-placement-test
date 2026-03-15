@@ -17,10 +17,9 @@ export default async function Test() {
     // Fetch the test form data from the backend, with 'retrieveOneQuestion' as the action to take
     console.log("ABOUT TO FETCH THE INITIAL STAGE!")
     const fetchedQuestion = await testUtils.questionFetch('retrieveStage', initialRequest)
-    console.log("FETCH A NEW STAGE!")
+    console.log("FETCHED THE INITIAL STAGE!")
     if (fetchedQuestion) {
-      console.log("HERE IS THE RESULT OF THE FETCHED QUESTION")
-      console.log(fetchedQuestion)
+      console.log(`HERE IS THE RESULT OF THE FETCHED QUESTION: ${fetchedQuestion}`)
     }
     else {
       console.log("Error retrieving the initial questions.")

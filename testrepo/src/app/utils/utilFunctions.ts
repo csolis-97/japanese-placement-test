@@ -1,3 +1,6 @@
+import { testQuestion } from "@/app/components/TestDisplay";
+import { XORShift128 } from "random-seedable";
+
 // The getURL function will check if an environmental variable named VERCEL_URL exists. If it does,
 // return the address prefixed by https://. Otherwise, return the value of the FRONTEND_URL
 // environmental variable, or the default localhost at port 5000, or whichever port is specified in Flask.
@@ -46,3 +49,68 @@ export function checkName(name: string) {
         return "Name length cannot be more than 254 characters.";
     } 
 }
+
+// This function will shuffle the elements of the list provided as the argument and return it.
+export function shuffleList(givenList: string[]) {
+    for (let i = givenList.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        // Swap the values at index i and index j
+        [givenList[i], givenList[j]] = [givenList[j], givenList[i]]
+    }
+    return givenList;
+}
+
+// This function will shuffle the answer_id and answer_text at each index of a given testQuestion array
+export function shuffleQuestion(givenList: testQuestion[]) {
+    for (let i = givenList.length - 1; i > -1; i--) {
+        for (let j = givenList[i].answer_id.length - 1; j > -1; j--) {
+            const k = Math.floor(Math.random() * (j + 1));
+            // Swap the values at index j and index k
+            [givenList[i].answer_id[j], givenList[i].answer_id[k]] = [givenList[i].answer_id[k], givenList[i].answer_id[j]];
+            [givenList[i].answer_text[j], givenList[i].answer_text[k]] = [givenList[i].answer_text[k], givenList[i].answer_text[j]];
+        }
+    }
+    return givenList;
+}
+
+//
+export function seedShuffle(givenList: testQuestion[], seed: number) {
+    const shuffleQuestions = new XORShift128(seed);
+
+    for (let i = givenList.length - 1; i > -1; i--) {
+
+        const originalId = givenList[i].answer_id;
+        const originalText = givenList[i].answer_text;
+        const originalCorrect = givenList[i].correct_answer;
+        let indexList = [];
+        for (let j = 0; j < givenList[0].answer_id.length; j++) {
+            indexList[j] = j;
+        }
+        const shuffledIndex = indexList;
+        shuffleQuestions.shuffle(shuffledIndex);
+
+
+
+        for (let k = givenList[i].answer_id.length - 1; k > -1; k--) {
+            const replaceIndex = shuffledIndex[k];
+            console.log(k);
+            // Swap the values at index j and index k
+            [givenList[i].answer_id[k], givenList[i].answer_id[replaceIndex]] = [givenList[i].answer_id[replaceIndex], givenList[i].answer_id[k]];
+            [givenList[i].answer_text[k], givenList[i].answer_text[replaceIndex]] = [givenList[i].answer_text[replaceIndex], givenList[i].answer_text[k]];
+
+            // Make a const to check if the correct_answer field exists, if so swap
+            const correctAnswer = givenList[i].correct_answer;
+            if (correctAnswer) {
+                [correctAnswer[k], correctAnswer[replaceIndex]] = [correctAnswer[replaceIndex], correctAnswer[k]]; 
+            }      
+        }
+    }
+}
+/*
+    for (let i = givenList.length - 1; i > - 1; i--) {
+        shuffleQuestions.shuffle(givenList[i].answer_id);
+        shuffleQuestions.shuffle(givenList[i].answer_text);
+        // Use the nullish coalescing operator when there is no array for correct answers
+        shuffleQuestions.shuffle(givenList[i].correct_answer ?? []);
+    }
+*/

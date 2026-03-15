@@ -14,6 +14,9 @@ importers:
       pnpm:
         specifier: ^10.30.3
         version: 10.30.3
+      random-seedable:
+        specifier: ^1.0.8
+        version: 1.0.8
       react:
         specifier: 19.2.3
         version: 19.2.3
@@ -1697,6 +1700,9 @@ packages:
 
   queue-microtask@1.2.3:
     resolution: {integrity: sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==}
+
+  random-seedable@1.0.8:
+    resolution: {integrity: sha512-f6gzvNhAnZBht1Prn0e/tpukUNhkANntFF42uIdWDPriyEATYaRpyH8A9bYaGecUB3AL+dXeYtBUggy18fe3rw==}
 
   react-dom@19.2.3:
     resolution: {integrity: sha512-yELu4WmLPw5Mr/lmeEpox5rw3RETacE++JgHqQzd2dg+YbJuat3jH4ingc+WPZhxaoFzdv9y33G+F7Nl5O0GBg==}
@@ -3705,6 +3711,8 @@ snapshots:
   punycode@2.3.1: {}
 
   queue-microtask@1.2.3: {}
+
+  random-seedable@1.0.8: {}
 
   react-dom@19.2.3(react@19.2.3):
     dependencies:
