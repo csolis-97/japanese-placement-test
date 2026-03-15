@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import * as resultUtils from "./displayActions";
 import ResultsDisplay from "@/app/components/ResultDisplay";
 import * as skeletons from "@/app/components/skeletons";
-import { seedShuffle } from "@/app/utils/utilFunctions";
+import { seedShuffle, digestSeed} from "@/app/utils/utilFunctions";
 
 export default async function Results({ searchParams } : { searchParams: Promise<{ [key : string] : string | string[] | undefined }> }) {
   // Here, the search Params will be dealt with, determining the current resultID alongside the user's current attempt number.
@@ -12,6 +12,7 @@ export default async function Results({ searchParams } : { searchParams: Promise
   const attemptNum = filterParams ? Number(filterParams.attempt) : 0;
   const resultNum = filterParams ? Number(filterParams.r) : 0;
   const seed = filterParams ? Number(filterParams.s) : 0;
+  //const seed = (attemptNum + (attemptNum % resultNum) * resultNum);
   console.log("HERE IS THE ATTEMPT NUMBER, RECORD NUMBER AND SEED IN THE RESULTS PAGE FROM THE SEARCH PARAMS WITHIN THE PAGE.TSX!");
   console.log(attemptNum);
   console.log(resultNum);
@@ -57,16 +58,34 @@ interface testQuestion {
 
   // If the data is successfully retrieved, then the following HTML will return If not, error.tsx will catch the error
   const answersPromise = resultUtils.answersData('retrieveAnswers', answersFormat)
-    .then(answerData => { 
-      seedShuffle(answerData, seed);   
-        console.log("INITIAL QUESTION ANSWER OPTIONS HAVE BEEN SHUFFLED!");
-        for (let i = answerData.length - 1; i > -1; i--) {
-          console.log(`HERE IS THE QUESTION ID FOR THE CURRENT QUESTION: ${answerData[i].question_id}`)
-          console.log(`HERE ARE THE ANSWER IDS FOR THE CURRENT QUESTION: ${answerData[i].answer_id}`)
-          console.log(`HERE ARE THE ANSWER TEXTS FOR THE CURRENT QUESTION: ${answerData[i].answer_text}`)
-          console.log(`HERE ARE THE CORRECT ANSWERS FOR THE CURRENT QUESTION: ${answerData[i].correct_answer}`)
-        }
-      return answerData}) as Promise<testQuestion[]>;
+    .then(answerData => {
+      // You can change the logic of stage size here if there are more than 5 questions per stage
+      const stageSize = 5;
+
+      console.log(`ANSWER DATA LENGTH: ${answerData.length}`);
+      console.log(`ANSWER DATA STAGE SIZES: ${stageSize}`);
+      // Here is some syntax I somehow did not know about. In order to initialize an empty array of numbers,
+      // do varName: number[] = [];
+      let tempData: testQuestion[] = [];
+      for (let i = 0; i < stageSize; i++) {
+        console.log(`CURRENT SLICE INDICES TO BE USED ${i * stageSize} AND ${stageSize * (i + 1)}`);
+        console.log(`CURRENT SLICE OF ANSWER DATA TO BE USED: ${answerData.slice(i * stageSize, stageSize * (i + 1))}`);
+        let subData = JSON.parse(JSON.stringify(answerData.slice(i * stageSize, stageSize * (i + 1))));
+        seedShuffle(subData, seed);
+        tempData = [...tempData, ...subData];
+        console.log(`RESULTS OF CONCATINATING STAGE ${i + 1}'S QUESTIONS: ${tempData}`);
+      }
+      answerData = tempData;
+      //seedShuffle(answerData, seed);   
+      console.log("INITIAL QUESTION ANSWER OPTIONS HAVE BEEN SHUFFLED!");
+      for (let j = answerData.length - 1; j > -1; j--) {
+        console.log(`HERE IS THE QUESTION ID FOR THE CURRENT QUESTION: ${answerData[j].question_id}`)
+        console.log(`HERE ARE THE ANSWER IDS FOR THE CURRENT QUESTION: ${answerData[j].answer_id}`)
+        console.log(`HERE ARE THE ANSWER TEXTS FOR THE CURRENT QUESTION: ${answerData[j].answer_text}`)
+        console.log(`HERE ARE THE CORRECT ANSWERS FOR THE CURRENT QUESTION: ${answerData[j].correct_answer}`)
+      }
+      return tempData;
+    }) as Promise<testQuestion[]>;
   const resultsPromise = resultUtils.resultsData('retrieveResults', resultsFormat)
 
   //HTML return for the results page

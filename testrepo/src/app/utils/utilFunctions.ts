@@ -114,3 +114,15 @@ export function seedShuffle(givenList: testQuestion[], seed: number) {
         shuffleQuestions.shuffle(givenList[i].correct_answer ?? []);
     }
 */
+
+// 
+export async function digestSeed(seed: string | number) {
+    // TextEncoder creates an object that allows you to encode a given string
+    const encoder = new TextEncoder();
+    const seedData = encoder.encode(String(seed));
+    const hashedData = await crypto.subtle.digest("SHA-256", seedData);
+    // DataView creates an object that lets you read and write numbers from an ArrayBuffer
+    const dataView = new DataView(hashedData);
+    // Get an integer from the first four bytes
+    return dataView.getUint32(0);
+}

@@ -9,8 +9,8 @@ import { infoData } from "../testStart/startActions";
 import { testQuestion } from "../TestDisplay";
 import { shuffleQuestion, seedShuffle } from "@/app/utils/utilFunctions";
 
-//const shuffleSeed = (Math.floor(Math.random() * 10000000));
-const shuffleSeed = 1234;
+const shuffleSeed = (Math.floor(Math.random() * 10000000));
+//const shuffleSeed = 1234;
 console.log(`CURRENT SEED TO BE USED: ${shuffleSeed}`);
 
 //Type defined below will be used for setting the test questions and answers
@@ -34,7 +34,14 @@ interface testProps {
 
 
 export default function TestTake({currentTestInfo, setCurrentTestInfo, initialQuestions} : testProps) {
-
+  //const attemptNum = JSON.parse(JSON.stringify(currentTestInfo.userAttempt));
+  //const resultNum = JSON.parse(JSON.stringify(currentTestInfo.resultId));
+  
+  //console.log(attemptNum);
+  //console.log(resultNum);
+  //console.log("THE VALUES ABOVE, CHECK THEM!");
+  //const shuffleSeed = (attemptNum + (attemptNum % resultNum) * resultNum);
+  //console.log(`CURRENT SEED TO BE USED: ${shuffleSeed}`);
     // This useState is used to store the questions received from the database
     const [questions, setQuestions] = useState<testQuestion[]>(() => {
       let shuffleInitial = JSON.parse(JSON.stringify(initialQuestions));
