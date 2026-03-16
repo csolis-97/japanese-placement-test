@@ -54,7 +54,7 @@ export default function TestDisplay( {initialQuestions} : {initialQuestions: tes
     }
     {
         currentDisplay === "test" && shuffleSeed !== "" && (
-        <TestTake shuffleSeed = {shuffleSeed} currentTestInfo = {testInfo} setCurrentTestInfo = {setTestInfo} initialQuestions = {initialQuestions}/>
+        <TestTake shuffleSeed = {shuffleSeed} currentTestInfo = {testInfo} initialQuestions = {initialQuestions}/>
         )
     }
     </>)

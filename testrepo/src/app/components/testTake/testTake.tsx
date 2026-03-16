@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useEffect, useRef, useTransition, Dispatch, SetStateAction } from "react";
+import { useState, useEffect, useRef, useTransition } from "react";
 import * as testUtils from "./testActions";
 import QuestionDisplay from "../QuestionDisplay";
 import StageComplete from "../StageComplete";
@@ -29,20 +29,11 @@ type questionType = {
 interface testProps {
   shuffleSeed: string;
   currentTestInfo: infoData;
-  setCurrentTestInfo: Dispatch<SetStateAction<infoData>>;
   initialQuestions: testQuestion[];
 }
 
 
-export default function TestTake({shuffleSeed, currentTestInfo, setCurrentTestInfo, initialQuestions} : testProps) {
-  //const attemptNum = JSON.parse(JSON.stringify(currentTestInfo.userAttempt));
-  //const resultNum = JSON.parse(JSON.stringify(currentTestInfo.resultId));
-  
-  //console.log(attemptNum);
-  //console.log(resultNum);
-  //console.log("THE VALUES ABOVE, CHECK THEM!");
-  //const shuffleSeed = (attemptNum + (attemptNum % resultNum) * resultNum);
-  //console.log(`CURRENT SEED TO BE USED: ${shuffleSeed}`);
+export default function TestTake({shuffleSeed, currentTestInfo, initialQuestions} : testProps) {
     // This useState is used to store the questions received from the database
     const [questions, setQuestions] = useState<testQuestion[]>(() => {
       let shuffleInitial = JSON.parse(JSON.stringify(initialQuestions));

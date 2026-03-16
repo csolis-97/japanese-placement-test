@@ -1,6 +1,5 @@
 import { testQuestion } from "@/app/components/TestDisplay";
 import { XORShift128 } from "random-seedable";
-import { createHash } from "crypto";
 import Sqids from "sqids";
 
 // The getURL function will check if an environmental variable named VERCEL_URL exists. If it does,
