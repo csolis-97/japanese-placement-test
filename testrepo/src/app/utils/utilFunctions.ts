@@ -75,15 +75,9 @@ export function shuffleQuestion(givenList: testQuestion[]) {
 }
 
 //
-export function seedShuffle(givenList: testQuestion[], seed: string) {
+export function seedShuffle(givenList: testQuestion[], seedRNG: XORShift128) {
 
-    console.log(`ENTERED THE SEED SHUFFLE WITH THIS SEED: ${seed}!`);
-    const replaceString = JSON.parse(JSON.stringify(seed));
-    // Strip the string of all non-integer characters. The below is Regex, the g flag means global, \D means all non-integers.
-    const finalString = replaceString.replace(/\D/g, "");
-    console.log(`FINISHED SETTING UP THE REPLACE STRING: ${finalString}`);
-    const shuffleQuestions = new XORShift128(Number(finalString));
-
+    console.log(`ENTERED THE SEED SHUFFLE WITH THIS SEED: ${seedRNG}!`);
     for (let i = givenList.length - 1; i > -1; i--) {
 
         const originalId = givenList[i].answer_id;
@@ -93,8 +87,8 @@ export function seedShuffle(givenList: testQuestion[], seed: string) {
         for (let j = 0; j < givenList[0].answer_id.length; j++) {
             indexList[j] = j;
         }
-        const shuffledIndex = indexList;
-        shuffleQuestions.shuffle(shuffledIndex);
+        const shuffledIndex = JSON.parse(JSON.stringify(indexList));
+        seedRNG.shuffle(shuffledIndex);
 
 
 
@@ -122,8 +116,9 @@ export function seedShuffle(givenList: testQuestion[], seed: string) {
     }
 */
 
-// This function uses Sqid to encode the seed and use it for the shuffle
-export function sqidSeed(seed: number[]) {
+// This function uses Sqid to encode the seed, which then strips it of all non-integer characters and passes it as the argument
+// for a new XORShift128 object, which is stored in the seedRNG const
+export function seedCreate(seed: number[]) {
     const hash = new Sqids({
         minLength: 16,
     });
@@ -132,7 +127,13 @@ export function sqidSeed(seed: number[]) {
     // PURELY DEBUG
     console.log(`HERE IS THE ENCODED SEED: ${hashedSeed}`);
     console.log(`HERE IS THE DECODED SEED: ${hash.decode(hashedSeed)}`);
-    return hashedSeed;
+
+    const replaceString = JSON.parse(JSON.stringify(hashedSeed));
+    // Strip the string of all non-integer characters. The below is Regex, the g flag means global, \D means all non-integers.
+    const finalString = replaceString.replace(/\D/g, "");
+    console.log(`FINISHED SETTING UP THE REPLACE STRING: ${finalString}`);
+    const seedRNG = new XORShift128(Number(finalString));
+    return seedRNG;
 }
 
 //This little function will calculate the correct answers for the stage

@@ -7,12 +7,8 @@ import QuestionDisplay from "../QuestionDisplay";
 import StageComplete from "../StageComplete";
 import { infoData } from "../testStart/startActions";
 import { testQuestion } from "../TestDisplay";
-import { sqidSeed, seedShuffle, calculateCorrect } from "@/app/utils/utilFunctions";
+import { seedShuffle, seedCreate, calculateCorrect } from "@/app/utils/utilFunctions";
 import { XORShift128 } from "random-seedable";
-
-// const shuffleSeed = (Math.floor(Math.random() * 10000000));
-// const shuffleSeed = 1234;
-// console.log(`CURRENT SEED TO BE USED: ${shuffleSeed}`);
 
 //Type defined below will be used for setting the test questions and answers
 type questionType = {
@@ -28,7 +24,7 @@ type questionType = {
 
 // This interface will be used to properly receive the useState and data which are passed to the component
 interface testProps {
-  shuffleSeed: string;
+  shuffleSeed: XORShift128;
   currentTestInfo: infoData;
   initialQuestionsPromise: Promise<testQuestion[]>;
 }
@@ -36,200 +32,191 @@ interface testProps {
 
 export default function TestTake({shuffleSeed, currentTestInfo, initialQuestionsPromise} : testProps) {
 
-    //let shuffleSeed: string = "";
-    //let shuffleSeed: XORShift128;
-
-    //if (currentTestInfo.resultId !== 0 && currentTestInfo.userAttempt !== 0) {
-    console.log("ABOUT TO SET THE SHUFFLE SEED!");
-    //const shuffleSeed = sqidSeed([currentTestInfo.userAttempt, currentTestInfo.resultId]);
-    console.log(`SHUFFLE SEED SET TO ${shuffleSeed}`);
-    //}
-    const initialQuestions = use(initialQuestionsPromise) as testQuestion[];  
-    // This useState is used to store the questions received from the database
-    const [questions, setQuestions] = useState<testQuestion[]>(() => {
-      let shuffleInitial = JSON.parse(JSON.stringify(initialQuestions));
-      seedShuffle(shuffleInitial, shuffleSeed);
-
-      console.log("INITIAL QUESTION ANSWER OPTIONS HAVE BEEN SHUFFLED!");
-      for (let i = shuffleInitial.length - 1; i > -1; i--) {
-        console.log(`HERE IS THE QUESTION ID FOR THE CURRENT QUESTION: ${shuffleInitial[i].question_id}`)
-        console.log(`HERE ARE THE ANSWER IDS FOR THE CURRENT QUESTION: ${shuffleInitial[i].answer_id}`)
-        console.log(`HERE ARE THE ANSWER TEXTS FOR THE CURRENT QUESTION: ${shuffleInitial[i].answer_text}`)
-      }
-      return shuffleInitial;
-    });
-
-    // This useState is used to track the current question
-    const [currentQuestion, setCurrentQuestion] = useState<number>(0);
-
-    //This useState is used for storing the info for the user's answers
-    const [answerArray, setAnswerArray] = useState<questionType[]>([])
-
-    //This useState will track the user's selected answer for each question
-    //THIS USESTATE IS MERELY FOR DEBUG
-    const [selectedAnswer, setSelectedAnswer] = useState<string>('');
-
-    //This useState will be used for displaying the modal, depending on whether the user has submitted the answers
-    const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
-
-    //Finally, useState for errors
-    const [error, setError] = useState<string | string[] | undefined>('');
-
-    //This useRef will be used to track all info of the stages of the test. Since the number of questions asked is
-    //dynamic, use the current question number modulus 5 to determine the current question index.
-    let stageInfo = useRef<testUtils.stageData>({
-    'stageDifficulty': [initialQuestions[0].question_level],
-    'stageNum' : 0,
-    'stageQuestion' : currentQuestion % 5,
-    'stageQuestionId' : initialQuestions.map((question: any) => question.question_id)
-    });
-
-    //This useRef will track the user's graded answers
-    const gradedAnswers = useRef<boolean[]>([]);
-
-    //This useRef is used for storing the total number of answers correct per stage
-    const correctTotal = useRef<number>(0);
-
-    //This useRef will track all of the question IDs used, regardless of stage
-    const questionIdTrack = useRef<number[]>([]);
-
-    //This useTransition will be used when new questions are being fetched, to display a loading state
-    const [isPending, startTransition] = useTransition();
-
-    // RIGHT NOW EACH STAGE IS HARDCODED TO BE JUST 5 QUESTIONS, SO CHECK HERE IF THAT EVER CHANGES!
-    const stageSize = questions.length;
-    const startStage = stageInfo.current.stageNum * stageSize;
-
-    //These variables will be used for checking when to disable and enable certain buttons
-    const isFirstQuestion = stageInfo.current.stageQuestion === 0;
-    const isLastQuestion = stageInfo.current.stageQuestion >= stageSize - 1;
-
-    console.log("CURRENT STAGE SIZE")
-    console.log(stageSize)
-    console.log("ISLASTQUESTION?")
-    console.log(isLastQuestion)
-
-    //These variables will apply the styling for the regular and disabled buttons
-    const buttonDefaults = "mt-4 px-8 py-4 font-semibold text-sm text-white";
-    const regularButton = "bg-[#d1190d] hover:bg-[#700f09]";
-    const disabledButton = "bg-gray-500";
-
-    let currentRequest: testUtils.requestData;
-    let currentAnswer: testUtils.responseData;
-
-    //Router will be used to push certain info when routed to the results page
-    const router = useRouter();
-
-    //This little function will calculate the correct answers for the stage, using the current value of the gradedAnswers useRef
-    async function handleCorrectCount(gradedAnswers: boolean[]) {
-      correctTotal.current = await calculateCorrect(gradedAnswers, stageSize);
+  const initialQuestions = use(initialQuestionsPromise) as testQuestion[];  
+  // This useState is used to store the questions received from the database
+  const [questions, setQuestions] = useState<testQuestion[]>(() => {
+    let shuffleInitial = JSON.parse(JSON.stringify(initialQuestions));
+    seedShuffle(shuffleInitial, shuffleSeed);
+    console.log("INITIAL QUESTION ANSWER OPTIONS HAVE BEEN SHUFFLED!");
+    for (let i = shuffleInitial.length - 1; i > -1; i--) {
+      console.log(`HERE IS THE QUESTION ID FOR THE CURRENT QUESTION: ${shuffleInitial[i].question_id}`)
+      console.log(`HERE ARE THE ANSWER IDS FOR THE CURRENT QUESTION: ${shuffleInitial[i].answer_id}`)
+      console.log(`HERE ARE THE ANSWER TEXTS FOR THE CURRENT QUESTION: ${shuffleInitial[i].answer_text}`)
     }
+    return shuffleInitial;
+  });
 
-    async function handleQuestionRetrieve(event: React.FormEvent) {
-      event.preventDefault();
-      console.log("ABOUT TO RETRIEVE SOME NEW QUESTIONS FOR THE NEXT STAGE")
-      if (stageInfo.current.stageNum <= 4) {
-        console.log("GOING INTO THE FETCHING NEW QUESTIONS FUNCTION")
-        // Fetch the test form data from the backend, with 'retrieveOneQuestion' as the action to take
-        console.log("REDEFINING THE CURRRENT QUESTION REQUEST")
-        currentRequest = {
-          questionId: stageInfo.current.stageQuestionId,
-          pastId: questionIdTrack.current,
-          questionCategory: stageInfo.current.stageDifficulty[stageInfo.current.stageNum],
-          // Check the last stage's five answers
-          wasCorrect: gradedAnswers.current.slice(-stageSize)
-        };
-        console.log("ABOUT TO FETCH THE NEXT STAGE!")
-        const fetchedQuestion = await testUtils.questionFetch('retrieveStage', currentRequest)
-        console.log("FETCHED THE NEXT STAGE!")
-        if (fetchedQuestion) {
-          console.log("HERE IS THE RESULT OF THE FETCHED QUESTION");
+  // This useState is used to track the current question
+  const [currentQuestion, setCurrentQuestion] = useState<number>(0);
 
-          //const shuffleSeed = sqidSeed([currentTestInfo.userAttempt, currentTestInfo.resultId]);
+  //This useState is used for storing the info for the user's answers
+  const [answerArray, setAnswerArray] = useState<questionType[]>([])
 
-          let shuffleQuestions = JSON.parse(JSON.stringify(fetchedQuestion));
-          seedShuffle(shuffleQuestions, shuffleSeed);
-          console.log("NEW QUESTION ANSWER OPTIONS HAVE BEEN SHUFFLED!");
+  //This useState will track the user's selected answer for each question
+  //THIS USESTATE IS MERELY FOR DEBUG
+  const [selectedAnswer, setSelectedAnswer] = useState<string>('');
 
-          for (let i = shuffleQuestions.length - 1; i > -1; i--) {
-            console.log(`HERE IS THE QUESTION ID FOR THE CURRENT QUESTION: ${shuffleQuestions[i].question_id}`)
-            console.log(`HERE ARE THE ANSWER IDS FOR THE CURRENT QUESTION: ${shuffleQuestions[i].answer_id}`)
-            console.log(`HERE ARE THE ANSWER TEXTS FOR THE CURRENT QUESTION: ${shuffleQuestions[i].answer_text}`)
-          }
-          setQuestions(shuffleQuestions);
+  //This useState will be used for displaying the modal, depending on whether the user has submitted the answers
+  const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
 
-          // If the questions were fetched, combine the previous answerData with new indices to be used, depending on how many questions
-          // were received. Just for my own reference, ({...}) after the arrow in an arrow function is shorthand for {...return x;}
-          setAnswerArray((prevData) => {
-            const newArray = fetchedQuestion.map((question: any) => ({
-              'questionId' : question.question_id,
-              'questionText' : '',
-              'questionBody' : '',
-              'questionCategory' : '',
-              'answerId' : [],
-              'answerText' : [],
-              'userText' : '',
-              'alreadyAnswered' : false,
-            }))
-            // If it is the first stage, return the array that was created above. Otherwise, combine the two
-            return stageInfo.current.stageNum === 0 ? newArray : [...prevData, ...newArray]
-          })
+  //Finally, useState for errors
+  const [error, setError] = useState<string | string[] | undefined>('');
 
-          console.log("SET THE CURRENT QUESTION TO THIS");
-          console.log(fetchedQuestion);
+  //This useRef will be used to track all info of the stages of the test. Since the number of questions asked is
+  //dynamic, use the current question number modulus 5 to determine the current question index.
+  let stageInfo = useRef<testUtils.stageData>({
+  'stageDifficulty': [initialQuestions[0].question_level],
+  'stageNum' : 0,
+  'stageQuestion' : currentQuestion % 5,
+  'stageQuestionId' : initialQuestions.map((question: any) => question.question_id)
+  });
 
-          console.log("INCREMENT THE CURRENT STAGE NUMBER AND RESET THE STAGE QUESTION COUNTER BACK TO 0!");
-          stageInfo.current.stageNum = stageInfo.current.stageNum + 1;
-          stageInfo.current.stageQuestion = 0;
-          console.log("SET THE CURRENT STAGE USING THE CURRENT STAGE NUM");
-          stageInfo.current.stageDifficulty[stageInfo.current.stageNum] = fetchedQuestion[0].question_level;
-          console.log("SET THE CURRENT STAGE QUESTION IDS");
-          stageInfo.current.stageQuestionId = fetchedQuestion.map((question: any) => question.question_id);
+  //This useRef will track the user's graded answers
+  const gradedAnswers = useRef<boolean[]>([]);
+
+  //This useRef is used for storing the total number of answers correct per stage
+  const correctTotal = useRef<number>(0);
+
+  //This useRef will track all of the question IDs used, regardless of stage
+  const questionIdTrack = useRef<number[]>([]);
+
+  //This useTransition will be used when new questions are being fetched, to display a loading state
+  const [isPending, startTransition] = useTransition();
+
+  // RIGHT NOW EACH STAGE IS HARDCODED TO BE JUST 5 QUESTIONS, SO CHECK HERE IF THAT EVER CHANGES!
+  const stageSize = questions.length;
+  const startStage = stageInfo.current.stageNum * stageSize;
+
+  //These variables will be used for checking when to disable and enable certain buttons
+  const isFirstQuestion = stageInfo.current.stageQuestion === 0;
+  const isLastQuestion = stageInfo.current.stageQuestion >= stageSize - 1;
+
+  console.log("CURRENT STAGE SIZE")
+  console.log(stageSize)
+  console.log("ISLASTQUESTION?")
+  console.log(isLastQuestion)
+
+  //These variables will apply the styling for the regular and disabled buttons
+  const buttonDefaults = "mt-4 px-8 py-4 font-semibold text-sm text-white";
+  const regularButton = "bg-[#d1190d] hover:bg-[#700f09]";
+  const disabledButton = "bg-gray-500";
+
+  let currentRequest: testUtils.requestData;
+  let currentAnswer: testUtils.responseData;
+
+  //Router will be used to push certain info when routed to the results page
+  const router = useRouter();
+
+  //This little function will calculate the correct answers for the stage, using the current value of the gradedAnswers useRef
+  async function handleCorrectCount(gradedAnswers: boolean[]) {
+    correctTotal.current = await calculateCorrect(gradedAnswers, stageSize);
+  }
+
+  async function handleQuestionRetrieve(event: React.FormEvent) {
+    event.preventDefault();
+    console.log("ABOUT TO RETRIEVE SOME NEW QUESTIONS FOR THE NEXT STAGE")
+    if (stageInfo.current.stageNum <= 4) {
+      console.log("GOING INTO THE FETCHING NEW QUESTIONS FUNCTION")
+      // Fetch the test form data from the backend, with 'retrieveOneQuestion' as the action to take
+      console.log("REDEFINING THE CURRRENT QUESTION REQUEST")
+      currentRequest = {
+        questionId: stageInfo.current.stageQuestionId,
+        pastId: questionIdTrack.current,
+        questionCategory: stageInfo.current.stageDifficulty[stageInfo.current.stageNum],
+        // Check the last stage's five answers
+        wasCorrect: gradedAnswers.current.slice(-stageSize)
+      };
+      console.log("ABOUT TO FETCH THE NEXT STAGE!")
+      const fetchedQuestion = await testUtils.questionFetch('retrieveStage', currentRequest)
+      console.log("FETCHED THE NEXT STAGE!")
+      if (fetchedQuestion) {
+        console.log("HERE IS THE RESULT OF THE FETCHED QUESTION");
+
+        let shuffleQuestions = JSON.parse(JSON.stringify(fetchedQuestion));
+
+        const nextShuffleSeed = seedCreate([currentTestInfo.userAttempt, (currentTestInfo.userAttempt % currentTestInfo.resultId), currentTestInfo.resultId]);
+        seedShuffle(shuffleQuestions, nextShuffleSeed);
+        console.log("NEW QUESTION ANSWER OPTIONS HAVE BEEN SHUFFLED!");
+
+        for (let i = shuffleQuestions.length - 1; i > -1; i--) {
+          console.log(`HERE IS THE QUESTION ID FOR THE CURRENT QUESTION: ${shuffleQuestions[i].question_id}`)
+          console.log(`HERE ARE THE ANSWER IDS FOR THE CURRENT QUESTION: ${shuffleQuestions[i].answer_id}`)
+          console.log(`HERE ARE THE ANSWER TEXTS FOR THE CURRENT QUESTION: ${shuffleQuestions[i].answer_text}`)
         }
-        else {
-          console.log("Error retrieving the next question.")
-        }
+        setQuestions(shuffleQuestions);
+
+        // If the questions were fetched, combine the previous answerData with new indices to be used, depending on how many questions
+        // were received. Just for my own reference, ({...}) after the arrow in an arrow function is shorthand for {...return x;}
+        setAnswerArray((prevData) => {
+          const newArray = fetchedQuestion.map((question: any) => ({
+            'questionId' : question.question_id,
+            'questionText' : '',
+            'questionBody' : '',
+            'questionCategory' : '',
+            'answerId' : [],
+            'answerText' : [],
+            'userText' : '',
+            'alreadyAnswered' : false,
+          }))
+          // If it is the first stage, return the array that was created above. Otherwise, combine the two
+          return stageInfo.current.stageNum === 0 ? newArray : [...prevData, ...newArray]
+        })
+
+        console.log("SET THE CURRENT QUESTION TO THIS");
+        console.log(fetchedQuestion);
+
+        console.log("INCREMENT THE CURRENT STAGE NUMBER AND RESET THE STAGE QUESTION COUNTER BACK TO 0!");
+        stageInfo.current.stageNum = stageInfo.current.stageNum + 1;
+        stageInfo.current.stageQuestion = 0;
+        console.log("SET THE CURRENT STAGE USING THE CURRENT STAGE NUM");
+        stageInfo.current.stageDifficulty[stageInfo.current.stageNum] = fetchedQuestion[0].question_level;
+        console.log("SET THE CURRENT STAGE QUESTION IDS");
+        stageInfo.current.stageQuestionId = fetchedQuestion.map((question: any) => question.question_id);
+      }
+      else {
+        console.log("Error retrieving the next question.")
       }
     }
+  }
 
-    async function handleQuestionSubmit(event: React.FormEvent) {
-      event.preventDefault();
-      if (answerArray[currentQuestion] && stageInfo.current.stageQuestion === 4 ) {
-        console.log("USER ANSWERS TO BE SUBMITTED")
-        // Since answerArray is an object with no toString function, use JSON.stringify to properly display the answer data in the console log
-        console.log(JSON.stringify(answerArray.slice(currentQuestion - stageSize, currentQuestion)))
-        // Append the current question_id to questionIdTrack, use ... to "spread" the values. The spread operator is useful when copying or
-        // combining list data because it directly takes out the values from the array.
-        questionIdTrack.current.push(...stageInfo.current.stageQuestionId)
-        
-        // Fetch the test form data from the backend, with 'retrieveOneQuestion' as the action to take
-        console.log("REDEFINING THE CURRRENT ANSWERS TO BE SUBMITTED")
-        currentAnswer = {
-          questionId: stageInfo.current.stageQuestionId,
-          pastId: questionIdTrack.current,
-          // I understand why the slice is being used here, figure out how the map works exactly
-          userText: answerArray.slice((startStage), (startStage+stageSize)).map(answer => answer.userText),
-          userAttempt: currentTestInfo.userAttempt,
-          resultId: currentTestInfo.resultId,
-          currentStage: stageInfo.current.stageNum
-        };
+  async function handleQuestionSubmit(event: React.FormEvent) {
+    event.preventDefault();
+    if (answerArray[currentQuestion] && stageInfo.current.stageQuestion === 4 ) {
+      console.log("USER ANSWERS TO BE SUBMITTED")
+      // Since answerArray is an object with no toString function, use JSON.stringify to properly display the answer data in the console log
+      console.log(JSON.stringify(answerArray.slice(currentQuestion - stageSize, currentQuestion)))
+      // Append the current question_id to questionIdTrack, use ... to "spread" the values. The spread operator is useful when copying or
+      // combining list data because it directly takes out the values from the array.
+      questionIdTrack.current.push(...stageInfo.current.stageQuestionId)
+      
+      // Fetch the test form data from the backend, with 'retrieveOneQuestion' as the action to take
+      console.log("REDEFINING THE CURRRENT ANSWERS TO BE SUBMITTED")
+      currentAnswer = {
+        questionId: stageInfo.current.stageQuestionId,
+        pastId: questionIdTrack.current,
+        // I understand why the slice is being used here, figure out how the map works exactly
+        userText: answerArray.slice((startStage), (startStage+stageSize)).map(answer => answer.userText),
+        userAttempt: currentTestInfo.userAttempt,
+        resultId: currentTestInfo.resultId,
+        currentStage: stageInfo.current.stageNum
+      };
 
-        const fetchedGradedAnswer = await testUtils.questionCheck('sendStage', currentAnswer)
-        console.log("ANSWERS FOR THE CURRENT STAGE SUBMITTED SUBMITTED!")
-        if (fetchedGradedAnswer) {
-            console.log("HERE ARE THE RESULTS OF THE CURRENT STAGE")
-            console.log(fetchedGradedAnswer)
-            // Use the "..." to directly push the values of fetchedGradedAnswer to gradedAnswers.current
-            gradedAnswers.current.push(...fetchedGradedAnswer)
-            console.log("HERE ARE THE LAST FIVE GRADED ANSWERS, THE ONES FROM THE CURRENT STAGE")
-            console.log(gradedAnswers.current.slice(-stageSize))
-            return fetchedGradedAnswer
-        }
-        else {
-            console.log("Error grading the current question.");
-        }
+      const fetchedGradedAnswer = await testUtils.questionCheck('sendStage', currentAnswer)
+      console.log("ANSWERS FOR THE CURRENT STAGE SUBMITTED SUBMITTED!")
+      if (fetchedGradedAnswer) {
+          console.log("HERE ARE THE RESULTS OF THE CURRENT STAGE")
+          console.log(fetchedGradedAnswer)
+          // Use the "..." to directly push the values of fetchedGradedAnswer to gradedAnswers.current
+          gradedAnswers.current.push(...fetchedGradedAnswer)
+          console.log("HERE ARE THE LAST FIVE GRADED ANSWERS, THE ONES FROM THE CURRENT STAGE")
+          console.log(gradedAnswers.current.slice(-stageSize))
+          return fetchedGradedAnswer
+      }
+      else {
+          console.log("Error grading the current question.");
       }
     }
+  }
 
   //Function to handle the test form itself, once the user presses the submit button
   async function handleTestForm(event: React.FormEvent) {
@@ -256,9 +243,8 @@ export default function TestTake({shuffleSeed, currentTestInfo, initialQuestions
         const urlParams = new URLSearchParams();
         urlParams.set('attempt', currentAttempt.toString());
         urlParams.set('r', currentRecord.toString());
-        urlParams.set('s', shuffleSeed.toString());
 
-        console.log(`ABOUT TO PUSH THROUGH ROUTE WITH THIS ATTEMPT NUMBER: ${currentAttempt}, THIS RECORD NUMBER: ${currentRecord}, AND THIS SEED: ${shuffleSeed}!`);
+        console.log(`ABOUT TO PUSH THROUGH ROUTE WITH THIS ATTEMPT NUMBER: ${currentAttempt} AND THIS RECORD NUMBER: ${currentRecord}!`);
         router.push(`/results?${urlParams.toString()}`);
       }
       // If there is an error, log to console.

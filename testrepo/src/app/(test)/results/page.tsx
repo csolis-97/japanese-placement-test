@@ -4,7 +4,8 @@ import { Suspense } from "react";
 import * as resultUtils from "./displayActions";
 import ResultsDisplay from "@/app/components/ResultDisplay";
 import * as skeletons from "@/app/components/skeletons";
-import { seedShuffle, sqidSeed } from "@/app/utils/utilFunctions";
+import { seedShuffle, seedCreate } from "@/app/utils/utilFunctions";
+import { XORShift128 } from "random-seedable";
 
 export default async function Results({ searchParams } : { searchParams: Promise<{ [key : string] : string | string[] | undefined }> }) {
   // Here, the search Params will be dealt with, determining the current resultID alongside the user's current attempt number.
@@ -14,12 +15,12 @@ export default async function Results({ searchParams } : { searchParams: Promise
   //const seed = filterParams ? Number(filterParams.s) : 0;
   // const seed = String(`${attemptNum + (attemptNum % resultNum) * resultNum}`);
   console.log("ABOUT TO SET THE SHUFFLE SEED!");
-  const seed = resultNum !== 0 && attemptNum !== 0 ? sqidSeed([attemptNum, (attemptNum % resultNum), resultNum]) : "";
-  console.log(`SEED SET TO ${seed}`);
-  console.log(`HERE IS THE ATTEMPT NUMBER: ${attemptNum}, RECORD NUMBER: ${resultNum} AND SEED: ${seed} IN THE RESULTS PAGE FROM THE SEARCH PARAMS WITHIN THE PAGE.TSX!`);
+  // const seed = resultNum !== 0 && attemptNum !== 0 ? seedCreate([attemptNum, (attemptNum % resultNum), resultNum]) : new XORShift128();
+  // console.log(`SEED SET TO ${seed}`);
+  //console.log(`HERE IS THE ATTEMPT NUMBER: ${attemptNum}, RECORD NUMBER: ${resultNum} AND SEED: ${seed} IN THE RESULTS PAGE FROM THE SEARCH PARAMS WITHIN THE PAGE.TSX!`);
   console.log(attemptNum);
   console.log(resultNum);
-  console.log(seed);
+  //console.log(seed);
 
   let answersFormat: resultUtils.answerData = {    
     'questionId' : 0,
@@ -74,6 +75,8 @@ interface testQuestion {
         console.log(`CURRENT SLICE INDICES TO BE USED ${i * stageSize} AND ${stageSize * (i + 1)}`);
         console.log(`CURRENT SLICE OF ANSWER DATA TO BE USED: ${answerData.slice(i * stageSize, stageSize * (i + 1))}`);
         let subData = JSON.parse(JSON.stringify(answerData.slice(i * stageSize, stageSize * (i + 1))));
+
+        const seed = seedCreate([attemptNum, (attemptNum % resultNum), resultNum]);
         seedShuffle(subData, seed);
         tempData = [...tempData, ...subData];
         console.log(`RESULTS OF CONCATINATING STAGE ${i + 1}'S QUESTIONS: ${tempData}`);
@@ -87,6 +90,7 @@ interface testQuestion {
         console.log(`HERE ARE THE ANSWER TEXTS FOR THE CURRENT QUESTION: ${answerData[j].answer_text}`)
         console.log(`HERE ARE THE CORRECT ANSWERS FOR THE CURRENT QUESTION: ${answerData[j].correct_answer}`)
       }
+      //return answerData;
       return tempData;
     }) as Promise<testQuestion[]>;
   const resultsPromise = resultUtils.resultsData('retrieveResults', resultsFormat)

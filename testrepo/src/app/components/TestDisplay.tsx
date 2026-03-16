@@ -5,7 +5,7 @@ import TestStart from "./testStart/testStart";
 import TestTake from "./testTake/testTake";
 import { infoData } from "./testStart/startActions";
 import { QuestionDisplaySkeleton } from "./skeletons";
-import { sqidSeed } from "../utils/utilFunctions";
+import { seedCreate } from "../utils/utilFunctions";
 import { XORShift128 } from "random-seedable";
 
 //Interface below will be used for when each question itself is displayed. Fields should be the exact same as the ones in
@@ -38,11 +38,11 @@ export default function TestDisplay( {initialQuestionsPromise} : {initialQuestio
   });
 
   // The shuffleSeed variable will hold the seed for the test, once the userAttempt and resultId fields have been set
-  let shuffleSeed: string = "";
+  let shuffleSeed: XORShift128 | null = null;
 
-  if (testInfo.resultId !== 0 && testInfo.userAttempt !== 0) {
+  if (testInfo.resultId !== 0 && testInfo.userAttempt !== 0 && shuffleSeed == null) {
     console.log("ABOUT TO SET THE SHUFFLE SEED!");
-    shuffleSeed = sqidSeed([testInfo.userAttempt, (testInfo.userAttempt % testInfo.resultId), testInfo.resultId]);
+    shuffleSeed = seedCreate([testInfo.userAttempt, (testInfo.userAttempt % testInfo.resultId), testInfo.resultId]);
     console.log(`SHUFFLE SEED SET TO ${shuffleSeed}`);
   }
 
@@ -65,7 +65,7 @@ export default function TestDisplay( {initialQuestionsPromise} : {initialQuestio
     { // Render only once currentDisplay is switched to test, and the shuffleSeed has been set
         currentDisplay === "test" && (
         <Suspense fallback = {<QuestionDisplaySkeleton />}>
-          { shuffleSeed && shuffleSeed !== "" ? (
+          { shuffleSeed && shuffleSeed !== null ? (
             <TestTake shuffleSeed = {shuffleSeed} currentTestInfo = {testInfo} initialQuestionsPromise = {initialQuestionsPromise}/>
           ) : (
             <QuestionDisplaySkeleton />
