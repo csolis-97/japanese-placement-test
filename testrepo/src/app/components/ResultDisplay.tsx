@@ -3,7 +3,7 @@
 import { Suspense, use } from "react";
 import QuestionDisplay from "./QuestionDisplay";
 import ResultInfo from "./ResultInfo";
-import * as skeletons from "./skeletons";
+import { QuestionDisplaySkeleton } from "./skeletons";
 
 //Interface below will be used for when each question itself is displayed. Fields should be the exact same as the ones in
 //the database in order to be properly displayed.
@@ -85,7 +85,7 @@ export default function ResultsDisplay( { attemptNum, resultNum, answersPromise,
             questions.map((question) =>
               <Suspense 
                 key = {question.response_order}
-                fallback = { <skeletons.QuestionDisplaySkeleton />}>
+                fallback = { <QuestionDisplaySkeleton />}>
                 <QuestionDisplay
                   questionId = {question.response_order}
                   questionText = {question.question_text}

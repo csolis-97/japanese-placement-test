@@ -1,7 +1,5 @@
 "use client";
 
-import Link from "next/link";
-
 // Loading animation, taken from the one provided by Vercel
 const shimmer = "before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/40 before:to-transparent";
 
@@ -48,11 +46,18 @@ export function ResultInfoSkeleton() {
             <div className = "bg-gray-300 rounded h-5 w-17 sm:w-34"></div>
             {/* Your Suggested Entrance Level */}
             <div className = "bg-gray-200 rounded h-5 w-42 sm:w-87"></div>
-            <Link href = "">
-                <button className = "mt-2 px-4 sm:px-8 py-4 font-semibold text-sm text-white position:sticky top:0 bg-gray-300" type = "button" disabled>
-                    <div className = "h-5 w-47"></div>
-                </button>
-            </Link>
+            <button className = "mt-2 px-4 sm:px-8 py-4 font-semibold text-sm text-white position:sticky top:0 bg-gray-300" type = "button" disabled>
+                <div className = "h-5 w-47"></div>
+            </button>
         </div>
     );
+}
+
+// Skeleton used as a placeholder for individual buttons, such as the one used in TestTake
+export function ButtonSkeleton() {
+    return (
+        <button className = "mt-2 px-4 sm:px-8 py-4 font-semibold text-sm text-white position:sticky top:0 bg-gray-300" type = "button" disabled>
+            <div className = "h-5 w-8"></div>
+        </button>
+    )
 }

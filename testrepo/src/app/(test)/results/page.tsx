@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic';
 import { Suspense } from "react";
 import * as resultUtils from "./displayActions";
 import ResultsDisplay from "@/app/components/ResultDisplay";
-import * as skeletons from "@/app/components/skeletons";
+import { ResultInfoSkeleton, QuestionDisplaySkeleton } from "@/app/components/skeletons";
 import { seedShuffle, seedCreate } from "@/app/utils/utilFunctions";
 import { XORShift128 } from "random-seedable";
 
@@ -102,14 +102,14 @@ interface testQuestion {
         <Suspense fallback = {
           <>
             <div className="flex flex-col items-center gap-6 p-12 text-center sm:items-start sm:text-left">
-              <skeletons.ResultInfoSkeleton />
+              <ResultInfoSkeleton />
             </div>
             <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-              <skeletons.QuestionDisplaySkeleton />
-              <skeletons.QuestionDisplaySkeleton />
-              <skeletons.QuestionDisplaySkeleton />
-              <skeletons.QuestionDisplaySkeleton />
-              <skeletons.QuestionDisplaySkeleton />
+              <QuestionDisplaySkeleton />
+              <QuestionDisplaySkeleton />
+              <QuestionDisplaySkeleton />
+              <QuestionDisplaySkeleton />
+              <QuestionDisplaySkeleton />
             </div>            
           </>                
         }>

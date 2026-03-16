@@ -4,7 +4,7 @@ import { useState, useEffect, Suspense } from "react";
 import TestStart from "./testStart/testStart";
 import TestTake from "./testTake/testTake";
 import { infoData } from "./testStart/startActions";
-import { QuestionDisplaySkeleton } from "./skeletons";
+import { QuestionDisplaySkeleton, ButtonSkeleton } from "./skeletons";
 import { seedCreate } from "../utils/utilFunctions";
 import { XORShift128 } from "random-seedable";
 
@@ -64,13 +64,29 @@ export default function TestDisplay( {initialQuestionsPromise} : {initialQuestio
     }
     { // Render only once currentDisplay is switched to test, and the shuffleSeed has been set
         currentDisplay === "test" && (
-        <Suspense fallback = {<QuestionDisplaySkeleton />}>
-          { shuffleSeed && shuffleSeed !== null ? (
-            <TestTake shuffleSeed = {shuffleSeed} currentTestInfo = {testInfo} initialQuestionsPromise = {initialQuestionsPromise}/>
+        <Suspense fallback = {
+          <>
+            <div className = "flex flex-col space-y-4 items-start justify-start py-32">
+              <QuestionDisplaySkeleton />
+            </div>
+            <div className = "flex w-full justify-end">
+              <ButtonSkeleton />
+            </div>
+          </>
+        }>
+        { shuffleSeed && shuffleSeed !== null ? (
+          <TestTake shuffleSeed = {shuffleSeed} currentTestInfo = {testInfo} initialQuestionsPromise = {initialQuestionsPromise}/>
           ) : (
-            <QuestionDisplaySkeleton />
+            <>
+              <div className = "flex flex-col space-y-6 items-start justify-start py-27">
+                <QuestionDisplaySkeleton />
+                <div className = "flex w-full justify-end">
+                  <ButtonSkeleton />
+                </div>
+              </div>
+            </>
           )
-          }
+        }
         </Suspense>
         )
     }
