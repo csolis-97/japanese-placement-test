@@ -1,10 +1,9 @@
 "use client";
 
-import { Suspense, use, useEffect } from "react";
+import { Suspense, use } from "react";
 import QuestionDisplay from "./QuestionDisplay";
 import ResultInfo from "./ResultInfo";
 import * as skeletons from "./skeletons";
-import { seedShuffle } from "../utils/utilFunctions";
 
 //Interface below will be used for when each question itself is displayed. Fields should be the exact same as the ones in
 //the database in order to be properly displayed.
@@ -34,12 +33,11 @@ interface testResult {
 interface resultsProps {
   attemptNum: number;
   resultNum: number;
-  seed: number;
   answersPromise: Promise<testQuestion[]>;
   resultsPromise: Promise<testResult>;
 }
 
-export default function ResultsDisplay( { attemptNum, resultNum, seed, answersPromise, resultsPromise } : resultsProps) {
+export default function ResultsDisplay( { attemptNum, resultNum, answersPromise, resultsPromise } : resultsProps) {
   //const questions = use(answersPromise) as testQuestion[];
   const questions = use(answersPromise);
   const results = use(resultsPromise) as testResult;

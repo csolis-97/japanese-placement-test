@@ -23,6 +23,9 @@ importers:
       react-dom:
         specifier: 19.2.3
         version: 19.2.3(react@19.2.3)
+      sqids:
+        specifier: ^0.3.0
+        version: 0.3.0
     devDependencies:
       '@tailwindcss/postcss':
         specifier: ^4
@@ -1815,6 +1818,9 @@ packages:
   source-map-js@1.2.1:
     resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}
     engines: {node: '>=0.10.0'}
+
+  sqids@0.3.0:
+    resolution: {integrity: sha512-lOQK1ucVg+W6n3FhRwwSeUijxe93b51Bfz5PMRMihVf1iVkl82ePQG7V5vwrhzB11v0NtsR25PSZRGiSomJaJw==}
 
   stable-hash@0.0.5:
     resolution: {integrity: sha512-+L3ccpzibovGXFK+Ap/f8LOS0ahMrHTf3xu7mMLSpEGU0EO9ucaysSylKo9eRDFNhWve/y275iPmIZ4z39a9iA==}
@@ -3882,6 +3888,8 @@ snapshots:
       side-channel-weakmap: 1.0.2
 
   source-map-js@1.2.1: {}
+
+  sqids@0.3.0: {}
 
   stable-hash@0.0.5: {}
 

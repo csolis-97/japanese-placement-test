@@ -7,11 +7,11 @@ import QuestionDisplay from "../QuestionDisplay";
 import StageComplete from "../StageComplete";
 import { infoData } from "../testStart/startActions";
 import { testQuestion } from "../TestDisplay";
-import { shuffleQuestion, seedShuffle } from "@/app/utils/utilFunctions";
+import { seedShuffle } from "@/app/utils/utilFunctions";
 
-const shuffleSeed = (Math.floor(Math.random() * 10000000));
-//const shuffleSeed = 1234;
-console.log(`CURRENT SEED TO BE USED: ${shuffleSeed}`);
+// const shuffleSeed = (Math.floor(Math.random() * 10000000));
+// const shuffleSeed = 1234;
+// console.log(`CURRENT SEED TO BE USED: ${shuffleSeed}`);
 
 //Type defined below will be used for setting the test questions and answers
 type questionType = {
@@ -27,13 +27,14 @@ type questionType = {
 
 // This interface will be used to properly receive the useState and data which are passed to the component
 interface testProps {
+  shuffleSeed: string;
   currentTestInfo: infoData;
   setCurrentTestInfo: Dispatch<SetStateAction<infoData>>;
   initialQuestions: testQuestion[];
 }
 
 
-export default function TestTake({currentTestInfo, setCurrentTestInfo, initialQuestions} : testProps) {
+export default function TestTake({shuffleSeed, currentTestInfo, setCurrentTestInfo, initialQuestions} : testProps) {
   //const attemptNum = JSON.parse(JSON.stringify(currentTestInfo.userAttempt));
   //const resultNum = JSON.parse(JSON.stringify(currentTestInfo.resultId));
   
@@ -248,10 +249,7 @@ export default function TestTake({currentTestInfo, setCurrentTestInfo, initialQu
         urlParams.set('r', currentRecord.toString());
         urlParams.set('s', shuffleSeed.toString());
 
-        console.log("ABOUT TO PUSH THROUGH ROUTE WITH THIS ATTEMPT NUMBER, THIS RECORD NUMBER, AND THIS SEED!");
-        console.log(currentAttempt);
-        console.log(currentRecord);
-        console.log(shuffleSeed);
+        console.log(`ABOUT TO PUSH THROUGH ROUTE WITH THIS ATTEMPT NUMBER: ${currentAttempt}, THIS RECORD NUMBER: ${currentRecord}, AND THIS SEED: ${shuffleSeed}!`);
         router.push(`/results?${urlParams.toString()}`);
       }
       // If there is an error, log to console.

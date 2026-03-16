@@ -4,16 +4,19 @@ import { Suspense } from "react";
 import * as resultUtils from "./displayActions";
 import ResultsDisplay from "@/app/components/ResultDisplay";
 import * as skeletons from "@/app/components/skeletons";
-import { seedShuffle, digestSeed} from "@/app/utils/utilFunctions";
+import { seedShuffle, sqidSeed } from "@/app/utils/utilFunctions";
 
 export default async function Results({ searchParams } : { searchParams: Promise<{ [key : string] : string | string[] | undefined }> }) {
   // Here, the search Params will be dealt with, determining the current resultID alongside the user's current attempt number.
   const filterParams = await searchParams;
   const attemptNum = filterParams ? Number(filterParams.attempt) : 0;
   const resultNum = filterParams ? Number(filterParams.r) : 0;
-  const seed = filterParams ? Number(filterParams.s) : 0;
-  //const seed = (attemptNum + (attemptNum % resultNum) * resultNum);
-  console.log("HERE IS THE ATTEMPT NUMBER, RECORD NUMBER AND SEED IN THE RESULTS PAGE FROM THE SEARCH PARAMS WITHIN THE PAGE.TSX!");
+  //const seed = filterParams ? Number(filterParams.s) : 0;
+  // const seed = String(`${attemptNum + (attemptNum % resultNum) * resultNum}`);
+  console.log("ABOUT TO SET THE SHUFFLE SEED!");
+  const seed = resultNum !== 0 && attemptNum !== 0 ? sqidSeed([attemptNum, (attemptNum % resultNum), resultNum]) : "";
+  console.log(`SEED SET TO ${seed}`);
+  console.log(`HERE IS THE ATTEMPT NUMBER: ${attemptNum}, RECORD NUMBER: ${resultNum} AND SEED: ${seed} IN THE RESULTS PAGE FROM THE SEARCH PARAMS WITHIN THE PAGE.TSX!`);
   console.log(attemptNum);
   console.log(resultNum);
   console.log(seed);
@@ -106,7 +109,7 @@ interface testQuestion {
             </div>            
           </>                
         }>
-          <ResultsDisplay attemptNum = {attemptNum} resultNum = {resultNum} seed = {seed} answersPromise = {answersPromise} resultsPromise= {resultsPromise} />
+          <ResultsDisplay attemptNum = {attemptNum} resultNum = {resultNum} answersPromise = {answersPromise} resultsPromise= {resultsPromise} />
         </Suspense>
       </main>
     </div>

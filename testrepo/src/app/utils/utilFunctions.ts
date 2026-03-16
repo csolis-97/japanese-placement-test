@@ -1,5 +1,7 @@
 import { testQuestion } from "@/app/components/TestDisplay";
 import { XORShift128 } from "random-seedable";
+import { createHash } from "crypto";
+import Sqids from "sqids";
 
 // The getURL function will check if an environmental variable named VERCEL_URL exists. If it does,
 // return the address prefixed by https://. Otherwise, return the value of the FRONTEND_URL
@@ -74,8 +76,14 @@ export function shuffleQuestion(givenList: testQuestion[]) {
 }
 
 //
-export function seedShuffle(givenList: testQuestion[], seed: number) {
-    const shuffleQuestions = new XORShift128(seed);
+export function seedShuffle(givenList: testQuestion[], seed: string) {
+
+    console.log(`ENTERED THE SEED SHUFFLE WITH THIS SEED: ${seed}!`);
+    const replaceString = JSON.parse(JSON.stringify(seed));
+    // Strip the string of all non-integer characters. The below is Regex, the g flag means global, \D means all non-integers.
+    const finalString = replaceString.replace(/\D/g, "");
+    console.log(`FINISHED SETTING UP THE REPLACE STRING: ${finalString}`);
+    const shuffleQuestions = new XORShift128(Number(finalString));
 
     for (let i = givenList.length - 1; i > -1; i--) {
 
@@ -115,14 +123,15 @@ export function seedShuffle(givenList: testQuestion[], seed: number) {
     }
 */
 
-// 
-export async function digestSeed(seed: string | number) {
-    // TextEncoder creates an object that allows you to encode a given string
-    const encoder = new TextEncoder();
-    const seedData = encoder.encode(String(seed));
-    const hashedData = await crypto.subtle.digest("SHA-256", seedData);
-    // DataView creates an object that lets you read and write numbers from an ArrayBuffer
-    const dataView = new DataView(hashedData);
-    // Get an integer from the first four bytes
-    return dataView.getUint32(0);
+// This function uses Sqid to encode the seed and use it for the shuffle
+export function sqidSeed(seed: number[]) {
+    const hash = new Sqids({
+        minLength: 16,
+    });
+    console.log(`HERE IS THE SEED BEFORE ENCODING: ${seed}`);
+    const hashedSeed = hash.encode(seed);
+    // PURELY DEBUG
+    console.log(`HERE IS THE ENCODED SEED: ${hashedSeed}`);
+    console.log(`HERE IS THE DECODED SEED: ${hash.decode(hashedSeed)}`);
+    return hashedSeed;
 }

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import TestStart from "./testStart/testStart";
 import TestTake from "./testTake/testTake";
 import { infoData } from "./testStart/startActions";
+import { sqidSeed } from "../utils/utilFunctions";
 
 //Interface below will be used for when each question itself is displayed. Fields should be the exact same as the ones in
 //the database in order to be properly displayed.
@@ -34,6 +35,11 @@ export default function TestDisplay( {initialQuestions} : {initialQuestions: tes
   'name' : ""
   });
 
+  //const [shuffleSeed, setShuffleSeed] = useState<string>("");
+  console.log("ABOUT TO SET THE SHUFFLE SEED!");
+  const shuffleSeed = testInfo.resultId !== 0 && testInfo.userAttempt !== 0 ? sqidSeed([testInfo.userAttempt, (testInfo.userAttempt % testInfo.resultId), testInfo.resultId]) : "";
+  console.log(`SHUFFLE SEED SET TO ${shuffleSeed}`);
+
   useEffect(() => {
     console.log(`HERE IS WHAT WAS RECEIVED FROM THE SERVER: ${initialQuestions}`);
     console.log(`HERE IS THE CURRENT VALUES OF TESTINFO: ${testInfo}`);
@@ -47,8 +53,8 @@ export default function TestDisplay( {initialQuestions} : {initialQuestions: tes
         )
     }
     {
-        currentDisplay === "test" && (
-        <TestTake currentTestInfo = {testInfo} setCurrentTestInfo = {setTestInfo} initialQuestions = {initialQuestions}/>
+        currentDisplay === "test" && shuffleSeed !== "" && (
+        <TestTake shuffleSeed = {shuffleSeed} currentTestInfo = {testInfo} setCurrentTestInfo = {setTestInfo} initialQuestions = {initialQuestions}/>
         )
     }
     </>)
