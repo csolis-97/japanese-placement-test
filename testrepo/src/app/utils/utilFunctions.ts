@@ -134,3 +134,11 @@ export function sqidSeed(seed: number[]) {
     console.log(`HERE IS THE DECODED SEED: ${hash.decode(hashedSeed)}`);
     return hashedSeed;
 }
+
+//This little function will calculate the correct answers for the stage
+export async function calculateCorrect(gradedAnswers:  boolean[], stageSize: number) {
+    const correctCount = gradedAnswers.slice(-stageSize).filter(Boolean).length;
+    console.log("HERE IS CORRECT COUNT!");
+    console.log(correctCount);
+    return correctCount;
+  }

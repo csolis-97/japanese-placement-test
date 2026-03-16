@@ -1,13 +1,14 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useEffect, useRef, useTransition } from "react";
+import { useState, useEffect, useRef, useTransition, use } from "react";
 import * as testUtils from "./testActions";
 import QuestionDisplay from "../QuestionDisplay";
 import StageComplete from "../StageComplete";
 import { infoData } from "../testStart/startActions";
 import { testQuestion } from "../TestDisplay";
-import { seedShuffle } from "@/app/utils/utilFunctions";
+import { sqidSeed, seedShuffle, calculateCorrect } from "@/app/utils/utilFunctions";
+import { XORShift128 } from "random-seedable";
 
 // const shuffleSeed = (Math.floor(Math.random() * 10000000));
 // const shuffleSeed = 1234;
@@ -29,11 +30,21 @@ type questionType = {
 interface testProps {
   shuffleSeed: string;
   currentTestInfo: infoData;
-  initialQuestions: testQuestion[];
+  initialQuestionsPromise: Promise<testQuestion[]>;
 }
 
 
-export default function TestTake({shuffleSeed, currentTestInfo, initialQuestions} : testProps) {
+export default function TestTake({shuffleSeed, currentTestInfo, initialQuestionsPromise} : testProps) {
+
+    //let shuffleSeed: string = "";
+    //let shuffleSeed: XORShift128;
+
+    //if (currentTestInfo.resultId !== 0 && currentTestInfo.userAttempt !== 0) {
+    console.log("ABOUT TO SET THE SHUFFLE SEED!");
+    //const shuffleSeed = sqidSeed([currentTestInfo.userAttempt, currentTestInfo.resultId]);
+    console.log(`SHUFFLE SEED SET TO ${shuffleSeed}`);
+    //}
+    const initialQuestions = use(initialQuestionsPromise) as testQuestion[];  
     // This useState is used to store the questions received from the database
     const [questions, setQuestions] = useState<testQuestion[]>(() => {
       let shuffleInitial = JSON.parse(JSON.stringify(initialQuestions));
@@ -109,6 +120,11 @@ export default function TestTake({shuffleSeed, currentTestInfo, initialQuestions
     //Router will be used to push certain info when routed to the results page
     const router = useRouter();
 
+    //This little function will calculate the correct answers for the stage, using the current value of the gradedAnswers useRef
+    async function handleCorrectCount(gradedAnswers: boolean[]) {
+      correctTotal.current = await calculateCorrect(gradedAnswers, stageSize);
+    }
+
     async function handleQuestionRetrieve(event: React.FormEvent) {
       event.preventDefault();
       console.log("ABOUT TO RETRIEVE SOME NEW QUESTIONS FOR THE NEXT STAGE")
@@ -128,6 +144,8 @@ export default function TestTake({shuffleSeed, currentTestInfo, initialQuestions
         console.log("FETCHED THE NEXT STAGE!")
         if (fetchedQuestion) {
           console.log("HERE IS THE RESULT OF THE FETCHED QUESTION");
+
+          //const shuffleSeed = sqidSeed([currentTestInfo.userAttempt, currentTestInfo.resultId]);
 
           let shuffleQuestions = JSON.parse(JSON.stringify(fetchedQuestion));
           seedShuffle(shuffleQuestions, shuffleSeed);
@@ -249,16 +267,8 @@ export default function TestTake({shuffleSeed, currentTestInfo, initialQuestions
       }
     }
   }
-
-  //This little function will calculate the correct answers for the stage
-  async function calculateCorrect(gradedAnswers:  boolean[]) {
-    const correctCount = gradedAnswers.slice(-stageSize).filter(Boolean).length;
-    console.log("HERE IS CORRECT COUNT!")
-    console.log(correctCount)
-    //Also set correctTotal so that the count can be used through a useRef
-    correctTotal.current = correctCount
-    return correctCount
-  }
+  
+  //const correctCount = calculateCorrect(gradedAnswers.current, stageSize);
 
   // This useEffect will populate the answerArray ONLY when the answerArray is shorter than questions, and questions is not empty
   useEffect(() => {
@@ -279,33 +289,33 @@ export default function TestTake({shuffleSeed, currentTestInfo, initialQuestions
 
   // FOR DEBUG. This useEffect will track all current relevant info needed
   useEffect(() => {
-    console.log("CURRENT SELECTED ANSWER")
-    console.log(selectedAnswer)
-    console.log("ABOUT TO ENTER THE HTML!")
-    console.log(questions)
-    console.log("CURRENT QUESTION!")
-    console.log(currentQuestion)
-    console.log("CURRENT FIRST AND LAST CHECKS")
-    console.log(isFirstQuestion, isLastQuestion)
+    console.log("CURRENT SELECTED ANSWER");
+    console.log(selectedAnswer);
+    console.log("ABOUT TO ENTER THE HTML!");
+    console.log(questions);
+    console.log("CURRENT QUESTION!");
+    console.log(currentQuestion);
+    console.log("CURRENT FIRST AND LAST CHECKS");
+    console.log(isFirstQuestion, isLastQuestion);
 
-    console.log("CURRENT STATUS OF ANSWER ARRAY")
-    console.log(answerArray)
-    console.log("LENGTH OF THE ANSWER ARRAY")
-    console.log(answerArray.length)
+    console.log("CURRENT STATUS OF ANSWER ARRAY");
+    console.log(answerArray);
+    console.log("LENGTH OF THE ANSWER ARRAY");
+    console.log(answerArray.length);
 
-    console.log("CURRENT LIST OF GRADED ANSWERS")
-    console.log(gradedAnswers)
-    console.log("CURRENT LIST OF STAGE VALUES")
-    console.log(stageInfo.current.stageDifficulty)
-    console.log("CURRENT STAGE")
-    console.log(stageInfo.current.stageNum)
-    console.log("DISPLAY THE CURRENT QUESTION OF THE CURRENT STAGE")
-    console.log(stageInfo.current.stageQuestion)
+    console.log("CURRENT LIST OF GRADED ANSWERS");
+    console.log(gradedAnswers);
+    console.log("CURRENT LIST OF STAGE VALUES");
+    console.log(stageInfo.current.stageDifficulty);
+    console.log("CURRENT STAGE");
+    console.log(stageInfo.current.stageNum);
+    console.log("DISPLAY THE CURRENT QUESTION OF THE CURRENT STAGE");
+    console.log(stageInfo.current.stageQuestion);
 
-    console.log("CURRENT TEST INFO WHILE TAKING THE TEST")
-    console.log(currentTestInfo)
-    console.log("HAS THE STAGE BEEN SUBMITTED?")
-    console.log(isSubmitted)
+    console.log("CURRENT TEST INFO WHILE TAKING THE TEST");
+    console.log(currentTestInfo);
+    console.log("HAS THE STAGE BEEN SUBMITTED?");
+    console.log(isSubmitted);
   }, [selectedAnswer, questions, currentQuestion, answerArray, isSubmitted])
   
   //Here the change in the selection of an answer for the current question will be handled
@@ -334,8 +344,8 @@ export default function TestTake({shuffleSeed, currentTestInfo, initialQuestions
     // After the user presses the continue button, the following will be executed
     // If the user did well enough and they have not reached the final stage, move onto the next stage but do not submit the test.
     if (stageInfo.current.stageNum < 4 && correctTotal.current > 3) {
-      startTransition( async () => {
-        console.log(`SCORES FOR STAGE ${stageInfo.current.stageNum} WERE SUFFICIENT, MOVE ONTO THE NEXT STAGE.`)
+      startTransition(async () => {
+        console.log(`SCORES FOR STAGE ${stageInfo.current.stageNum} WERE SUFFICIENT, MOVE ONTO THE NEXT STAGE.`);
         await handleQuestionRetrieve(event);
 
         setCurrentQuestion(prev => prev + 1);
@@ -346,10 +356,10 @@ export default function TestTake({shuffleSeed, currentTestInfo, initialQuestions
     // Otherwise, do the following
     else {
       if (stageInfo.current.stageNum > 4) {
-        console.log(`USER HAS REACHED THE FINAL STAGE, END THE TEST NOW.`)
+        console.log(`USER HAS REACHED THE FINAL STAGE, END THE TEST NOW.`);
       }
       else {
-        console.log(`SCORES FOR STAGE ${stageInfo.current.stageNum} WERE TOO LOW, END THE TEST NOW.`)
+        console.log(`SCORES FOR STAGE ${stageInfo.current.stageNum} WERE TOO LOW, END THE TEST NOW.`);
       }
       // Now handle the submission
       await handleTestForm(event);
@@ -376,7 +386,7 @@ export default function TestTake({shuffleSeed, currentTestInfo, initialQuestions
       await handleQuestionSubmit(event);
 
       // Await the correct number of answers for the stage before moving on
-      await calculateCorrect(gradedAnswers.current);
+      await handleCorrectCount(gradedAnswers.current);
 
       //Set submitted to true so that the modal can be displayed
       setIsSubmitted(true);

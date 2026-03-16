@@ -5,7 +5,19 @@ import TestDisplay from "@/app/components/TestDisplay";
 
 export default async function Test() {
 
-  //Make a default request for fetching the first question
+  interface testQuestion {
+  question_id: number;
+  question_text: string;
+  question_body: string;
+  question_level: string;
+  answer_id: number[];
+  answer_text: string[];
+  already_answered?: boolean;
+  correct_answer?: boolean[];
+  is_correct?: boolean;
+  };
+
+  //Make a default request for fetching the first questions
   let initialRequest: testUtils.requestData = {
     questionId: [0],
     pastId: [],
@@ -13,21 +25,11 @@ export default async function Test() {
     wasCorrect: [false]
   };
 
-  async function fetchInitialQuestions() {
-    // Fetch the test form data from the backend, with 'retrieveOneQuestion' as the action to take
-    console.log("ABOUT TO FETCH THE INITIAL STAGE!")
-    const fetchedQuestion = await testUtils.questionFetch('retrieveStage', initialRequest)
-    console.log("FETCHED THE INITIAL STAGE!")
-    if (fetchedQuestion) {
-      console.log(`HERE IS THE RESULT OF THE FETCHED QUESTION: ${fetchedQuestion}`)
-    }
-    else {
-      console.log("Error retrieving the initial questions.")
-    }
-    return fetchedQuestion;
-  }
-    
-  const initialQuestions = await fetchInitialQuestions();
+  // Fetch the initial set of questions from the backend, with 'retrieveStage' as the action to take
+  console.log("ABOUT TO FETCH THE INITIAL STAGE!")
+  const fetchedQuestion = testUtils.questionFetch('retrieveStage', initialRequest) as Promise<testQuestion[]>;
+  console.log("FETCHED THE INITIAL STAGE!")
+  console.log(`HERE IS THE RESULT OF THE FETCHED QUESTION: ${fetchedQuestion}`)
   
   //HTML return for the test form page
   return (
@@ -35,7 +37,7 @@ export default async function Test() {
       <main className="flex sm:min-h-screen w-full sm:max-w-3xl flex-col items-center justify-between px-16 bg-white dark:bg-black ">
         {
           // Send the initial questions as a prop to testDisplay component
-          <TestDisplay initialQuestions = {initialQuestions}/>
+          <TestDisplay initialQuestionsPromise = {fetchedQuestion}/>
         }
       </main>
     </div>
