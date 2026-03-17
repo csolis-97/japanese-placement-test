@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import * as resultUtils from "./displayActions";
 import ResultsDisplay from "@/app/components/ResultDisplay";
 import { ResultInfoSkeleton, QuestionDisplaySkeleton } from "@/app/components/skeletons";
-import { seedShuffle, seedCreate } from "@/app/utils/utilFunctions";
+import { shuffleList, seedShuffle, seedCreate } from "@/app/utils/utilFunctions";
 import { XORShift128 } from "random-seedable";
 
 export default async function Results({ searchParams } : { searchParams: Promise<{ [key : string] : string | string[] | undefined }> }) {
@@ -77,8 +77,9 @@ interface testQuestion {
         let subData = JSON.parse(JSON.stringify(answerData.slice(i * stageSize, stageSize * (i + 1))));
 
         const seed = seedCreate([attemptNum, (attemptNum % resultNum), resultNum]);
-        seedShuffle(subData, seed);
-        tempData = [...tempData, ...subData];
+        //seedShuffle(subData, seed);
+        const shuffledSubData = shuffleList(subData, seed);
+        tempData = [...tempData, ...shuffledSubData];
         console.log(`RESULTS OF CONCATINATING STAGE ${i + 1}'S QUESTIONS: ${tempData}`);
       }
       answerData = tempData;

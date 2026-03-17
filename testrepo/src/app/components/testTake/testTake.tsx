@@ -7,11 +7,11 @@ import QuestionDisplay from "../QuestionDisplay";
 import StageComplete from "../StageComplete";
 import { infoData } from "../testStart/startActions";
 import { testQuestion } from "../TestDisplay";
-import { seedShuffle, seedCreate, calculateCorrect } from "@/app/utils/utilFunctions";
+import { shuffleList, seedShuffle, seedCreate, calculateCorrect } from "@/app/utils/utilFunctions";
 import { XORShift128 } from "random-seedable";
 
 //Type defined below will be used for setting the test questions and answers
-type questionType = {
+export type questionType = {
   questionId: number;
   questionText: string;
   questionBody: string;
@@ -35,8 +35,9 @@ export default function TestTake({shuffleSeed, currentTestInfo, initialQuestions
   const initialQuestions = use(initialQuestionsPromise) as testQuestion[];  
   // This useState is used to store the questions received from the database
   const [questions, setQuestions] = useState<testQuestion[]>(() => {
-    let shuffleInitial = JSON.parse(JSON.stringify(initialQuestions));
-    seedShuffle(shuffleInitial, shuffleSeed);
+    //let initialQuestionsShuffle = JSON.parse(JSON.stringify(initialQuestions));
+    //seedShuffle(shuffleInitial, shuffleSeed);
+    const shuffleInitial = shuffleList(initialQuestions, shuffleSeed);
     console.log("INITIAL QUESTION ANSWER OPTIONS HAVE BEEN SHUFFLED!");
     for (let i = shuffleInitial.length - 1; i > -1; i--) {
       console.log(`HERE IS THE QUESTION ID FOR THE CURRENT QUESTION: ${shuffleInitial[i].question_id}`)
@@ -132,10 +133,11 @@ export default function TestTake({shuffleSeed, currentTestInfo, initialQuestions
       if (fetchedQuestion) {
         console.log("HERE IS THE RESULT OF THE FETCHED QUESTION");
 
-        let shuffleQuestions = JSON.parse(JSON.stringify(fetchedQuestion));
+        let nextQuestions = JSON.parse(JSON.stringify(fetchedQuestion));
 
         const nextShuffleSeed = seedCreate([currentTestInfo.userAttempt, (currentTestInfo.userAttempt % currentTestInfo.resultId), currentTestInfo.resultId]);
-        seedShuffle(shuffleQuestions, nextShuffleSeed);
+        //seedShuffle(shuffleQuestions, nextShuffleSeed);
+        const shuffleQuestions = shuffleList(nextQuestions, nextShuffleSeed);
         console.log("NEW QUESTION ANSWER OPTIONS HAVE BEEN SHUFFLED!");
 
         for (let i = shuffleQuestions.length - 1; i > -1; i--) {

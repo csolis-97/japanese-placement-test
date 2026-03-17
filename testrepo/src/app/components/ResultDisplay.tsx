@@ -42,17 +42,6 @@ export default function ResultsDisplay( { attemptNum, resultNum, answersPromise,
   const questions = use(answersPromise);
   const results = use(resultsPromise) as testResult;
 
-  /* useEffect(() => {
-    seedShuffle(questions, seed);
-
-    console.log("QUESTION ANSWER OPTIONS HAVE BEEN SHUFFLED!");
-    for (let i = questions.length - 1; i > -1; i--) {
-      console.log(`HERE IS THE QUESTION ID FOR THE CURRENT QUESTION: ${questions[i].question_id}`)
-      console.log(`HERE ARE THE ANSWER IDS FOR THE CURRENT QUESTION: ${questions[i].answer_id}`)
-      console.log(`HERE ARE THE ANSWER TEXTS FOR THE CURRENT QUESTION: ${questions[i].answer_text}`)
-    }
-  }, []); */
-
   //Fetch the user's graded responses from the test page
   console.log("ABOUT TO ENTER THE HTML!");
   console.log("HERE IS THE QUESTION AND ANSWER INFORMATION");

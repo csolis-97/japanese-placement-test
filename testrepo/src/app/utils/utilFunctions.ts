@@ -51,27 +51,61 @@ export function checkName(name: string) {
     } 
 }
 
-// This function will shuffle the elements of the list provided as the argument and return it.
-export function shuffleList(givenList: string[]) {
-    for (let i = givenList.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        // Swap the values at index i and index j
-        [givenList[i], givenList[j]] = [givenList[j], givenList[i]]
-    }
-    return givenList;
-}
+// This function will shuffle the answer_id and answer_text (and correct_answer if it exists) (using the seedRNG that was also passed)
+// of the testQuestion array provided as the argument, and return it.
 
-// This function will shuffle the answer_id and answer_text at each index of a given testQuestion array
-export function shuffleQuestion(givenList: testQuestion[]) {
-    for (let i = givenList.length - 1; i > -1; i--) {
-        for (let j = givenList[i].answer_id.length - 1; j > -1; j--) {
-            const k = Math.floor(Math.random() * (j + 1));
-            // Swap the values at index j and index k
-            [givenList[i].answer_id[j], givenList[i].answer_id[k]] = [givenList[i].answer_id[k], givenList[i].answer_id[j]];
-            [givenList[i].answer_text[j], givenList[i].answer_text[k]] = [givenList[i].answer_text[k], givenList[i].answer_text[j]];
+export function shuffleList(givenList: testQuestion[], seedRNG: XORShift128) {
+    console.log(`ENTERED THE SEED SHUFFLE WITH THIS SEED: ${seedRNG}!`);
+    let cloneList = JSON.parse(JSON.stringify(givenList));
+    for (let i = 0; i < givenList.length; i++) {
+        let indexList: number[] = [];
+        let cloneSublist = JSON.parse(JSON.stringify(givenList[i]));
+        for (let j = 0; j < givenList[i].answer_id.length; j++) {
+            //indexList.push(givenList[i].answer_id[j]);
+            indexList.push(j);
         }
+        console.log(`FINISHED GETTING THE INDICES FOR THE INDEX LIST OF THE CURRENT TEST QUESTION: ${indexList}`);
+        let shuffleIndex = JSON.parse(JSON.stringify(indexList));
+        seedRNG.shuffle(shuffleIndex);
+        console.log(`FINISHED SHUFFLING THE INDICES FOR THE INDEX LIST OF THE CURRENT TEST QUESTION: ${shuffleIndex}`);
+        //Object.values(cloneSublist as testQuestion).map((value: testQuestion, index: number) => {
+        const answerId = cloneSublist.answer_id.map((value: number, index: number) => {
+            //value = shuffleIndex[index];
+            value = givenList[i].answer_id[shuffleIndex[index]];
+            console.log(`MAPPED ${givenList[i].answer_id[index]} AT INDEX ${index} OF GIVENLIST TO ${value} AT INDEX ${index} OF SHUFFLE INDEX!`);
+            return value;
+        });
+        const answerText = cloneSublist.answer_text.map((value: string, index: number) => {
+            //value = givenList[i].answer_text[shuffleIndex[index] - 1];
+            value = givenList[i].answer_text[shuffleIndex[index]];
+            console.log(`MAPPED ${givenList[i].answer_text[index]} AT INDEX ${index} TO ${value} AT INDEX ${index} OF SHUFFLE INDEX!`);
+            return value;
+        });
+        // Make a const so it can define if the correct_answer array is null or not below
+        const correctValues = givenList[i].correct_answer;
+        if (correctValues) {
+            const correctAnswer = cloneSublist.correct_answer.map((value: boolean, index: number) => {
+                //value = correctValues[shuffleIndex[index] - 1];
+                value = correctValues[shuffleIndex[index]];
+                console.log(`MAPPED ${correctValues[index]} AT INDEX ${index} TO ${value} AT INDEX ${index} OF SHUFFLE INDEX!`);
+                return value;
+            });
+            // Set the shuffled array of correct_answer
+            cloneSublist.correct_answer = correctAnswer;
+        }
+
+        // Set the shuffled arrays of answer_id and answer_text
+        cloneSublist.answer_id = answerId;
+        cloneSublist.answer_text = answerText;
+
+        console.log(`FINALIZED VERSION OF CLONESUBLIST LOOKS LIKE THIS AT THE CURRENT INDEX ${i}: ${JSON.stringify(cloneSublist)}`);
+        console.log(`FOR REFERENCE, ORIGINAL VERSION LOOKS LIKE THIS AT THE CURRENT INDEX ${i}: ${JSON.stringify(givenList[i])}`);
+        cloneList[i] = cloneSublist;
+        console.log(`REPLACED VALUES AT INDEX ${i} OF CLONELIST WITH THIS: ${JSON.stringify(cloneList[i])}`);
     }
-    return givenList;
+    // After exiting the for loops
+    console.log(`NEW CLONELIST: ${JSON.stringify(cloneList)}`);
+    return cloneList;
 }
 
 //
@@ -107,14 +141,6 @@ export function seedShuffle(givenList: testQuestion[], seedRNG: XORShift128) {
         }
     }
 }
-/*
-    for (let i = givenList.length - 1; i > - 1; i--) {
-        shuffleQuestions.shuffle(givenList[i].answer_id);
-        shuffleQuestions.shuffle(givenList[i].answer_text);
-        // Use the nullish coalescing operator when there is no array for correct answers
-        shuffleQuestions.shuffle(givenList[i].correct_answer ?? []);
-    }
-*/
 
 // This function uses Sqid to encode the seed, which then strips it of all non-integer characters and passes it as the argument
 // for a new XORShift128 object, which is stored in the seedRNG const
