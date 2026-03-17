@@ -108,7 +108,7 @@ interface testQuestion {
         w-full sm:max-w-3xl 
         flex-col items-center 
         justify-between py-16 sm:py-32 
-        px-16 bg-white dark:bg-black sm:items-start
+        px-16 bg-white dark:bg-black
       `}>
         <Suspense fallback = {
           <>
