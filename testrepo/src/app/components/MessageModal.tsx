@@ -3,20 +3,29 @@
 import Link from "next/link";
 import { createPortal } from "react-dom";
 
-interface messageProps {
+interface MessageProps {
     messageText: string;
     buttonText: string;
     reset?: () => void;
 }
 
 // MessageModal is a simple component used for displaying messages on screen. It accepts text for the message and button as props.
-export default function MessageModal( { messageText, buttonText, reset } : messageProps) {
+export default function MessageModal( { messageText, buttonText, reset } : MessageProps) {
     return createPortal(
-    <div className="flex min-h-screen justify-center bg-[#d1190d] font-sans dark:bg-black">
-        <main className="w-full sm:max-w-3xl bg-white dark:bg-black sm:items-start">
+    <div className = {`
+        flex min-h-screen 
+        justify-center bg-[#d1190d] 
+        font-sans dark:bg-black
+    `}>
+        <main className = "w-full sm:max-w-3xl bg-white dark:bg-black sm:items-start">
             <div className = "fixed inset-0 flex items-center justify-center bg-black/40">
-            {
-                <div className = "relative border-8 border-gray-400 shadow-lg rounded-lg bg-white p-4 dark:text-black-500 min-w-[10rem] sm:min-w-[10rem] min-h-[11rem] sm:min-h-[10rem]">
+                <div className = {`
+                    relative border-8 border-gray-400 
+                    shadow-lg rounded-lg bg-white 
+                    p-4 dark:text-black-500 
+                    min-w-[10rem] sm:min-w-[10rem] 
+                    min-h-[11rem] sm:min-h-[10rem]
+                `}>
                     <h1>{messageText}</h1>
                     <Link href = "/">
                         <div className = "absolute left-6 sm:left-10 bottom-5">
@@ -31,7 +40,6 @@ export default function MessageModal( { messageText, buttonText, reset } : messa
                         )
                     }
                 </div>
-            }
             </div>
         </main>
     </div>, document.body

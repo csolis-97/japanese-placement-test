@@ -4,8 +4,7 @@ import { Suspense } from "react";
 import * as resultUtils from "./displayActions";
 import ResultsDisplay from "@/app/components/ResultDisplay";
 import { ResultInfoSkeleton, QuestionDisplaySkeleton } from "@/app/components/skeletons";
-import { shuffleList, seedShuffle, seedCreate } from "@/app/utils/utilFunctions";
-import { XORShift128 } from "random-seedable";
+import { shuffleList, seedCreate } from "@/app/utils/utilFunctions";
 
 export default async function Results({ searchParams } : { searchParams: Promise<{ [key : string] : string | string[] | undefined }> }) {
   // Here, the search Params will be dealt with, determining the current resultID alongside the user's current attempt number.
@@ -22,7 +21,7 @@ export default async function Results({ searchParams } : { searchParams: Promise
   console.log(resultNum);
   //console.log(seed);
 
-  let answersFormat: resultUtils.answerData = {    
+  let answersFormat: resultUtils.AnswerData = {    
     'questionId' : 0,
     'questionText' : '',
     'questionBody' : '',
@@ -36,7 +35,7 @@ export default async function Results({ searchParams } : { searchParams: Promise
     'wasCorrect' : false
   }
 
-  let resultsFormat: resultUtils.resultData = {
+  let resultsFormat: resultUtils.ResultData = {
     'resultId' : resultNum,
     'attemptId' : attemptNum,
     'totalScore' : 0,
@@ -86,20 +85,31 @@ interface testQuestion {
       //seedShuffle(answerData, seed);   
       console.log("INITIAL QUESTION ANSWER OPTIONS HAVE BEEN SHUFFLED!");
       for (let j = answerData.length - 1; j > -1; j--) {
-        console.log(`HERE IS THE QUESTION ID FOR THE CURRENT QUESTION: ${answerData[j].question_id}`)
-        console.log(`HERE ARE THE ANSWER IDS FOR THE CURRENT QUESTION: ${answerData[j].answer_id}`)
-        console.log(`HERE ARE THE ANSWER TEXTS FOR THE CURRENT QUESTION: ${answerData[j].answer_text}`)
-        console.log(`HERE ARE THE CORRECT ANSWERS FOR THE CURRENT QUESTION: ${answerData[j].correct_answer}`)
+        console.log(`HERE IS THE QUESTION ID FOR THE CURRENT QUESTION: ${answerData[j].question_id}`);
+        console.log(`HERE ARE THE ANSWER IDS FOR THE CURRENT QUESTION: ${answerData[j].answer_id}`);
+        console.log(`HERE ARE THE ANSWER TEXTS FOR THE CURRENT QUESTION: ${answerData[j].answer_text}`);
+        console.log(`HERE ARE THE CORRECT ANSWERS FOR THE CURRENT QUESTION: ${answerData[j].correct_answer}`);
       }
       //return answerData;
       return tempData;
     }) as Promise<testQuestion[]>;
-  const resultsPromise = resultUtils.resultsData('retrieveResults', resultsFormat)
+  const resultsPromise = resultUtils.resultsData('retrieveResults', resultsFormat);
 
   //HTML return for the results page
   return (
-    <div className="flex sm:min-h-screen items-center justify-center bg-[#d1190d] font-sans dark:bg-black">
-      <main className="flex sm:min-h-screen w-full sm:max-w-3xl flex-col items-center justify-between py-16 sm:py-32 px-16 bg-white dark:bg-black sm:items-start">
+    <div className = {`
+      flex sm:min-h-screen 
+      items-center justify-center 
+      bg-[#d1190d] font-sans 
+      dark:bg-black
+    `}>
+      <main className = {`
+        flex sm:min-h-screen 
+        w-full sm:max-w-3xl 
+        flex-col items-center 
+        justify-between py-16 sm:py-32 
+        px-16 bg-white dark:bg-black sm:items-start
+      `}>
         <Suspense fallback = {
           <>
             <div className="flex flex-col items-center gap-6 p-12 text-center sm:items-start sm:text-left">
@@ -114,7 +124,11 @@ interface testQuestion {
             </div>            
           </>                
         }>
-          <ResultsDisplay attemptNum = {attemptNum} resultNum = {resultNum} answersPromise = {answersPromise} resultsPromise= {resultsPromise} />
+          <ResultsDisplay 
+            attemptNum = {attemptNum} 
+            answersPromise = {answersPromise} 
+            resultsPromise= {resultsPromise} 
+          />
         </Suspense>
       </main>
     </div>

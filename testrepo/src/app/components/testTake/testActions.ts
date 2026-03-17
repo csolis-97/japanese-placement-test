@@ -2,19 +2,19 @@
 
 import { getURL, responseMessage } from "@/app/utils/utilFunctions";
 
-console.log(`"HERE IS THE URL BEING USED!" ${getURL()}`)
+console.log(`"HERE IS THE URL BEING USED!" ${getURL()}`);
 
 //Type defined below will be used for tracking each stage's info, including each stage's difficulty,
 //The current stage number, the current question of the stage, and the current stage's question_ids.
-export type stageData = {
+export type StageData = {
     stageDifficulty: string[];
     stageNum: number;
     stageQuestion: number;
     stageQuestionId: number[];
-}
+};
 
 //Define a type for storing the test form data
-export type testFormData = {
+export type TestFormData = {
     questionId: number;
     questionText: string;
     questionBody: string;
@@ -23,33 +23,33 @@ export type testFormData = {
     answerText: string[];
     userAttempt: number;
     resultId: number;
-}
+};
 
-export type responseData = {
+export type ResponseData = {
     questionId: number[];
     pastId: number[];
     userText: string[];
     userAttempt: number;
     resultId: number;
     currentStage: number;
-}
+};
 
-export type requestData = {
+export type RequestData = {
     questionId: number[];
     pastId: number[];
     questionCategory: string;
     wasCorrect: boolean[];
-}
+};
 
-export type submitData = {
+export type SubmitData = {
     resultId: number;
     userAttempt: number;
     pastId: number[];
     isCorrect: boolean[];
     stageArray: string[];
-}
+};
 
-export async function submitTest(action: string, givenFields: submitData) {
+export async function submitTest(action: string, givenFields: SubmitData) {
     //Divide the form data into separate variables
     const isCorrect = givenFields.isCorrect;
     const resultId = givenFields.resultId;
@@ -74,8 +74,15 @@ export async function submitTest(action: string, givenFields: submitData) {
             headers: {
                 'Content-Type' : 'application/json',
             },
-            body: JSON.stringify({'action' : action, 'date' : submittedTime, 'was_correct' : isCorrect, 'score_id' : resultId,
-                 'user_attempt' : userAttempt, 'past_id' : pastId, 'stage_array' : stageArray})
+            body: JSON.stringify({
+                'action' : action, 
+                'date' : submittedTime, 
+                'was_correct' : isCorrect, 
+                'score_id' : resultId,
+                'user_attempt' : userAttempt, 
+                'past_id' : pastId, 
+                'stage_array' : stageArray
+            })
         });
 
         // If there were any errors in the response, it will be stored in this const and caught.
@@ -93,7 +100,7 @@ export async function submitTest(action: string, givenFields: submitData) {
     }
 }
 
-export async function questionFetch(action: string, givenFields: requestData) {
+export async function questionFetch(action: string, givenFields: RequestData) {
     //Divide the form data into separate variables
     const questionId = givenFields.questionId;
     const pastId = givenFields.pastId;
@@ -111,8 +118,13 @@ export async function questionFetch(action: string, givenFields: requestData) {
             headers: {
                 'Content-Type' : 'application/json',
             },
-            body: JSON.stringify({'action' : action, 'question_id' : questionId, 'past_id' : pastId, 
-                'question_category' : questionCategory, 'was_correct' : wasCorrect})
+            body: JSON.stringify({
+                'action' : action, 
+                'question_id' : questionId, 
+                'past_id' : pastId, 
+                'question_category' : questionCategory, 
+                'was_correct' : wasCorrect
+            })
         });
 
         // If there were any errors in the response, it will be stored in this const and caught.
@@ -130,7 +142,7 @@ export async function questionFetch(action: string, givenFields: requestData) {
     }
 }
 
-export async function questionCheck(action: string, givenFields: responseData) {
+export async function questionCheck(action: string, givenFields: ResponseData) {
     //Divide the form data into separate variables
     const questionId = givenFields.questionId;
     const pastId = givenFields.pastId;
@@ -162,9 +174,15 @@ export async function questionCheck(action: string, givenFields: responseData) {
             headers: {
                 'Content-Type' : 'application/json',
             },
-            body: JSON.stringify({'action' : action, 'question_id' : questionId, 'past_id' : pastId, 
-                'user_answer_text' : userText, 'user_attempt' : userAttempt, 'score_id' : resultId,
-                'current_stage' : currentStage})
+            body: JSON.stringify({
+                'action' : action, 
+                'question_id' : questionId, 
+                'past_id' : pastId, 
+                'user_answer_text' : userText, 
+                'user_attempt' : userAttempt, 
+                'score_id' : resultId,
+                'current_stage' : currentStage
+            })
         });
 
         // If there were any errors in the response, it will be stored in this const and caught.

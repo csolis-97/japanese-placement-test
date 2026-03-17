@@ -2,10 +2,10 @@
 
 import { getURL, responseMessage } from "@/app/utils/utilFunctions";
 
-console.log(`"HERE IS THE URL BEING USED!" ${getURL()}`)
+console.log(`"HERE IS THE URL BEING USED!" ${getURL()}`);
 
 //Define a type for storing the test form data
-export type answerData = {
+export type AnswerData = {
     questionId: number;
     questionText: string;
     questionBody: string;
@@ -17,18 +17,17 @@ export type answerData = {
     resultId: number;
     userText: string;
     wasCorrect: boolean;
-}
+};
 
-export type resultData = {
+export type ResultData = {
     resultId:  number;
     attemptId: number;
     totalScore: number;
     entranceLevel: string;
     testDate: Date;
-}
+};
 
-export async function answersData(action: string, givenFields: answerData) {
-
+export async function answersData(action: string, givenFields: AnswerData) {
     //Divide the form data into separate variables
     const questionId = givenFields.questionId;
     const questionText = givenFields.questionText;
@@ -54,10 +53,20 @@ export async function answersData(action: string, givenFields: answerData) {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({'action' : action, 'question_category' : questionCategory, 'question_id' : questionId, 
-                'question_text' : questionText, 'question_body' : questionBody, 'answer_id' : answerId, 'answer_text' : answerText, 
-                'correct_answer' : correctAnswer, 'user_answer_text' : userText, 'user_was_correct' : wasCorrect,
-                'attempt_id' : attemptId, 'score_id' : resultId})
+            body: JSON.stringify({
+                'action' : action, 
+                'question_category' : questionCategory, 
+                'question_id' : questionId, 
+                'question_text' : questionText, 
+                'question_body' : questionBody, 
+                'answer_id' : answerId, 
+                'answer_text' : answerText, 
+                'correct_answer' : correctAnswer, 
+                'user_answer_text' : userText, 
+                'user_was_correct' : wasCorrect,
+                'attempt_id' : attemptId, 
+                'score_id' : resultId
+            })
         });
 
         // If there were any errors in the response, it will be stored in this const and caught.
@@ -76,8 +85,7 @@ export async function answersData(action: string, givenFields: answerData) {
     }
 }
 
-export async function resultsData(action: string, givenFields: resultData) {
-
+export async function resultsData(action: string, givenFields: ResultData) {
     //Divide the form data into separate variables
     const resultId = givenFields.resultId;
     const attemptId = givenFields.attemptId;
@@ -96,8 +104,14 @@ export async function resultsData(action: string, givenFields: resultData) {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({'action' : action, 'score_id' : resultId, 'attempt_id' : attemptId, 'total_score' : totalScore,
-                'entrance_level' : entranceLevel, 'test_date' : testDate})
+            body: JSON.stringify({
+                'action' : action, 
+                'score_id' : resultId, 
+                'attempt_id' : attemptId, 
+                'total_score' : totalScore,
+                'entrance_level' : entranceLevel, 
+                'test_date' : testDate
+            })
         });
 
         // If there were any errors in the response, it will be stored in this const and caught.

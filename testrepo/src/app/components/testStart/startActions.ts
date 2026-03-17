@@ -2,17 +2,17 @@
 
 import { getURL, responseMessage } from "@/app/utils/utilFunctions";
 
-console.log(`"HERE IS THE URL BEING USED!" ${getURL()}`)
+console.log(`"HERE IS THE URL BEING USED!" ${getURL()}`);
 
 //Define a type that will be used to store and send necessary background info for the current test.
-export type infoData = {
+export type InfoData = {
     resultId: number;
     userAttempt: number;
     email: string;
     name: string;
-}
+};
 
-export async function createRecord(action: string, givenFields: infoData) {
+export async function createRecord(action: string, givenFields: InfoData) {
     // This action will create the record that will be used to store the results and return the resultId to be used
     const resultId = givenFields.resultId;
     const userAttempt = givenFields.userAttempt;
@@ -39,8 +39,14 @@ export async function createRecord(action: string, givenFields: infoData) {
             headers: {
                 'Content-Type' : 'application/json',
             },
-            body: JSON.stringify({'action' : action, 'score_id' : resultId, 'user_attempt' : userAttempt,
-                'email' : email, 'name' : name, 'submit_time' : submittedTime})
+            body: JSON.stringify({
+                'action' : action, 
+                'score_id' : resultId, 
+                'user_attempt' : userAttempt,
+                'email' : email, 
+                'name' : name, 
+                'submit_time' : submittedTime
+            })
         });
 
         // If there were any errors in the response, it will be stored in this const and caught.

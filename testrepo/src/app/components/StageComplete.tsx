@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
 
-interface messageProps {
+interface MessageProps {
     stageNum: number;
     stagePassed: boolean;
     difficultyLevel: string;
@@ -14,7 +14,7 @@ interface messageProps {
     onButtonChange?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 }
 
-export default function StageComplete(props: messageProps) {
+export default function StageComplete(props: MessageProps) {
 
     console.log(`CURRENT STAGE: ${props.stageNum}`);
     console.log(`STAGE PASSED? ${props.stagePassed}`);
@@ -48,7 +48,13 @@ export default function StageComplete(props: messageProps) {
 
     return createPortal(
         <div className = "flex fixed inset-0 items-center justify-center bg-black/40">
-            <div className = "text-center border-8 border-gray-400 shadow-lg rounded-lg bg-white p-4 dark:text-gray-400 min-w-[4rem] sm:min-w-[10rem] min-h-[5rem] sm:min-h-[10rem]">
+            <div className = {`
+                text-center border-8 border-gray-400 
+                shadow-lg rounded-lg bg-white 
+                p-4 dark:text-gray-400 
+                min-w-[4rem] sm:min-w-[10rem] 
+                min-h-[5rem] sm:min-h-[10rem]
+            `}>
                 <h1>Stage {props.stageNum + 1}: {props.difficultyLevel}</h1>
                 <h2>{stageMessage}</h2>
                 <p>{props.totalCorrect} out of {props.totalQuestions} correct!</p>

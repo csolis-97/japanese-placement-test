@@ -7,7 +7,7 @@ import { QuestionDisplaySkeleton } from "./skeletons";
 
 //Interface below will be used for when each question itself is displayed. Fields should be the exact same as the ones in
 //the database in order to be properly displayed.
-interface testQuestion {
+interface TestQuestion {
   question_id: number;
   question_text: string;
   question_body: string;
@@ -19,35 +19,38 @@ interface testQuestion {
   user_answer_text: string;
   user_was_correct?: boolean;
   response_order: number;
-}
+};
 
 //Interface below will be used for displaying the user's results.
-interface testResult {
+interface TestResult {
   attempt_id: number;
   total_score: number;
   totalQuestions?: number;
   entrance_level: string;
   test_date: Date;
-}
+};
 
-interface resultsProps {
+interface ResultsProps {
   attemptNum: number;
-  resultNum: number;
-  answersPromise: Promise<testQuestion[]>;
-  resultsPromise: Promise<testResult>;
-}
+  answersPromise: Promise<TestQuestion[]>;
+  resultsPromise: Promise<TestResult>;
+};
 
-export default function ResultsDisplay( { attemptNum, resultNum, answersPromise, resultsPromise } : resultsProps) {
-  //const questions = use(answersPromise) as testQuestion[];
+export default function ResultsDisplay({
+  attemptNum, 
+  answersPromise, 
+  resultsPromise 
+} : ResultsProps) {
+  //const questions = use(answersPromise) as TestQuestion[];
   const questions = use(answersPromise);
-  const results = use(resultsPromise) as testResult;
+  const results = use(resultsPromise) as TestResult;
 
   //Fetch the user's graded responses from the test page
   console.log("ABOUT TO ENTER THE HTML!");
   console.log("HERE IS THE QUESTION AND ANSWER INFORMATION");
-  //console.log(questions)
+  //console.log(questions);
   console.log("QUESTIONS.LENGTH");
-  //console.log(questions.length)
+  //console.log(questions.length);
   
   return (
     <>
@@ -89,8 +92,7 @@ export default function ResultsDisplay( { attemptNum, resultNum, answersPromise,
                   alreadyAnswered = {true}
                 />
               </Suspense>
-            )
-          }
+          )}
       </div>
     </>
   );

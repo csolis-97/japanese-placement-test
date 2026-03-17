@@ -1,4 +1,4 @@
-import { testQuestion } from "@/app/components/TestDisplay";
+import { TestQuestion } from "@/app/components/TestDisplay";
 import { XORShift128 } from "random-seedable";
 import Sqids from "sqids";
 
@@ -27,16 +27,16 @@ export async function responseMessage(response: Response) {
 // This function will check if the email provided meets the bare minimum requirements. That being that it is under
 // a certain length, and that there is a @ and a . included in the email string.
 export function checkEmail(email: string) {
-    const lengthLimit = 254;
+    const LENGTH_LIMIT = 254;
     // const emailRegex = RegExp('^[A-Za-z0-9._+-]+@[A-Za-z0-9._]+\.[A-Za-z]{2,}$', 'i');
-    const laxRegex = RegExp('^[\\S]+@[\\S]+\.[\\S]+$', 'i');
+    const LAX_REGEX = RegExp('^[\\S]+@[\\S]+\.[\\S]+$', 'i');
     // Check if the email length is above 254 characters and return the message below if it is.
-    if (email.length > lengthLimit) {
+    if (email.length > LENGTH_LIMIT) {
         console.log("EMAIL LENGTH ERROR.");
         return "Email length cannot be more than 254 characters.";
     }
     // Test if the email passes the test for the given regex. Swap out the regex if a different one is required.
-    if (!laxRegex.test(email)) {
+    if (!LAX_REGEX.test(email)) {
         console.log("EMAIL FORMAT ERROR.");
         return "Please ensure that the email address format is correct.";
     }
@@ -44,8 +44,8 @@ export function checkEmail(email: string) {
 
 // This function will check if the name provided is shorter than the character limit. If not, return an error.
 export function checkName(name: string) {
-    const lengthLimit = 254;
-    if (name.length > lengthLimit) {
+    const LENGTH_LIMIT = 254;
+    if (name.length > LENGTH_LIMIT) {
         console.log("NAME LENGTH ERROR.");
         return "Name length cannot be more than 254 characters.";
     } 
@@ -53,8 +53,7 @@ export function checkName(name: string) {
 
 // This function will shuffle the answer_id and answer_text (and correct_answer if it exists) (using the seedRNG that was also passed)
 // of the testQuestion array provided as the argument, and return it.
-
-export function shuffleList(givenList: testQuestion[], seedRNG: XORShift128) {
+export function shuffleList(givenList: TestQuestion[], seedRNG: XORShift128) {
     console.log(`ENTERED THE SEED SHUFFLE WITH THIS SEED: ${seedRNG}!`);
     let cloneList = JSON.parse(JSON.stringify(givenList));
     for (let i = 0; i < givenList.length; i++) {
@@ -109,7 +108,7 @@ export function shuffleList(givenList: testQuestion[], seedRNG: XORShift128) {
 }
 
 //
-export function seedShuffle(givenList: testQuestion[], seedRNG: XORShift128) {
+export function seedShuffle(givenList: TestQuestion[], seedRNG: XORShift128) {
 
     console.log(`ENTERED THE SEED SHUFFLE WITH THIS SEED: ${seedRNG}!`);
     for (let i = givenList.length - 1; i > -1; i--) {
@@ -163,7 +162,7 @@ export function seedCreate(seed: number[]) {
 }
 
 //This little function will calculate the correct answers for the stage
-export async function calculateCorrect(gradedAnswers:  boolean[], stageSize: number) {
+export async function calculateCorrect(gradedAnswers: boolean[], stageSize: number) {
     const correctCount = gradedAnswers.slice(-stageSize).filter(Boolean).length;
     console.log("HERE IS CORRECT COUNT!");
     console.log(correctCount);

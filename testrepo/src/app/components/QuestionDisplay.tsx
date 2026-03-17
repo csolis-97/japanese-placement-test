@@ -1,6 +1,6 @@
 "use client";
 
-interface questionDisplayProps {
+interface QuestionDisplayProps {
     questionId: number;
     questionText: string;
     questionBody: string;
@@ -11,33 +11,36 @@ interface questionDisplayProps {
     alreadyAnswered?: boolean;
     correctAnswer?: boolean[];
     wasCorrect?: boolean;
-    /* Since I've never used this syntax before, I'll explain it right now. onChangeValue is the name of the function,
-    event: React.ChangeEvent<HTMLInputElement> is the argument, the arrow is part of the arrow function declaration,
-    and void is the return type. Since this function will only be used to set the answer selected by the user in the form,
+    /* Since this function will only be used to set the answer selected by the user in the form,
     it does not need to return anything, hence void.
     */
-
     onChangeValue?: (event: React.ChangeEvent<HTMLInputElement>) => void;
-}
+};
 
 // These strings will be used for determining the className styling for the radio buttons
-const regularRadio = "ml-2 text-gray-600"
-const correctRadio = "ml-2 text-green-600"
-const wrongRadio = "ml-2 text-red-600"
+const regularRadio = "ml-2 text-gray-600";
+const correctRadio = "ml-2 text-green-600";
+const wrongRadio = "ml-2 text-red-600";
 
-export default function questionDisplay(props: questionDisplayProps) {
+export default function questionDisplay(props: QuestionDisplayProps) {
     console.log("ALREADY ANSWERED?");
     console.log(props.alreadyAnswered);
-    console.log("LOG THE CORRECT ANSWERS IF ANY!!")
+    console.log("LOG THE CORRECT ANSWERS IF ANY!!");
     console.log(props.correctAnswer);
-    console.log("VALUE IN SELECTED ANSWER!")
-    console.log(props.selectedAnswer)
-    console.log("WAS CORRECT?")
-    console.log(props.wasCorrect)
+    console.log("VALUE IN SELECTED ANSWER!");
+    console.log(props.selectedAnswer);
+    console.log("WAS CORRECT?");
+    console.log(props.wasCorrect);
 
     return (
         // Here, min-h-[40.625rem] is used to ensure that the height is a minimum of 650px, but will grow if content is bigger than that using h-fit.
-        <div className = "flex flex-col bg-gray-100 rounded-lg w-full min-w-[20rem] sm:min-w-[40.625rem] min-h-[25rem] sm:min-h-[40.625rem] h-fit shadow-md">
+        <div className = {`
+            flex flex-col 
+            bg-gray-100 rounded-lg 
+            w-full min-w-[20rem] sm:min-w-[40.625rem] 
+            min-h-[25rem] sm:min-h-[40.625rem] h-fit 
+            shadow-md
+        `}>
             <div className = "divide-y-2 divide-gray-400">
                 <div className = "text-gray-600 font-semibold">
                     <h1 className = "sm:text-3xl p-4">Question #{props.questionId}</h1>
@@ -56,15 +59,28 @@ export default function questionDisplay(props: questionDisplayProps) {
                         //If the user chose the wrong option, color only that radio red.
 
                         //flex items-start is used to properly algin the radio buttons and the answer text
-                        <div key={index} className = "flex mt-2 text-sm sm:text-base">
-                            <input type = "radio" id = {`answer-${props.answerId[index]}`} name = {`question-${props.questionId}`} value = {answer || props.selectedAnswer}
-                                className = {`${props.selectedAnswer === props.answerText[index] && Number(props.wasCorrect) === 1 || Number(props.correctAnswer?.[index]) === 1 ? 
-                                (correctRadio) : (regularRadio)} `}
-                                onChange = {props.onChangeValue} checked = { props.selectedAnswer === answer}
-                            readOnly = {props.alreadyAnswered} />
-                            <label htmlFor ={`answer-${props.answerId[index]}`} className = {`${props.selectedAnswer === props.answerText[index] && Number(props.wasCorrect) === 1 || Number(props.correctAnswer?.[index]) === 1 ? 
-                                (correctRadio) : props.selectedAnswer === props.answerText[index] && Number(props.wasCorrect) === 0 ? 
-                                (wrongRadio) : (regularRadio)}`}>{props.answerText[index]}</label>
+                        <div key = {index} className = "flex mt-2 text-sm sm:text-base">
+                            <input type = "radio" 
+                                id = {`answer-${props.answerId[index]}`} 
+                                name = {`question-${props.questionId}`} 
+                                value = {answer || props.selectedAnswer}
+                                className = {`
+                                    ${props.selectedAnswer === props.answerText[index] && Number(props.wasCorrect) === 1 || 
+                                    Number(props.correctAnswer?.[index]) === 1 ? (correctRadio) : (regularRadio)}
+                                `}
+                                onChange = {props.onChangeValue} 
+                                checked = { props.selectedAnswer === answer}
+                                readOnly = {props.alreadyAnswered} 
+                            />
+                            <label 
+                                htmlFor ={`answer-${props.answerId[index]}`} 
+                                className = {`
+                                    ${props.selectedAnswer === props.answerText[index] && Number(props.wasCorrect) === 1 || 
+                                    Number(props.correctAnswer?.[index]) === 1 ? (correctRadio) : props.selectedAnswer === props.answerText[index] && 
+                                    Number(props.wasCorrect) === 0 ? (wrongRadio) : (regularRadio)}
+                            `}>
+                                {props.answerText[index]}
+                            </label>
                         </div>
                         ))
                     }
