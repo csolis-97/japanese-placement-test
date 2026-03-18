@@ -7,7 +7,7 @@ def getCorrectAnswerInfo(cursor, answerList, questionId, answerId):
     # and 'question_id' values
     print("ANSWERLIST LENGTH")
     print(len(answerList))
-    if type(answerList) == str and type(questionId) == int:
+    if isinstance(answerList, str) and isinstance(questionId, int):
         # DEBUG CHECK THE CURRENT QUESTION_ID VALUE
         print("HERE IS THE CURRENT QUESTION_ID")
         print(questionId)
@@ -61,7 +61,7 @@ def gradeAnswers(results, questionId):
     same, since multiple questions can potentially have the same answers. Otherwise, move to the inner if statement and check if the 
     current row's value of 'correct_answer' is True. If it is, append True to isCorrect, otherwise append False. 
     '''
-    if (type(questionId) == int):
+    if (isinstance(questionId, int)):
         print("RESULTS FOR SINGLE QUESTION_ID!")
         print(results)
         for i, row in enumerate(results) :
@@ -108,7 +108,7 @@ def buildValueQuery(answerList):
     close the INSERT() VALUES() statement that will be used in a momement. Otherwise, append anotherValueString. 
     '''
     for i in range(answerLength):
-        if i >= answerLength-1:
+        if i >= answerLength - 1:
             valueQuery.append("(%s, %s, %s, %s, %s, %s, %s);")
             print(i)
             print("FILLING IN THE VALUEQUERY WITH FINAL!")

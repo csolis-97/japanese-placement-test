@@ -1,16 +1,11 @@
 "use server";
 
-const getURL = () => {
-    if (process.env.VERCEL_URL) {
-        return `https://${process.env.VERCEL_URL}`;
-    }
-    return `${process.env.FRONTEND_URL}` || "http://localhost:3000";
-}
+import { getURL, responseMessage } from "@/app/utils/utilFunctions";
 
-console.log(`"HERE IS THE URL BEING USED!" ${getURL()}`)
+console.log(`"HERE IS THE URL BEING USED!" ${getURL()}`);
 
 //Define a type for storing the test form data
-export type answerData = {
+export type AnswerData = {
     questionId: number;
     questionText: string;
     questionBody: string;
@@ -22,18 +17,17 @@ export type answerData = {
     resultId: number;
     userText: string;
     wasCorrect: boolean;
-}
+};
 
-export type resultData = {
+export type ResultData = {
     resultId:  number;
     attemptId: number;
     totalScore: number;
     entranceLevel: string;
     testDate: Date;
-}
+};
 
-export async function answersData(action: string, givenFields: answerData) {
-
+export async function answersData(action: string, givenFields: AnswerData) {
     //Divide the form data into separate variables
     const questionId = givenFields.questionId;
     const questionText = givenFields.questionText;
@@ -59,11 +53,24 @@ export async function answersData(action: string, givenFields: answerData) {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({'action' : action, 'question_category' : questionCategory, 'question_id' : questionId, 
-                'question_text' : questionText, 'question_body' : questionBody, 'answer_id' : answerId, 'answer_text' : answerText, 
-                'correct_answer' : correctAnswer, 'user_answer_text' : userText, 'user_was_correct' : wasCorrect,
-                'attempt_id' : attemptId, 'score_id' : resultId})
+            body: JSON.stringify({
+                'action' : action, 
+                'question_category' : questionCategory, 
+                'question_id' : questionId, 
+                'question_text' : questionText, 
+                'question_body' : questionBody, 
+                'answer_id' : answerId, 
+                'answer_text' : answerText, 
+                'correct_answer' : correctAnswer, 
+                'user_answer_text' : userText, 
+                'user_was_correct' : wasCorrect,
+                'attempt_id' : attemptId, 
+                'score_id' : resultId
+            })
         });
+
+        // If there were any errors in the response, it will be stored in this const and caught.
+        const errorMessage = await responseMessage(response);
 
         //Get the response from the database and return
         const data = await response.json();
@@ -72,14 +79,13 @@ export async function answersData(action: string, givenFields: answerData) {
         return data;
     }
     //If an error occured during retrieval, catch it and log it
-    catch (error) {
-        console.log(error);
-        return "Internal Server Error";
+    catch (errorMessage) {
+        console.log(errorMessage);
+        throw new Error ("Internal Server Error: The record of the user's test results could not be retrieved.");
     }
 }
 
-export async function resultsData(action: string, givenFields: resultData) {
-
+export async function resultsData(action: string, givenFields: ResultData) {
     //Divide the form data into separate variables
     const resultId = givenFields.resultId;
     const attemptId = givenFields.attemptId;
@@ -98,9 +104,18 @@ export async function resultsData(action: string, givenFields: resultData) {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({'action' : action, 'score_id' : resultId, 'attempt_id' : attemptId, 'total_score' : totalScore,
-                'entrance_level' : entranceLevel, 'test_date' : testDate})
+            body: JSON.stringify({
+                'action' : action, 
+                'score_id' : resultId, 
+                'attempt_id' : attemptId, 
+                'total_score' : totalScore,
+                'entrance_level' : entranceLevel, 
+                'test_date' : testDate
+            })
         });
+
+        // If there were any errors in the response, it will be stored in this const and caught.
+        const errorMessage = await responseMessage(response);
 
         //Get the response from the database and return
         const data = await response.json();
@@ -109,15 +124,14 @@ export async function resultsData(action: string, givenFields: resultData) {
 
         //Since the date was converted into a string after it was retrieved in the backend, convert it back to a Date object before
         //returning
-        const newTest = new Date(data['test_date'])
-        testDate = newTest
-        data['test_date'] = testDate
+        const newTest = new Date(data['test_date']);
+        testDate = newTest;
+        data['test_date'] = testDate;
         return data;
     }
     //If an error occured during retrieval, catch it and log it
-    catch (error) {
-        console.log(error);
-        return "Internal Server Error";
+    catch (errorMessage) {
+        console.log(errorMessage);
+        throw new Error ("Internal Server Error: The user's answers could not be retrieved.");
     }
 }
-//Only async functions are allowed to be exported in a "use server" file.
