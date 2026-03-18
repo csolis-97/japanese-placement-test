@@ -442,5 +442,5 @@ def resultDisplay():
 
 # Once the app is running, it will use the port 5000 and communicate to the localhost. It will also be in debug mode
 # After the app is out of development, not needed in production
-if __name__ == '__main__':
-   app.run(debug=True, host="localhost", port=int("5000"))
+#if __name__ == '__main__':
+#   app.run(debug=True, host="localhost", port=int("5000"))
