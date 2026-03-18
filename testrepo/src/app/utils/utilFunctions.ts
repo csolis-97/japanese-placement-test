@@ -121,40 +121,6 @@ export function shuffleList(givenList: TestQuestion[], seedRNG: XORShift128) {
     return cloneList;
 }
 
-//
-export function seedShuffle(givenList: TestQuestion[], seedRNG: XORShift128) {
-
-    console.log(`ENTERED THE SEED SHUFFLE WITH THIS SEED: ${seedRNG}!`);
-    for (let i = givenList.length - 1; i > -1; i--) {
-
-        const originalId = givenList[i].answer_id;
-        const originalText = givenList[i].answer_text;
-        const originalCorrect = givenList[i].correct_answer;
-        let indexList = [];
-        for (let j = 0; j < givenList[0].answer_id.length; j++) {
-            indexList[j] = j;
-        }
-        const shuffledIndex = JSON.parse(JSON.stringify(indexList));
-        seedRNG.shuffle(shuffledIndex);
-
-
-
-        for (let k = givenList[i].answer_id.length - 1; k > -1; k--) {
-            const replaceIndex = shuffledIndex[k];
-            console.log(k);
-            // Swap the values at index j and index k
-            [givenList[i].answer_id[k], givenList[i].answer_id[replaceIndex]] = [givenList[i].answer_id[replaceIndex], givenList[i].answer_id[k]];
-            [givenList[i].answer_text[k], givenList[i].answer_text[replaceIndex]] = [givenList[i].answer_text[replaceIndex], givenList[i].answer_text[k]];
-
-            // Make a const to check if the correct_answer field exists, if so swap
-            const correctAnswer = givenList[i].correct_answer;
-            if (correctAnswer) {
-                [correctAnswer[k], correctAnswer[replaceIndex]] = [correctAnswer[replaceIndex], correctAnswer[k]]; 
-            }      
-        }
-    }
-}
-
 // This function uses Sqid to encode the seed, which then strips it of all non-integer characters and passes it as the argument
 // for a new XORShift128 object, which is stored in the seedRNG const
 export function seedCreate(seed: number[]) {
