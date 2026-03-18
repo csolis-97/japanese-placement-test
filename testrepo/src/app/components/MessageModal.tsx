@@ -25,17 +25,18 @@ export default function MessageModal( { messageText, buttonText, reset } : Messa
                     p-4 dark:text-black-500 
                     min-w-[10rem] sm:min-w-[10rem] 
                     min-h-[11rem] sm:min-h-[10rem]
+                    max-w-xl text-center
                 `}>
                     <h1>{messageText}</h1>
-                    <Link href = "/">
-                        <div className = "absolute left-6 sm:left-10 bottom-5">
-                            <button className = {"buttonStyle"} type = "button">{buttonText}</button>
-                        </div>
+                    <Link href = "/" className = "buttonStyle absolute left-6 sm:left-10 bottom-5">
+                        {buttonText}
                     </Link>
                     { // Only render this button if there was a reset function passed to the component
                         reset && (
                             <div className = "absolute right-6 sm:right-10 bottom-5">
-                                <button className = {"buttonStyle"} type = "button" onClick = {() => reset()}>Reload the Page</button>
+                                <button className = {"buttonStyle"} onClick = {() => reset()}>
+                                    Reload the Page
+                                </button>
                             </div>
                         )
                     }

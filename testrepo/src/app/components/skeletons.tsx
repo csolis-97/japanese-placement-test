@@ -69,15 +69,18 @@ export function ResultInfoSkeleton() {
             <div className = "bg-gray-200 rounded h-5 w-46 sm:w-78"></div>
             {/* Your Suggested Entrance Level Line 2*/}
             <div className = "sm:hidden bg-gray-200 rounded h-5 w-30 sm:w-87"></div>
-            <button className = {`
-                mt-4 px-4 sm:px-8 
-                py-4 font-semibold text-sm 
-                text-white sticky 
-                top-0 bg-gray-300
-                w-[14rem] sm:w-[16rem] 
-                h-[3.375rem] sm:h-[3.375rem]
-            `} 
-            type = "button" disabled>
+            <button 
+                className = {`
+                    mt-4 px-4 sm:px-8 
+                    py-4 font-semibold text-sm 
+                    text-white sticky 
+                    top-0 bg-gray-300
+                    w-[14rem] sm:w-[16rem] 
+                    h-[3.375rem] sm:h-[3.375rem]
+                `} 
+                type = "button" 
+                disabled
+            >
             </button>
         </div>
     );
@@ -86,12 +89,16 @@ export function ResultInfoSkeleton() {
 // Skeleton used as a placeholder for individual buttons, such as the one used in TestTake
 export function ButtonSkeleton() {
     return (
-        <button className = {`
-            mt-2 px-4 sm:px-8 
-            py-4 font-semibold text-sm 
-            text-white sticky 
-            top-0 bg-gray-300
-        `}  type = "button" disabled>
+        <button 
+            className = {`
+                mt-2 px-4 sm:px-8 
+                py-4 font-semibold text-sm 
+                text-white sticky 
+                top-0 bg-gray-300
+            `}  
+            type = "button" 
+            disabled
+        >
             <div className = "h-5 w-8"></div>
         </button>
     )

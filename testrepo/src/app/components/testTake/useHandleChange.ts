@@ -10,6 +10,7 @@ import {
 import * as testUtils from "./testActions";
 import { QuestionType } from "./testTake";
 import { TestQuestion } from "../TestDisplay";
+import { errorType } from "@/app/utils/utilFunctions";
 
 type HandleChangeProps = {
     questions: TestQuestion[];
@@ -41,32 +42,37 @@ export function useHandleChange({
   handleTestForm 
 } : HandleChangeProps) {
 
-  //This useState will track the user's selected answer for each question
-  //THIS USESTATE IS MERELY FOR DEBUG
+  // This useState will track the user's selected answer for each question
+  // THIS USESTATE IS MERELY FOR DEBUG
   const [selectedAnswer, setSelectedAnswer] = useState<string>('');
 
-  //This useState will be used for displaying the modal, depending on whether the user has submitted the answers
+  // This useState will be used for displaying the modal, depending on whether the user has submitted the answers
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
 
-  //This useTransition will be used when new questions are being fetched, to display a loading state
+  // This useTransition will be used when new questions are being fetched, to display a loading state
   const [isPending, startTransition] = useTransition();
 
-  //Finally, useState for errors
-  const [error, setError] = useState<string | string[] | undefined>('');
+  // Finally, useState for errors
+  const [error, setError] = useState<Error | null>();
 
-  //Here the change in the selection of an answer for the current question will be handled
+  if (error) {
+    console.log("AN ERROR OCCURED IN THE USEHANDLECHANGE HOOK: ", error);
+    throw error;
+  }
+
+  // Here the change in the selection of an answer for the current question will be handled
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     // This line refers to the name and value fields of an HTML input tag, and uses object destructuring to assign them values from
     // event.target, which itself refers to the HTML element that triggered the event in the first place.
     const {value} = event.target;
 
-    //Track the current Selected Answer here by giving it the user's currently selected answer
+    // Track the current Selected Answer here by giving it the user's currently selected answer
     console.log("CURRENT ANSWERARRAY[CURRENTQUESTION]");
     console.log(answerArray[currentQuestion]);
     setSelectedAnswer(value);
     
-    //Call the setter function with prevData as its argument, then use it to map each answer to an index. If the index matches currentQuestion,
-    //set userText to value and keep the other attributes as is, otherwise do just answer.
+    // Call the setter function with prevData as its argument, then use it to map each answer to an index. If the index matches currentQuestion,
+    // set userText to value and keep the other attributes as is, otherwise do just answer.
     setAnswerArray((prevData) =>
       prevData.map((answer, index) =>
       index === currentQuestion ? {...answer, userText: value} : answer
@@ -76,29 +82,43 @@ export function useHandleChange({
   };
 
   const handleNextStage = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    event.preventDefault();
-    // After the user presses the continue button, the following will be executed
-    // If the user did well enough and they have not reached the final stage, move onto the next stage but do not submit the test.
-    if (stageInfo.current.stageNum < 4 && correctTotal.current > 3) {
-      startTransition(async () => {
-        console.log(`SCORES FOR STAGE ${stageInfo.current.stageNum} WERE SUFFICIENT, MOVE ONTO THE NEXT STAGE.`);
-        await handleQuestionRetrieve(event);
+    try {
+      event.preventDefault();
+      // After the user presses the continue button, the following will be executed
+      // If the user did well enough and they have not reached the final stage, move onto the next stage but do not submit the test.
+      if (stageInfo.current.stageNum < 4 && correctTotal.current > 3) {
+        startTransition(async () => {
+          try {
+            console.log(`SCORES FOR STAGE ${stageInfo.current.stageNum} WERE SUFFICIENT, MOVE ONTO THE NEXT STAGE.`);
+            await handleQuestionRetrieve(event);
 
-        setCurrentQuestion(prev => prev + 1);
-        //Reset it before exiting
-        setIsSubmitted(false);
-      });
-    }
-    // Otherwise, do the following
-    else {
-      if (stageInfo.current.stageNum > 4) {
-        console.log(`USER HAS REACHED THE FINAL STAGE, END THE TEST NOW.`);
+            setCurrentQuestion(prev => prev + 1);
+            //Reset it before exiting
+            setIsSubmitted(false);
+          }
+          catch(transitionError) {
+            console.log("ERROR WAS CAUGHT DURING THE TRANSITION OF THE HANDLENEXTSTAGE OF THE USEHANDLECHANGE HOOK!");
+            setError(errorType(transitionError));
+            console.log("ERROR WAS SET!");
+          }
+        });
       }
+      // Otherwise, do the following
       else {
-        console.log(`SCORES FOR STAGE ${stageInfo.current.stageNum} WERE TOO LOW, END THE TEST NOW.`);
+        if (stageInfo.current.stageNum > 4) {
+          console.log(`USER HAS REACHED THE FINAL STAGE, END THE TEST NOW.`);
+        }
+        else {
+          console.log(`SCORES FOR STAGE ${stageInfo.current.stageNum} WERE TOO LOW, END THE TEST NOW.`);
+        }
+        // Now handle the submission
+        await handleTestForm(event);
       }
-      // Now handle the submission
-      await handleTestForm(event);
+    }
+    catch(error) {
+      console.log("ERROR WAS CAUGHT IN THE HANDLENEXTSTAGE OF THE USEHANDLECHANGE HOOK!");
+      setError(errorType(error));
+      console.log("ERROR WAS SET!");
     }
   };
 

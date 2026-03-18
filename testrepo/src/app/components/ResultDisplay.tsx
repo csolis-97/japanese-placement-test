@@ -7,7 +7,7 @@ import { QuestionDisplaySkeleton } from "./skeletons";
 
 //Interface below will be used for when each question itself is displayed. Fields should be the exact same as the ones in
 //the database in order to be properly displayed.
-interface TestQuestion {
+interface ResultQuestion {
   question_id: number;
   question_text: string;
   question_body: string;
@@ -32,7 +32,7 @@ interface TestResult {
 
 interface ResultsProps {
   attemptNum: number;
-  answersPromise: Promise<TestQuestion[]>;
+  answersPromise: Promise<ResultQuestion[]>;
   resultsPromise: Promise<TestResult>;
 };
 

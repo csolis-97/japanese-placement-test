@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { XORShift128 } from "random-seedable";
+import { useTest } from "./useTest";
 import QuestionDisplay from "../QuestionDisplay";
 import StageComplete from "../StageComplete";
 import { InfoData } from "../testStart/startActions";
 import { TestQuestion } from "../TestDisplay";
-import { XORShift128 } from "random-seedable";
-import { useTest } from "./useTest";
+import { errorType } from "@/app/utils/utilFunctions";
 
 //Type defined below will be used for setting the test questions and answers
 export type QuestionType = {
@@ -29,7 +30,29 @@ interface TestProps {
 
 export default function TestTake({shuffleSeed, currentTestInfo, initialQuestionsPromise} : TestProps) {
 
+  // useState for errors
+  const [error, setError] = useState<Error | null>();
+
+  // Get the useTest hook
   const testHook = useTest({shuffleSeed, currentTestInfo, initialQuestionsPromise});
+
+  if (error) {
+    console.log("AN ERROR OCCURED IN TESTTAKE: ", error);
+    throw error;
+  }
+
+  // Check if testHook works correctly, otherwise throw an error
+  try {
+    if (!testHook) {
+      console.log("THERE WAS AN ERROR WITH TESTHOOK IN TESTTAKE!");
+      throw new Error("An error occured with testHook.");
+    }
+  }
+  catch(error) {
+    console.log("ERROR WAS CAUGHT IN TESTTAKE!");
+    setError(errorType(error));
+    console.log("ERROR WAS SET!");
+  }
 
   // RIGHT NOW EACH STAGE IS HARDCODED TO BE JUST 5 QUESTIONS, SO CHECK HERE IF THAT EVER CHANGES!
   const STAGE_SIZE = testHook.questions.length;
@@ -90,7 +113,8 @@ export default function TestTake({shuffleSeed, currentTestInfo, initialQuestions
       <main className="flex w-full max-w-3xl flex-col items-start justify-between bg-white dark:bg-black">
         {
           // Await the correct number of answers for the stage before moving on
-          testHook.changeHook.isSubmitted !== false && (<StageComplete
+          testHook.changeHook.isSubmitted !== false && (
+          <StageComplete
             stageNum = {testHook.stageInfo.current.stageNum}
             stagePassed = {testHook.correctTotal.current > 3 ? true : false}
             difficultyLevel = {testHook.stageInfo.current.stageDifficulty[testHook.stageInfo.current.stageNum]}

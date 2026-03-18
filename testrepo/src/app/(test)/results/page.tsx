@@ -33,7 +33,7 @@ export default async function Results({ searchParams } : { searchParams: Promise
     'correctAnswer' : [],
     'userText' : '',
     'wasCorrect' : false
-  }
+  };
 
   let resultsFormat: resultUtils.ResultData = {
     'resultId' : resultNum,
@@ -41,7 +41,7 @@ export default async function Results({ searchParams } : { searchParams: Promise
     'totalScore' : 0,
     'entranceLevel' : '',
     'testDate' : new Date()
-  }
+  };
 
   //Interface below will be used for when each question itself is displayed. Fields should be the exact same as the ones in
 //the database in order to be properly displayed.
@@ -57,7 +57,7 @@ interface testQuestion {
   user_answer_text: string;
   user_was_correct?: boolean;
   response_order: number;
-}
+};
 
   // If the data is successfully retrieved, then the following HTML will return If not, error.tsx will catch the error
   const answersPromise = resultUtils.answersData('retrieveAnswers', answersFormat)
@@ -112,10 +112,10 @@ interface testQuestion {
       `}>
         <Suspense fallback = {
           <>
-            <div className="flex flex-col items-center gap-6 p-12 text-center sm:items-start sm:text-left">
+            <div className = "flex flex-col items-center gap-6 p-12 text-center sm:items-start sm:text-left">
               <ResultInfoSkeleton />
             </div>
-            <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
+            <div className = "flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
               <QuestionDisplaySkeleton />
               <QuestionDisplaySkeleton />
               <QuestionDisplaySkeleton />
@@ -127,7 +127,7 @@ interface testQuestion {
           <ResultsDisplay 
             attemptNum = {attemptNum} 
             answersPromise = {answersPromise} 
-            resultsPromise= {resultsPromise} 
+            resultsPromise = {resultsPromise} 
           />
         </Suspense>
       </main>

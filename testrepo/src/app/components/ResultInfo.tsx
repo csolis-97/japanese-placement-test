@@ -14,6 +14,7 @@ interface InfoProps {
 // Component to display the results of the test
 export default function resultinfo(props: InfoProps) {
 
+    // This const will be used in order to get a localeString with the correct info
     const dateOptions: Intl.DateTimeFormatOptions = {
         weekday: "short",
         year: "numeric",
@@ -32,7 +33,6 @@ export default function resultinfo(props: InfoProps) {
     const editFormat = formattedDate
         .replace("AM", "A.M.")
         .replace("PM", "P.M.");
-
     formattedDate = editFormat;
     
     return (

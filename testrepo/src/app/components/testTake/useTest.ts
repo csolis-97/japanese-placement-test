@@ -6,14 +6,14 @@ import {
   useRef, 
   use 
 } from "react";
+import { XORShift128 } from "random-seedable";
 import * as testUtils from "./testActions";
+import { useTestFlow } from "./useTestFlow";
+import { useHandleChange } from "./useHandleChange";
 import { QuestionType } from "./testTake";
 import { TestQuestion } from "../TestDisplay";
 import { InfoData } from "../testStart/startActions";
-import { shuffleList } from "@/app/utils/utilFunctions";
-import { XORShift128 } from "random-seedable";
-import { useTestFlow } from "./useTestFlow";
-import { useHandleChange } from "./useHandleChange";
+import { errorType, shuffleList } from "@/app/utils/utilFunctions";
 
 type HookProps = {
   shuffleSeed: XORShift128;
@@ -49,7 +49,7 @@ export function useTest({
   const [answerArray, setAnswerArray] = useState<QuestionType[]>([]);
 
   //Finally, useState for errors
-  const [error, setError] = useState<string | string[] | undefined>('');
+  const [error, setError] = useState<Error | null>();
 
   //This useRef will be used to track all info of the stages of the test. Since the number of questions asked is
   //dynamic, use the current question number modulus 5 to determine the current question index.
@@ -79,6 +79,7 @@ export function useTest({
     correctTotal
   });
 
+  // Make another const for handling the changes in the UI here
   const changeHook = useHandleChange({
     questions, 
     answerArray, 
@@ -94,7 +95,26 @@ export function useTest({
     handleTestForm: flowHook.handleTestForm
   });
   
-  //const correctCount = calculateCorrect(gradedAnswers.current, stageSize);
+  if (error) {
+    console.log("AN ERROR OCCURED IN THE USETEST HOOK: ", error);
+    throw error;
+  }
+
+  try {
+    if (!flowHook) {
+      console.log("THERE WAS AN ERROR WITH FLOWHOOK IN THE USETEST HOOK!");
+      throw new Error("An error occured with flowHook.");
+    }
+    if (!changeHook) {
+      console.log("THERE WAS AN ERROR WITH CHANGEHOOK IN THE USETEST HOOK!");
+      throw new Error("An error occured with changeHook.");
+    }
+  }
+  catch(error) {
+    console.log("ERROR WAS CAUGHT IN THE THE USETEST HOOK!");
+    setError(errorType(error));
+    console.log("ERROR WAS SET!");
+  }
 
   // This useEffect will populate the answerArray ONLY when the answerArray is shorter than questions, and questions is not empty
   useEffect(() => {

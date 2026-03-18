@@ -24,6 +24,20 @@ export async function responseMessage(response: Response) {
     }
 }
 
+// This function will take an error of unknown type as an argument, and check its type. If it is Error,
+// return it. If it is a string, make a new error with it. Otherwise go to the else.
+export function errorType(error: unknown) {
+    if (error instanceof Error) {
+        return error;
+    }
+    else if (error instanceof String) {
+      return(new Error(String(error)));
+    }
+    else {
+      return(new Error("An unknown error occured."));
+    }
+}
+
 // This function will check if the email provided meets the bare minimum requirements. That being that it is under
 // a certain length, and that there is a @ and a . included in the email string.
 export function checkEmail(email: string) {
@@ -160,11 +174,3 @@ export function seedCreate(seed: number[]) {
     const seedRNG = new XORShift128(Number(finalString));
     return seedRNG;
 }
-
-//This little function will calculate the correct answers for the stage
-export async function calculateCorrect(gradedAnswers: boolean[], stageSize: number) {
-    const correctCount = gradedAnswers.slice(-stageSize).filter(Boolean).length;
-    console.log("HERE IS CORRECT COUNT!");
-    console.log(correctCount);
-    return correctCount;
-  }

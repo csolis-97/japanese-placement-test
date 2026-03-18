@@ -7,7 +7,11 @@ import {
   SetStateAction 
 } from "react";
 import * as infoUtils from "./startActions";
-import { checkEmail, checkName } from "@/app/utils/utilFunctions";
+import { 
+  errorType, 
+  checkEmail, 
+  checkName 
+} from "@/app/utils/utilFunctions";
 
 //These variables will apply the styling for the regular and disabled buttons
 const buttonDefaults = "mt-4 px-8 py-4 font-semibold text-sm text-white";
@@ -44,9 +48,18 @@ export default function TestStart({
     emailError: ''
   });
 
+  //Finally, useState for errors
+  const [error, setError] = useState<Error | null>();
+
   // These two variables will be used to store the error messages (if any) returned from checking the user's email and name
   const emailTest = checkEmail(initialTestInfo.email);
   const nameTest = checkName(initialTestInfo.name);
+
+  
+  if (error) {
+    console.log("AN ERROR OCCURED IN TESTSTART: ", error);
+    throw error; // This "throws" it into the React render cycle so error.tsx sees it
+  }
 
   // FOR DEBUG. This useEffect will track all current relevant info needed
   useEffect(() => {
@@ -70,9 +83,11 @@ export default function TestStart({
       console.log("THERE WAS AN ERROR WITH THE PROVIDED FIELDS.");
       return;
     }
+    else  {
+      console.log("NO ERRORS IN THE USER INPUT, MOVE ONTO THE CREATION OF THE SCORE RECORD.");
+    }
 
-    console.log("NO ERRORS IN THE USER INPUT, MOVE ONTO THE CREATION OF THE SCORE RECORD.");
-    const getRecord = async () => {
+    try {
       const fetchedInfo = await infoUtils.createRecord('createRecord', initialTestInfo);
       // If the current result's ID in the database was successfully retrieved, set the value to resultId. Otherwise log an error.
       if (fetchedInfo) {
@@ -86,27 +101,24 @@ export default function TestStart({
         ['userAttempt']: fetchedInfo[1]
         }));
         console.log("Current resultId and userAttempt fetched and set.");
+        console.log("RECORD WAS CREATED!");
+        console.log("PLEASE CHECK HERE FOR FINALIZED USER INFO BEFORE STARTING");
+        console.log(initialTestInfo);
+        const currentAttempt = initialTestInfo.userAttempt;
+        console.log("ABOUT TO ENTER THE TEST WITH THIS ATTEMPT NUMBER!");
+        console.log(currentAttempt);
+        setCurrentDisplay('test');
+        setIsSubmitted(true);
       }
       else {
-          console.log("Error creating the record.");
+        console.log("Error creating the record.");
+        throw new Error("The test could not be started as an error occured while making the record.");
       }
-    };
-
-    // Call the function to fetch the resultId to be used
-    getRecord();
-    console.log("RECORD WAS CREATED!");
-    console.log("PLEASE CHECK HERE FOR FINALIZED USER INFO BEFORE STARTING");
-    console.log(initialTestInfo);
-    setCurrentDisplay('test');
-    if (initialTestInfo.userAttempt !== 0 && initialTestInfo.resultId !== 0) {
-      setIsSubmitted(true);
-      const currentAttempt = initialTestInfo.userAttempt;
-      console.log("ABOUT TO ENTER THE TEST WITH THIS ATTEMPT NUMBER!");
-      console.log(currentAttempt);
     }
-    // If there is an error, log to console.
-    else {
-      console.log("An error occured while attempting to start the test.");
+    catch(error){
+      console.log("ERROR WAS CAUGHT IN TESTSTART!");
+      setError(errorType(error));
+      console.log("ERROR WAS SET!");
     }
   }
 
