@@ -178,14 +178,19 @@ export function useHandleChange({
       } : answer
     ));
 
-    // Wait for the question to be submitted before going any further. Since we are not using an event here, make the first argument undefined
-    await handleQuestionSubmit(undefined, true);
+    // Use this const to check if the answers were already graded. If so, skip the await functions below
+    const alreadyGradedCheck = gradedAnswers.current.filter(Boolean).length;
+    console.log(`HERE ARE THE RESULTS OF ALREADYGRADEDCHECK: ${alreadyGradedCheck}`);
+    if (alreadyGradedCheck === 0) {
+      // Wait for the question to be submitted before going any further. Since we are not using an event here, make the first argument undefined
+      await handleQuestionSubmit(undefined, true);
 
-    // Await the correct number of answers for the stage before moving on
-    await handleCorrectCount(gradedAnswers.current);
+      // Await the correct number of answers for the stage before moving on
+      await handleCorrectCount(gradedAnswers.current);
 
-    //Set submitted to true so that the modal can be displayed
-    setIsSubmitted(true);
+      //Set submitted to true so that the modal can be displayed
+      setIsSubmitted(true);
+    }
   }
 
   return {

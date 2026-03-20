@@ -132,7 +132,7 @@ export default function TestTake({shuffleSeed, currentTestInfo, initialQuestions
     <div className = "w-full flex min-h-screen items-center">
         {
           // Await the correct number of answers for the stage before moving on, OR if the timer runs out
-          testHook.changeHook.isSubmitted !== false && (
+          (testHook.changeHook.isSubmitted || testTimerOver) && (
           <StageComplete
             stageNum = {testHook.stageInfo.current.stageNum}
             stagePassed = {testHook.correctTotal.current > 3 ? true : false}
@@ -140,7 +140,7 @@ export default function TestTake({shuffleSeed, currentTestInfo, initialQuestions
             totalQuestions = {testHook.questions.length}
             totalCorrect = {testHook.correctTotal.current}
             testTimerOver = {testTimerOver}
-            onButtonChange = {testHook.changeHook.handleNextStage}
+            onButtonChange = {testTimerOver ? (testHook.flowHook.handleTestForm) : (testHook.changeHook.handleNextStage)}
           />)
         }
         <form name = "placeTest" onSubmit = {testHook.flowHook.handleTestForm} className = "flex flex-col space-y-4 items-start justify-start">
