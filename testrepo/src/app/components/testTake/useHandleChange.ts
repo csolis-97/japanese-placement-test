@@ -23,7 +23,7 @@ type HandleChangeProps = {
     gradedAnswers: RefObject<boolean[]>;
     handleCorrectCount: (gradedAnswers: boolean[]) => Promise<void>;
     handleQuestionRetrieve: (event: React.SyntheticEvent) => Promise<void>;
-    handleQuestionSubmit: (event: React.SyntheticEvent) => Promise<void>;
+    handleQuestionSubmit: (event?: React.SyntheticEvent, forcedSubmit?: boolean) => Promise<void>;
     handleTestForm: (event: React.SyntheticEvent) => Promise<void>;
 };
 
@@ -84,9 +84,12 @@ export function useHandleChange({
   const handleNextStage = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     try {
       event.preventDefault();
+      const emptyAnswer = answerArray.filter(answer => answer.userText === "").length;
+      // DEBUG CHECK THE TOTAL NUMBER OF EMPTY ANSWERS
+      console.log(`TOTAL NUMBER OF QUESTIONS THAT WERE NOT ANSWERED: ${emptyAnswer}`);
       // After the user presses the continue button, the following will be executed
       // If the user did well enough and they have not reached the final stage, move onto the next stage but do not submit the test.
-      if (stageInfo.current.stageNum < 4 && correctTotal.current > 3) {
+      if (stageInfo.current.stageNum < 4 && correctTotal.current > 3 && emptyAnswer === 0) {
         startTransition(async () => {
           try {
             console.log(`SCORES FOR STAGE ${stageInfo.current.stageNum} WERE SUFFICIENT, MOVE ONTO THE NEXT STAGE.`);
@@ -108,8 +111,11 @@ export function useHandleChange({
         if (stageInfo.current.stageNum > 4) {
           console.log(`USER HAS REACHED THE FINAL STAGE, END THE TEST NOW.`);
         }
+        else if (emptyAnswer > 0) {
+          console.log(`USER RAN OUT OF TIME, END THE TEST NOW.`);
+        }
         else {
-          console.log(`SCORES FOR STAGE ${stageInfo.current.stageNum} WERE TOO LOW, END THE TEST NOW.`);
+          console.log(`SCORES FOR STAGE ${stageInfo.current.stageNum + 1} WERE TOO LOW, END THE TEST NOW.`);
         }
         // Now handle the submission
         await handleTestForm(event);
@@ -159,12 +165,36 @@ export function useHandleChange({
     }
   };
 
+  // This function is similar to part of the code inhandleButtonChange, except for forced submissions, so it has no arguments
+  const handleForceSubmit = async () => {
+    // Call the setter function with prevData as its argument, then use it to map each answer to an index. If the index matches currentQuestion,
+    // set alreadyAnswered to true, the questionId to the current question in the stage, and keep the other attributes as is, otherwise do just answer.
+    setAnswerArray((prevData) =>
+      prevData.map((answer, index) =>
+      index === currentQuestion ? {
+        ...answer, 
+        questionId: questions[stageInfo.current.stageQuestion].question_id, 
+        alreadyAnswered: true
+      } : answer
+    ));
+
+    // Wait for the question to be submitted before going any further. Since we are not using an event here, make the first argument undefined
+    await handleQuestionSubmit(undefined, true);
+
+    // Await the correct number of answers for the stage before moving on
+    await handleCorrectCount(gradedAnswers.current);
+
+    //Set submitted to true so that the modal can be displayed
+    setIsSubmitted(true);
+  }
+
   return {
     selectedAnswer,
     isSubmitted,
     isPending,
     handleChange, 
     handleNextStage, 
-    handleButtonChange 
+    handleButtonChange,
+    handleForceSubmit
   };
 }

@@ -34,15 +34,13 @@ export default async function Test() {
   //HTML return for the test form page
   return (
     <div className = {`
-      flex min-h-screen 
+      flex 
       justify-center bg-[#d1190d] 
       font-sans dark:bg-black
     `}>
       <main className={`
-        flex sm:min-h-screen 
-        w-full sm:max-w-3xl 
-        flex-col items-center 
-        justify-between px-16 
+        max-w-3xl
+        px-[1.7rem] sm:px-16 
         bg-white dark:bg-black
       `}>
         {

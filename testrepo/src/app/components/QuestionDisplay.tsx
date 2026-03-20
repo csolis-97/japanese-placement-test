@@ -37,8 +37,8 @@ export default function questionDisplay(props: QuestionDisplayProps) {
         <div className = {`
             flex flex-col 
             bg-gray-100 rounded-lg 
-            w-full min-w-[20rem] sm:min-w-[40.625rem] 
-            min-h-[25rem] sm:min-h-[40.625rem] h-fit 
+            min-w-[20rem] sm:min-w-[40.625rem] 
+            min-h-[25rem] sm:min-h-[40.625rem]
             shadow-md
         `}>
             <div className = "divide-y-2 divide-gray-400">
@@ -85,6 +85,17 @@ export default function questionDisplay(props: QuestionDisplayProps) {
                         ))
                     }
                     </fieldset>
+                {   // Check if the question was not answered by the user during the test, and display this message.
+                    // "not answered" is the text assigned as a default to answers that were received as empty in the backend
+                    props.selectedAnswer === "not answered" ? (
+                        <h1 className = "flex p-4 mt-6 bg-gray-200 rounded shadow-md font-semibold justify-center text-red-600 text-sm sm:text-base">
+                            X Question was not answered.
+                        </h1>
+                    ) : (
+                        <>
+                        </>
+                    )
+                }
                 </div>
             </div>
         </div>

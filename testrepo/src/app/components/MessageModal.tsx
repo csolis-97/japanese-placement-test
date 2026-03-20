@@ -23,8 +23,8 @@ export default function MessageModal( { messageText, buttonText, reset } : Messa
                     relative border-8 border-gray-400 
                     shadow-lg rounded-lg bg-white 
                     p-4 dark:text-black-500 
-                    min-w-[10rem] sm:min-w-[10rem] 
-                    min-h-[11rem] sm:min-h-[10rem]
+                    min-w-[10rem] sm:min-w-[40rem] 
+                    min-h-[11rem] sm:min-h-[11rem]
                     max-w-xl text-center
                 `}>
                     <h1>{messageText}</h1>

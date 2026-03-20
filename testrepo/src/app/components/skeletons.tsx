@@ -92,14 +92,12 @@ export function ButtonSkeleton() {
         <button 
             className = {`
                 mt-2 px-4 sm:px-8 
-                py-4 font-semibold text-sm 
-                text-white sticky 
+                py-4 sticky 
                 top-0 bg-gray-300
             `}  
             type = "button" 
             disabled
         >
-            <div className = "h-5 w-8"></div>
         </button>
     )
 }

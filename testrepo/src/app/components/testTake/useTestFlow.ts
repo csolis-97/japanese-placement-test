@@ -152,11 +152,15 @@ export function useTestFlow({
   }
 
   // This functions deals with the logic of submitting questions
-  async function handleQuestionSubmit(event: React.SyntheticEvent) {
-    event.preventDefault();
+  // The event argument is optional, as this function can also be called when forcefully ending the test through the timer
+  async function handleQuestionSubmit(event?: React.SyntheticEvent, forcedSubmit?: boolean) {
+    // Check if it is an event, otherwise the test is being submitted because the timer ran out
+    if (event) {
+      event.preventDefault();
+    }
     console.log("ABOUT TO SUBMIT THE ANSWERS OF THE CURRENT STAGE!");
     try {
-      if (answerArray[currentQuestion] && stageInfo.current.stageQuestion === 4 ) {
+      if (answerArray[currentQuestion] && stageInfo.current.stageQuestion === 4 || forcedSubmit) {
         console.log("USER ANSWERS TO BE SUBMITTED");
         // Since answerArray is an object with no toString function, use JSON.stringify to properly display the answer data in the console log
         console.log(JSON.stringify(answerArray.slice(currentQuestion - STAGE_SIZE, currentQuestion)));
@@ -205,7 +209,7 @@ export function useTestFlow({
     event.preventDefault();
     console.log("ABOUT TO SUBMIT THE TEST!");
     try {
-      if (answerArray.length === questionIdTrack.current.length) {
+      if (currentTestInfo.userAttempt !== 0) {
         console.log("CHECKS PASSED, TEST WILL BE SUBMITTED!");
         let submitInfo: testUtils.SubmitData = {
           resultId: currentTestInfo.resultId,
@@ -213,24 +217,22 @@ export function useTestFlow({
           userAttempt: currentTestInfo.userAttempt,
           isCorrect: gradedAnswers.current,
           stageArray: stageInfo.current.stageDifficulty
-        }
-        if (currentTestInfo.userAttempt !== 0) {
-          const fetchedResponse = await testUtils.submitTest('submitTest', submitInfo);
-          console.log(fetchedResponse);
+        };
+        const fetchedResponse = await testUtils.submitTest('submitTest', submitInfo);
+        console.log(fetchedResponse);
 
-          const currentAttempt = currentTestInfo.userAttempt;
-          const currentRecord = currentTestInfo.resultId;
-          const urlParams = new URLSearchParams();
-          urlParams.set('attempt', currentAttempt.toString());
-          urlParams.set('r', currentRecord.toString());
+        const currentAttempt = currentTestInfo.userAttempt;
+        const currentRecord = currentTestInfo.resultId;
+        const urlParams = new URLSearchParams();
+        urlParams.set('attempt', currentAttempt.toString());
+        urlParams.set('r', currentRecord.toString());
 
-          console.log(`ABOUT TO PUSH THROUGH ROUTE WITH THIS ATTEMPT NUMBER: ${currentAttempt} AND THIS RECORD NUMBER: ${currentRecord}!`);
-          router.push(`/results?${urlParams.toString()}`);
-        }
-        else {
-          console.log("THERE WAS AN ERROR IN THE HANDLETESTFORM OF THE USETESTFLOW HOOK!");
-          throw new Error("Error submitting the test.");
-        }
+        console.log(`ABOUT TO PUSH THROUGH ROUTE WITH THIS ATTEMPT NUMBER: ${currentAttempt} AND THIS RECORD NUMBER: ${currentRecord}!`);
+        router.push(`/results?${urlParams.toString()}`);
+      }
+      else {
+        console.log("THERE WAS AN ERROR IN THE HANDLETESTFORM OF THE USETESTFLOW HOOK!");
+        throw new Error("Error submitting the test.");
       }
     }
     catch(submitError) {

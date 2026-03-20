@@ -136,7 +136,7 @@ export default function TestStart({
     
   //HTML return for the test start
   return (
-    <div className="flex flex-col min-h-screen items-center justify-center gap-6">
+    <div className="sm:px-12 flex flex-col min-h-screen items-center justify-center gap-6">
       <h1 className = "text-2xl sm:text-3xl font-semibold text-black text-center dark:text-zinc-50">Japanese Placement Test</h1>
         <form 
           id = "userInfo" 
