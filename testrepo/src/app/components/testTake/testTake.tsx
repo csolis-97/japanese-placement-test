@@ -46,6 +46,7 @@ export default function TestTake({shuffleSeed, currentTestInfo, initialQuestions
 
   const timerForcedSubmission = () => {
     testHook.changeHook.handleForceSubmit();
+    testHook.flowHook.handleForcedTestForm(testTimerOver);
   }
 
   if (error) {
@@ -140,7 +141,7 @@ export default function TestTake({shuffleSeed, currentTestInfo, initialQuestions
             totalQuestions = {testHook.questions.length}
             totalCorrect = {testHook.correctTotal.current}
             testTimerOver = {testTimerOver}
-            onButtonChange = {testTimerOver ? (testHook.flowHook.handleTestForm) : (testHook.changeHook.handleNextStage)}
+            onButtonChange = {testTimerOver ? (testHook.flowHook.handleForcedRouter) : (testHook.changeHook.handleNextStage)}
           />)
         }
         <form name = "placeTest" onSubmit = {testHook.flowHook.handleTestForm} className = "flex flex-col space-y-4 items-start justify-start">

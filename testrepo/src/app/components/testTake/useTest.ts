@@ -92,7 +92,9 @@ export function useTest({
     handleCorrectCount: flowHook.handleCorrectCount, 
     handleQuestionRetrieve: flowHook.handleQuestionRetrieve, 
     handleQuestionSubmit: flowHook.handleQuestionSubmit, 
-    handleTestForm: flowHook.handleTestForm
+    handleTestForm: flowHook.handleTestForm,
+    handleForcedTestForm: flowHook.handleForcedTestForm,
+    handleForcedRouter: flowHook.handleForcedRouter
   });
   
   if (error) {

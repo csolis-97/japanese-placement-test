@@ -26,8 +26,8 @@ export default function StageComplete(props: MessageProps) {
     let stageMessage, buttonText;
 
     if (props.testTimerOver) {
-        stageMessage = "Time is up! The test will now be submitted."
-        buttonText = "Submit Test"
+        stageMessage = "Time is up! The test was submitted."
+        buttonText = "Go to Results"
     }
     else if (props.stageNum === 4) {
         stageMessage = "Congratulations! You have reached the end of the test!";

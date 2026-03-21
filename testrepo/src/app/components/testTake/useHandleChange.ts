@@ -25,6 +25,8 @@ type HandleChangeProps = {
     handleQuestionRetrieve: (event: React.SyntheticEvent) => Promise<void>;
     handleQuestionSubmit: (event?: React.SyntheticEvent, forcedSubmit?: boolean) => Promise<void>;
     handleTestForm: (event: React.SyntheticEvent) => Promise<void>;
+    handleForcedTestForm: (forcedSubmit: boolean) => Promise<void>;
+    handleForcedRouter: (event: React.SyntheticEvent) => Promise<void>;
 };
 
 export function useHandleChange({ 
@@ -39,7 +41,8 @@ export function useHandleChange({
   handleCorrectCount, 
   handleQuestionRetrieve, 
   handleQuestionSubmit, 
-  handleTestForm 
+  handleTestForm,
+  handleForcedTestForm 
 } : HandleChangeProps) {
 
   // This useState will track the user's selected answer for each question

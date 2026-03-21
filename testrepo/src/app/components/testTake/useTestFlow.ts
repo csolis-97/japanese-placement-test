@@ -151,10 +151,11 @@ export function useTestFlow({
     }
   }
 
-  // This functions deals with the logic of submitting questions
+  // This function deals with the logic of submitting questions
   // The event argument is optional, as this function can also be called when forcefully ending the test through the timer
-  async function handleQuestionSubmit(event?: React.SyntheticEvent, forcedSubmit?: boolean) {
-    // Check if it is an event, otherwise the test is being submitted because the timer ran out
+  // but by default the forcedSubmit is set to false, making it also optional
+  async function handleQuestionSubmit(event?: React.SyntheticEvent, forcedSubmit: boolean = false) {
+    // Check if it is an event, otherwise the questions are being submitted because the timer ran out
     if (event) {
       event.preventDefault();
     }
@@ -210,25 +211,10 @@ export function useTestFlow({
     console.log("ABOUT TO SUBMIT THE TEST!");
     try {
       if (currentTestInfo.userAttempt !== 0) {
-        console.log("CHECKS PASSED, TEST WILL BE SUBMITTED!");
-        let submitInfo: testUtils.SubmitData = {
-          resultId: currentTestInfo.resultId,
-          pastId: questionIdTrack.current,
-          userAttempt: currentTestInfo.userAttempt,
-          isCorrect: gradedAnswers.current,
-          stageArray: stageInfo.current.stageDifficulty
-        };
-        const fetchedResponse = await testUtils.submitTest('submitTest', submitInfo);
-        console.log(fetchedResponse);
-
-        const currentAttempt = currentTestInfo.userAttempt;
-        const currentRecord = currentTestInfo.resultId;
-        const urlParams = new URLSearchParams();
-        urlParams.set('attempt', currentAttempt.toString());
-        urlParams.set('r', currentRecord.toString());
-
-        console.log(`ABOUT TO PUSH THROUGH ROUTE WITH THIS ATTEMPT NUMBER: ${currentAttempt} AND THIS RECORD NUMBER: ${currentRecord}!`);
-        router.push(`/results?${urlParams.toString()}`);
+        // Await the test submission logic
+        await handleTestSubmit();
+        // Await the routing logic
+        await handleRouter();
       }
       else {
         console.log("THERE WAS AN ERROR IN THE HANDLETESTFORM OF THE USETESTFLOW HOOK!");
@@ -242,10 +228,102 @@ export function useTestFlow({
     }
   }
 
+  // Function to handle a forced test submission, once the time runs out.
+  async function handleForcedTestForm(forcedSubmit: boolean) {
+    console.log("TIMER RAN OUT, ABOUT TO AUTO SUBMIT THE TEST INFO!");
+    try {
+      if (currentTestInfo.userAttempt !== 0 || forcedSubmit) {
+        // Await the test submission logic
+        await handleTestSubmit();
+      }
+      else {
+        console.log("THERE WAS AN ERROR IN THE HANDLEFORCEDTESTFORM OF THE USETESTFLOW HOOK!");
+        throw new Error("Error submitting the test results after a forced submission.");
+      }
+    }
+    catch(formError) {
+      console.log("ERROR WAS CAUGHT IN THE HANDLEFORCEDTESTFORM OF THE USETESTFLOW HOOK!");
+      setError(errorType(formError));
+      console.log("ERROR WAS SET!");
+    }
+  }
+
+  // Function to handle a forced routing, once the time runs out.
+  async function handleForcedRouter(event: React.SyntheticEvent) {
+    event.preventDefault();
+    console.log("TIMER RAN OUT, ABOUT TO ROUTE TO THE RESULTS!");
+    try {
+      if (currentTestInfo.userAttempt !== 0) {
+        // Await the routing logic
+        await handleRouter();
+      }
+      else {
+        console.log("THERE WAS AN ERROR IN THE HANDLEFORCEDROUTER OF THE USETESTFLOW HOOK!");
+        throw new Error("Error routing to the results after a forced submission.");
+      }
+    }
+    catch(formError) {
+      console.log("ERROR WAS CAUGHT IN THE HANDLEFORCEDROUTER OF THE USETESTFLOW HOOK!");
+      setError(errorType(formError));
+      console.log("ERROR WAS SET!");
+    }
+  }
+
+  async function handleTestSubmit() {
+    try {
+      if (currentTestInfo.userAttempt !== 0) {
+        let submitInfo: testUtils.SubmitData = {
+          resultId: currentTestInfo.resultId,
+          pastId: questionIdTrack.current,
+          userAttempt: currentTestInfo.userAttempt,
+          isCorrect: gradedAnswers.current,
+          stageArray: stageInfo.current.stageDifficulty
+        };
+        const fetchedResponse = await testUtils.submitTest('submitTest', submitInfo);
+        console.log(fetchedResponse);
+      }
+      else {
+        console.log("THERE WAS AN ERROR IN THE HANDLETESTSUBMIT OF THE USETESTFLOW HOOK!");
+        throw new Error("Error submitting the test record info.");
+      }
+    }
+    catch(submitError) {
+      console.log("ERROR WAS CAUGHT IN THE HANDLETESTSUBMIT OF THE USETESTFLOW HOOK!");
+      setError(errorType(submitError));
+      console.log("ERROR WAS SET!");
+    }
+  }
+
+  async function handleRouter() {
+    try {
+      if (currentTestInfo.userAttempt !== 0) {
+        const currentAttempt = currentTestInfo.userAttempt;
+        const currentRecord = currentTestInfo.resultId;
+        const urlParams = new URLSearchParams();
+        urlParams.set('attempt', currentAttempt.toString());
+        urlParams.set('r', currentRecord.toString());
+
+        console.log(`ABOUT TO PUSH THROUGH ROUTE WITH THIS ATTEMPT NUMBER: ${currentAttempt} AND THIS RECORD NUMBER: ${currentRecord}!`);
+        router.push(`/results?${urlParams.toString()}`);
+      }
+      else {
+        console.log("THERE WAS AN ERROR IN THE HANDLEROUTER OF THE USETESTFLOW HOOK!");
+        throw new Error("Error routing to the results page.");
+      }
+    }
+    catch(routerError) {
+      console.log("ERROR WAS CAUGHT IN THE HANDLEROUTER OF THE USETESTFLOW HOOK!");
+      setError(errorType(routerError));
+      console.log("ERROR WAS SET!");
+    }
+  }
+
   return { 
     handleCorrectCount, 
     handleQuestionRetrieve, 
     handleQuestionSubmit, 
-    handleTestForm 
+    handleTestForm,
+    handleForcedTestForm,
+    handleForcedRouter
   };
 }

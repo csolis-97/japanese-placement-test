@@ -26,7 +26,7 @@ export async function createRecord(action: string, givenFields: InfoData) {
     console.log(name);
 
     // Create a snapshot of the submission time to send alongside the POST request
-    let submittedTime = new Date();
+    let submittedTime = new Date().toISOString();
     console.log("HERE IS THE SUBMISSION TIMESTAP");
     console.log(submittedTime);
 
@@ -45,7 +45,7 @@ export async function createRecord(action: string, givenFields: InfoData) {
                 'user_attempt' : userAttempt,
                 'email' : email, 
                 'name' : name, 
-                'submit_time' : submittedTime
+                'start_time' : submittedTime
             })
         });
 

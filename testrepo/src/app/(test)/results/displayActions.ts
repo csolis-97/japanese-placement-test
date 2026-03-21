@@ -110,7 +110,7 @@ export async function resultsData(action: string, givenFields: ResultData) {
                 'attempt_id' : attemptId, 
                 'total_score' : totalScore,
                 'entrance_level' : entranceLevel, 
-                'test_date' : testDate
+                'end_time' : testDate
             })
         });
 
@@ -124,9 +124,9 @@ export async function resultsData(action: string, givenFields: ResultData) {
 
         //Since the date was converted into a string after it was retrieved in the backend, convert it back to a Date object before
         //returning
-        const newTest = new Date(data['test_date']);
+        const newTest = new Date(data['end_time']);
         testDate = newTest;
-        data['test_date'] = testDate;
+        data['end_time'] = testDate;
         return data;
     }
     //If an error occured during retrieval, catch it and log it

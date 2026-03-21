@@ -27,7 +27,7 @@ interface TestResult {
   total_score: number;
   totalQuestions?: number;
   entrance_level: string;
-  test_date: Date;
+  end_time: Date;
 };
 
 interface ResultsProps {
@@ -64,7 +64,7 @@ export default function ResultsDisplay({
             totalScore = { // The total_score stored is actually the percentage of overall correct questions, so calculate the correct number here
               (results.total_score / 100) * questions.length}
             entranceLevel = {results.entrance_level}
-            testDate = {results.test_date}
+            testDate = {results.end_time}
             totalQuestions = {questions.length}
           />
         }
