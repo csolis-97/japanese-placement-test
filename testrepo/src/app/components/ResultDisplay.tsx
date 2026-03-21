@@ -1,6 +1,12 @@
 "use client";
 
-import { Suspense, use } from "react";
+import { 
+  Suspense, 
+  use, 
+  useRef,
+  useState,
+  useEffect
+} from "react";
 import QuestionDisplay from "./QuestionDisplay";
 import ResultInfo from "./ResultInfo";
 import { QuestionDisplaySkeleton } from "./skeletons";
@@ -45,16 +51,52 @@ export default function ResultsDisplay({
   const questions = use(answersPromise);
   const results = use(resultsPromise) as TestResult;
 
+  const[buttonIsVisible, setButtonIsVisible] = useState<boolean>(false);
+
+  const topDivRef = useRef<HTMLDivElement>(null);
+  const midDivRef = useRef<HTMLDivElement>(null);
+
+  const topScroll = () => {
+    if (topDivRef.current) {
+    topDivRef.current.scrollIntoView({behavior : "smooth", inline : "start"})
+    }
+  }
+
   //Fetch the user's graded responses from the test page
   console.log("ABOUT TO ENTER THE HTML!");
   console.log("HERE IS THE QUESTION AND ANSWER INFORMATION");
   //console.log(questions);
   console.log("QUESTIONS.LENGTH");
   //console.log(questions.length);
+
+  useEffect(() => {
+    const observerOptions = {
+      root: null,
+      threshold: 0.0000000001
+    }
+
+    // Figure out how tis syntax works, as in why I have to specify that it is this interface
+    const callBack: IntersectionObserverCallback = (entries) => {
+      //const [specificEntry] = entries;
+      if (entries) {
+        setButtonIsVisible(entries[0].isIntersecting);
+      }
+    }
+    const pageObserver = new IntersectionObserver(callBack, observerOptions);
+
+    if (topDivRef.current) {
+      pageObserver.observe(topDivRef.current);
+    }
+
+    // Clean up logic
+    return () => {
+      pageObserver.disconnect();
+    }
+  }, []);
   
   return (
     <>
-      <div className = "p-12">
+      <div className = "p-12" ref = {topDivRef}>
         { //DEBUG ONLY, TEST THE RESULTINFO SKELETON
           // <skeletons.ResultInfoSkeleton />
         }
@@ -62,20 +104,21 @@ export default function ResultsDisplay({
           <ResultInfo
             attemptId = {attemptNum}
             totalScore = { // The total_score stored is actually the percentage of overall correct questions, so calculate the correct number here
-              (results.total_score / 100) * questions.length}
+              (results.total_score / 100) * questions.length
+            }
             entranceLevel = {results.entrance_level}
             testDate = {results.end_time}
             totalQuestions = {questions.length}
           />
         }
         </div>
-        <div className = "flex flex-col gap-6">
+        <div className = "flex flex-col gap-6" ref = {midDivRef}>
           { // DEBUG ONLY, TEST THE QUESTIONDISPLAY SKELETON
             // <skeletons.QuestionDisplaySkeleton />
           }
           {
             questions.map((question) =>
-              <Suspense 
+              <Suspense
                 key = {question.response_order}
                 fallback = { <QuestionDisplaySkeleton />}>
                 <QuestionDisplay
@@ -94,6 +137,12 @@ export default function ResultsDisplay({
               </Suspense>
           )}
       </div>
+      { !buttonIsVisible && (
+          <button className = "buttonStyle fixed right-24" type = "button" onClick = {topScroll}>
+            Back to the Top
+          </button>
+        )
+      }
     </>
   );
 }
