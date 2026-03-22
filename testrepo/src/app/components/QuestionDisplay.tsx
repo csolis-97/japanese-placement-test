@@ -11,9 +11,6 @@ interface QuestionDisplayProps {
     alreadyAnswered?: boolean;
     correctAnswer?: boolean[];
     wasCorrect?: boolean;
-    /* Since this function will only be used to set the answer selected by the user in the form,
-    it does not need to return anything, hence void.
-    */
     onChangeValue?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
@@ -22,7 +19,7 @@ const regularRadio = "ml-2 text-gray-600";
 const correctRadio = "ml-2 text-green-600";
 const wrongRadio = "ml-2 text-red-600";
 
-export default function questionDisplay(props: QuestionDisplayProps) {
+export default function questionDisplay(props : QuestionDisplayProps) {
     console.log("ALREADY ANSWERED?");
     console.log(props.alreadyAnswered);
     console.log("LOG THE CORRECT ANSWERS IF ANY!!");
@@ -34,13 +31,15 @@ export default function questionDisplay(props: QuestionDisplayProps) {
 
     return (
         // Here, min-h-[40.625rem] is used to ensure that the height is a minimum of 650px, but will grow if content is bigger than that using h-fit.
-        <div className = {`
-            flex flex-col 
-            bg-gray-100 rounded-lg 
-            min-w-[20rem] sm:min-w-[40.625rem] 
-            min-h-[25rem] sm:min-h-[40.625rem]
-            shadow-md
-        `}>
+        <div className = 
+            {`
+                flex flex-col 
+                bg-gray-100 rounded-lg 
+                min-w-[20rem] sm:min-w-[40.625rem] 
+                min-h-[25rem] sm:min-h-[40.625rem]
+                shadow-md
+            `}
+        >
             <div className = "divide-y-2 divide-gray-400">
                 <div className = "text-gray-600 font-semibold">
                     <h1 className = "sm:text-3xl p-4">Question #{props.questionId}</h1>

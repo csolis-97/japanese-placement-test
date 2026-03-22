@@ -47,20 +47,43 @@ export default function ResultsDisplay({
   answersPromise, 
   resultsPromise 
 } : ResultsProps) {
+
   //const questions = use(answersPromise) as TestQuestion[];
   const questions = use(answersPromise);
   const results = use(resultsPromise) as TestResult;
 
-  const[buttonIsVisible, setButtonIsVisible] = useState<boolean>(false);
+  // This useState will be used to track whether or not the button that allows the user to go back to the top of the page
+  // is toggled or not
+  const[showTopButton, setshowTopButton] = useState<boolean>(false);
 
+  // This const will be used as a ref value for the div that contains the ResultInfo component, to which the button will return
   const topDivRef = useRef<HTMLDivElement>(null);
-  const midDivRef = useRef<HTMLDivElement>(null);
 
+  // This const contains an arrow function that defines how the page will scroll from the button all the way to the top
   const topScroll = () => {
     if (topDivRef.current) {
     topDivRef.current.scrollIntoView({behavior : "smooth", inline : "start"})
     }
   }
+
+  // I haven't really needed to use EventListener, so let my explain. scroll is the type of event, handleScroll is the function called
+  // if window.scrollY is greater than 2000 pixels, then display the button to go the top. Otherwise, do not
+  useEffect(() => {
+    const handleScroll = () => {
+      // Check if screen size is above the sm breakpoint, if not use the else value
+      if (window.matchMedia("(min-width: 640px)").matches) {
+        setshowTopButton(window.scrollY > 1500);
+      }
+      else {
+        setshowTopButton(window.scrollY > 900);
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+
+    // Clean up function
+    return () => window.removeEventListener("scroll", handleScroll);
+
+  }, []);
 
   //Fetch the user's graded responses from the test page
   console.log("ABOUT TO ENTER THE HTML!");
@@ -68,31 +91,6 @@ export default function ResultsDisplay({
   //console.log(questions);
   console.log("QUESTIONS.LENGTH");
   //console.log(questions.length);
-
-  useEffect(() => {
-    const observerOptions = {
-      root: null,
-      threshold: 0.0000000001
-    }
-
-    // Figure out how tis syntax works, as in why I have to specify that it is this interface
-    const callBack: IntersectionObserverCallback = (entries) => {
-      //const [specificEntry] = entries;
-      if (entries) {
-        setButtonIsVisible(entries[0].isIntersecting);
-      }
-    }
-    const pageObserver = new IntersectionObserver(callBack, observerOptions);
-
-    if (topDivRef.current) {
-      pageObserver.observe(topDivRef.current);
-    }
-
-    // Clean up logic
-    return () => {
-      pageObserver.disconnect();
-    }
-  }, []);
   
   return (
     <>
@@ -112,7 +110,7 @@ export default function ResultsDisplay({
           />
         }
         </div>
-        <div className = "flex flex-col gap-6" ref = {midDivRef}>
+        <div className = "flex flex-col gap-6">
           { // DEBUG ONLY, TEST THE QUESTIONDISPLAY SKELETON
             // <skeletons.QuestionDisplaySkeleton />
           }
@@ -137,11 +135,12 @@ export default function ResultsDisplay({
               </Suspense>
           )}
       </div>
-      { !buttonIsVisible && (
-          <button className = "buttonStyle fixed right-24" type = "button" onClick = {topScroll}>
+      { // If the user scrolls down far enough, this will be set to true and be displayed
+        showTopButton && (
+          <button className = "buttonStyleInverted sm:buttonStyleInverted cursor-pointer fixed right-12 bottom-12 sm:right-52 sm:bottom-24" type = "button" onClick = {topScroll}>
             Back to the Top
           </button>
-        )
+          )
       }
     </>
   );

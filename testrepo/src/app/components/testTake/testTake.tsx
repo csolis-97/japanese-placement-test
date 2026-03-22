@@ -45,7 +45,7 @@ export default function TestTake({shuffleSeed, currentTestInfo, initialQuestions
   };
 
   const timerForcedSubmission = () => {
-    testHook.changeHook.handleForceSubmit();
+    testHook.changeHook.handleForceSubmit(testTimerOver);
     testHook.flowHook.handleForcedTestForm(testTimerOver);
   }
 
@@ -137,7 +137,7 @@ export default function TestTake({shuffleSeed, currentTestInfo, initialQuestions
           <StageComplete
             stageNum = {testHook.stageInfo.current.stageNum}
             stagePassed = {testHook.correctTotal.current > 3 ? true : false}
-            difficultyLevel = {testHook.stageInfo.current.stageDifficulty[testHook.stageInfo.current.stageNum]}
+            difficultyLevel = { testHook.stageInfo.current.stageDifficulty[testHook.stageInfo.current.stageNum]}
             totalQuestions = {testHook.questions.length}
             totalCorrect = {testHook.correctTotal.current}
             testTimerOver = {testTimerOver}

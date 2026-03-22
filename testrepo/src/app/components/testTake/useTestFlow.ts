@@ -19,15 +19,15 @@ import {
 } from "@/app/utils/utilFunctions";
 
 type TestFlowProps = {
-    currentTestInfo: InfoData;
-    questions: TestQuestion[];
-    setQuestions: Dispatch<SetStateAction<TestQuestion[]>>;
-    answerArray: QuestionType[];
-    setAnswerArray: Dispatch<SetStateAction<QuestionType[]>>;
-    currentQuestion: number;
-    stageInfo: RefObject<testUtils.StageData>;
-    gradedAnswers: RefObject<boolean[]>;
-    correctTotal: RefObject<number>;
+  currentTestInfo: InfoData;
+  questions: TestQuestion[];
+  setQuestions: Dispatch<SetStateAction<TestQuestion[]>>;
+  answerArray: QuestionType[];
+  setAnswerArray: Dispatch<SetStateAction<QuestionType[]>>;
+  currentQuestion: number;
+  stageInfo: RefObject<testUtils.StageData>;
+  gradedAnswers: RefObject<boolean[]>;
+  correctTotal: RefObject<number>;
 };
 
 export function useTestFlow({ 
@@ -154,14 +154,14 @@ export function useTestFlow({
   // This function deals with the logic of submitting questions
   // The event argument is optional, as this function can also be called when forcefully ending the test through the timer
   // but by default the forcedSubmit is set to false, making it also optional
-  async function handleQuestionSubmit(event?: React.SyntheticEvent, forcedSubmit: boolean = false) {
+  async function handleQuestionSubmit(event?: React.SyntheticEvent, forcedSubmit?: boolean) {
     // Check if it is an event, otherwise the questions are being submitted because the timer ran out
     if (event) {
       event.preventDefault();
     }
-    console.log("ABOUT TO SUBMIT THE ANSWERS OF THE CURRENT STAGE!");
+    console.log(`ABOUT TO SUBMIT THE ANSWERS OF STAGE ${stageInfo.current.stageNum + 1}!`);
     try {
-      if (answerArray[currentQuestion] && stageInfo.current.stageQuestion === 4 || forcedSubmit) {
+      if ((answerArray[currentQuestion] && stageInfo.current.stageQuestion === 4) || forcedSubmit === true) {
         console.log("USER ANSWERS TO BE SUBMITTED");
         // Since answerArray is an object with no toString function, use JSON.stringify to properly display the answer data in the console log
         console.log(JSON.stringify(answerArray.slice(currentQuestion - STAGE_SIZE, currentQuestion)));
@@ -174,7 +174,6 @@ export function useTestFlow({
         currentAnswer = {
           questionId: stageInfo.current.stageQuestionId,
           pastId: questionIdTrack.current,
-          // I understand why the slice is being used here, figure out how the map works exactly
           userText: answerArray.slice((START_STAGE), (START_STAGE+STAGE_SIZE)).map(answer => answer.userText),
           userAttempt: currentTestInfo.userAttempt,
           resultId: currentTestInfo.resultId,
