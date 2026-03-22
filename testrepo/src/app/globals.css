@@ -47,29 +47,10 @@ body {
 .buttonStyle:hover {
   background-color: #700f09;
 }
-.buttonStyleInverted {
-  margin-top: 1rem;
-  font-weight: 600;
-  padding-left: 1rem;
-  padding-right: 1rem;
-  padding-top: 1rem;
-  padding-bottom: 1rem;
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-  color: #d1190d;
-  background-color: #FFFFFF;
-}
-.buttonStyleInverted:hover {
-  background-color: #9CA3AF;
-}
 
 /* Custom styles for breakpoints at screens sm and above */
 @media (min-width: 640px) {
   .buttonStyle {
-    padding-left: 2rem;
-    padding-right: 2rem;
-  }
-  .buttonStyleInverted {
     padding-left: 2rem;
     padding-right: 2rem;
   }

@@ -72,7 +72,7 @@ export default function ResultsDisplay({
     const handleScroll = () => {
       // Check if screen size is above the sm breakpoint, if not use the else value
       if (window.matchMedia("(min-width: 640px)").matches) {
-        setshowTopButton(window.scrollY > 1500);
+        setshowTopButton(window.scrollY > 850);
       }
       else {
         setshowTopButton(window.scrollY > 900);
@@ -137,9 +137,11 @@ export default function ResultsDisplay({
       </div>
       { // If the user scrolls down far enough, this will be set to true and be displayed
         showTopButton && (
-          <button className = "buttonStyleInverted sm:buttonStyleInverted cursor-pointer fixed right-12 bottom-12 sm:right-52 sm:bottom-24" type = "button" onClick = {topScroll}>
-            Back to the Top
-          </button>
+          <div className = "fixed right-6 bottom-6 sm:right-12 sm:bottom-12 sm:bg-white sm:p-4 sm:rounded-lg">
+            <button className = "flex w-36 h-12 sm:w-48 sm:h-16 !m-0 !p-0 buttonStyle sm:buttonStyle cursor-pointer justify-center items-center text-center" type = "button" onClick = {topScroll}>
+              Back to the Top
+            </button>            
+          </div>
           )
       }
     </>
