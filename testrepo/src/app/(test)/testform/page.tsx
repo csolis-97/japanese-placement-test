@@ -34,14 +34,12 @@ export default async function Test() {
   //HTML return for the test form page
   return (
     <div className = {`
-      flex 
-      justify-center bg-[#d1190d] 
-      font-sans dark:bg-black
+      flex font-sans
+      justify-center bg-[#d1190d]
     `}>
       <main className={`
-        max-w-3xl
+        max-w-3xl bg-white
         px-[1.7rem] sm:px-16 
-        bg-white dark:bg-black
       `}>
         {
           // Send the initial questions as a prop to testDisplay component

@@ -54,9 +54,9 @@ export default function StageComplete(props: MessageProps) {
     return createPortal(
         <div className = "flex fixed inset-0 items-center justify-center bg-black/40">
             <div className = {`
-                text-center border-8 border-gray-400 
+                border-8 border-gray-400 
                 shadow-lg rounded-lg bg-white 
-                p-4 dark:text-gray-400 
+                text-center p-4
                 min-w-[4rem] sm:min-w-[30rem] 
                 min-h-[5rem] sm:min-h-[10rem]
             `}>

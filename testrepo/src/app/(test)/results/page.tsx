@@ -99,15 +99,14 @@ interface testQuestion {
   return (
     <div className = {`
       flex justify-center 
-      bg-[#d1190d] font-sans 
-      dark:bg-black
+      bg-[#d1190d] font-sans
     `}>
       <main className = {`
         flex 
         w-full sm:max-w-3xl 
         flex-col items-center 
         py-16 sm:py-32 
-        px-16 bg-white dark:bg-black
+        px-16 bg-white
       `}>
         <Suspense fallback = {
           <>

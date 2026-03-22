@@ -15,14 +15,14 @@ export default function MessageModal( { messageText, buttonText, reset } : Messa
     <div className = {`
         flex min-h-screen 
         justify-center bg-[#d1190d] 
-        font-sans dark:bg-black
+        font-sans
     `}>
-        <main className = "w-full sm:max-w-3xl bg-white dark:bg-black sm:items-start">
+        <main className = "w-full sm:max-w-3xl bg-white sm:items-start">
             <div className = "fixed inset-0 flex items-center justify-center bg-black/40">
                 <div className = {`
                     relative border-8 border-gray-400 
-                    shadow-lg rounded-lg bg-white 
-                    p-4 dark:text-black-500 
+                    shadow-lg rounded-lg
+                    p-4 bg-white 
                     min-w-[10rem] sm:min-w-[40rem] 
                     min-h-[11rem] sm:min-h-[11rem]
                     max-w-xl text-center
