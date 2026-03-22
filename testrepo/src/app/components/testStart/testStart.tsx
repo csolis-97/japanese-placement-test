@@ -68,6 +68,18 @@ export default function TestStart({
       console.log(`USER INFO SUBMITTED?: ${isSubmitted}`);
   }, [initialTestInfo, isSubmitted]);
 
+  // This useEffect will merely display a warning message if the user tries to refresh the page without submitting their info
+  useEffect(() => {
+    if (isSubmitted) {
+      return;
+    }
+    const beforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+    }
+    window.addEventListener("beforeunload", beforeUnload);
+    return () => window.removeEventListener("beforeunload", beforeUnload);
+  }, [isSubmitted]);
+
   //Function to handle the submission form itself, once the user presses the submit button
   async function handleSubmission(event: React.SubmitEvent) {
     // Default behavior of form submission, to send data and reload the page, is prevented here.

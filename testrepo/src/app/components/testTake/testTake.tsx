@@ -92,6 +92,18 @@ export default function TestTake({shuffleSeed, currentTestInfo, initialQuestions
     }
   }, [testTimerOver]);
 
+  // This useEffect will merely display a warning message if the user tries to refresh the page without submitting their info
+  useEffect(() => {
+    if (testHook.testIsSubmitted) {
+      return;
+    }
+    const beforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+    }
+    window.addEventListener("beforeunload", beforeUnload);
+    return () => window.removeEventListener("beforeunload", beforeUnload);
+  }, [testHook.testIsSubmitted]);
+
   // FOR DEBUG. This useEffect will track all current relevant info needed
   useEffect(() => {
     console.log("CURRENT SELECTED ANSWER");

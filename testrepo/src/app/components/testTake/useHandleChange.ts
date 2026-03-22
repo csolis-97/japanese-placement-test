@@ -18,6 +18,7 @@ type HandleChangeProps = {
   setAnswerArray: Dispatch<SetStateAction<QuestionType[]>>;
   currentQuestion: number;
   setCurrentQuestion: Dispatch<SetStateAction<number>>;
+  setTestIsSubmitted: Dispatch<SetStateAction<boolean>>;
   stageInfo: RefObject<testUtils.StageData>;
   correctTotal: RefObject<number>;
   gradedAnswers: RefObject<boolean[]>;
@@ -34,7 +35,8 @@ export function useHandleChange({
   answerArray, 
   setAnswerArray, 
   currentQuestion, 
-  setCurrentQuestion, 
+  setCurrentQuestion,
+  setTestIsSubmitted, 
   stageInfo, 
   correctTotal, 
   gradedAnswers, 
@@ -122,6 +124,8 @@ export function useHandleChange({
         }
         // Now handle the submission
         await handleTestForm(event);
+        // Set the test as submitted
+        setTestIsSubmitted(true);
       }
     }
     catch(error) {
@@ -193,6 +197,9 @@ export function useHandleChange({
 
     //Set submitted to true so that the modal can be displayed
     setIsSubmitted(true);
+
+    // Set the test as submitted
+    setTestIsSubmitted(true);
     }
   }
 

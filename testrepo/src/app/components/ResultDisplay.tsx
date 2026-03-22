@@ -75,7 +75,7 @@ export default function ResultsDisplay({
         setshowTopButton(window.scrollY > 850);
       }
       else {
-        setshowTopButton(window.scrollY > 900);
+        setshowTopButton(window.scrollY > 600);
       }
     };
     window.addEventListener("scroll", handleScroll);
@@ -135,15 +135,35 @@ export default function ResultsDisplay({
               </Suspense>
           )}
       </div>
-      { // If the user scrolls down far enough, this will be set to true and be displayed
-        showTopButton && (
-          <div className = "fixed right-6 bottom-6 sm:right-12 sm:bottom-12 sm:bg-white sm:p-4 sm:rounded-lg">
-            <button className = "flex w-36 h-12 sm:w-48 sm:h-16 !m-0 !p-0 buttonStyle sm:buttonStyle cursor-pointer justify-center items-center text-center" type = "button" onClick = {topScroll}>
-              Back to the Top
-            </button>            
-          </div>
-          )
-      }
+      { /* The div below contains the button for scrolling to the top of the page. It transitions with opacity, and if it is not visible,
+        then the button is disabled from receiving pointer events.*/ }
+      <div className = {`
+        fixed 
+        right-6 bottom-6 
+        sm:right-12 sm:bottom-12 
+        sm:bg-white sm:p-4 
+        sm:rounded-lg
+        transition-opacity duration-500
+        ${showTopButton ? "opacity-100" : "opacity-0 pointer-events-none"}
+      `}
+      >
+        <button 
+          className = {`
+            flex 
+            w-36 h-12 
+            sm:w-48 sm:h-16 
+            !m-0 !p-0 
+            buttonStyle sm:buttonStyle 
+            cursor-pointer justify-center 
+            items-center text-center
+          `}
+            type = "button" 
+            onClick = {topScroll}
+            disabled = {!showTopButton}
+        >
+          Back to the Top
+        </button>            
+      </div>
     </>
   );
 }

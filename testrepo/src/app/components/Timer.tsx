@@ -14,24 +14,35 @@ export default function Timer({timerOver} : TimerProps){
 
     const [count, setCount] = useState<number>(ONE_HOUR);
 
+    // EndTime is the current date, plus the value of ONE_HOUR multipled by 1000, or 1 second
+    const [endTime, setEndTime] = useState<number>(Date.now() + ONE_HOUR * 1000);
+
     const second = count % ONE_MINUTE;
     const secondDisplay = String(second).padStart(2, "0");
     const minute = Math.floor(count / ONE_MINUTE);
     const minuteDisplay = String(minute);
 
-    // This useEffect will handle the counter. Once it reaches 0, end the test. Otherwise decrement each second
+    // This useEffect will handle the counter. Once it reaches 0, end the test. Otherwise calculate the difference between
+    // The time the test will end and the current timeStamp. If the difference is below 0, set it to 0, otherwise set newVal
+    // to the difference divided by 1000, or 1 second.
     useEffect(() => {
-            // Check this syntax later
         const startTimer = setInterval(() => setCount(prev => {
             if (prev > 0) {
-                const newVal = prev - 1;
+                console.log(`CURRENT PREV VALUE: ${prev}`);
+                const timeStamp = Date.now();
+                console.log(`CURRENT TIMESTAMP: ${timeStamp}`);
+                const timeDifference = (endTime - timeStamp);
+                console.log(`CURRENT DIFFERENCE BETWEEN TIMESTAMP AND ENDTIME: ${timeDifference}`);
+                // To avoid display errors, if the value of timeDifference goes under 0, newVal is set to 0 instead
+                const newVal = (Math.max(0, Math.ceil(timeDifference / 1000)));
                 console.log(`NEW VALUE OF COUNT: ${newVal}`);
                 return newVal;
             }
             else {
                 return prev;
             }
-        }), 1000);
+            // Every 100 ms to prevent jumping between numbers in the counter display
+        }), 100);
 
         // Clean up logic. Basically the inverse of the regular logic so that it unmounts and remounts
         // instead of decrementing the timer twice.
@@ -51,9 +62,8 @@ export default function Timer({timerOver} : TimerProps){
     // DEBUG,  This useEffect will be used to track the current values of each useState
     useEffect(() => {
         console.log(`CURRENT VALUE OF COUNT: ${count}`);
-    }, [count, timerOver]);
-
-    //             <p>{`${count}`}</p>
+        console.log(`CURRENT VALUE OF ENDTIME: ${endTime}`);
+    }, [count, endTime, timerOver]);
 
     return (
         <div className = {`
