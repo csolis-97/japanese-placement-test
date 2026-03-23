@@ -10,18 +10,18 @@ import datetime
 # so set it to false if needed.
 
 # Import all the functions defined elsewhere in the backend. Remove the dot when running locally.
-from .test_data_functions import *
-from .question_retrieval_fuctions import *
-from .answer_storage_functions import *
-from .test_submission_functions import *
-from .util_functions import *
+#from .test_data_functions import *
+#from .question_retrieval_fuctions import *
+#from .answer_storage_functions import *
+#from .test_submission_functions import *
+#from .util_functions import *
 
 # Import all the functions defined elsewhere in the backend. Remove the dot when running locally.
-#from test_data_functions import *
-#from question_retrieval_fuctions import *
-#from answer_storage_functions import *
-#from test_submission_functions import *
-#from util_functions import *
+from test_data_functions import *
+from question_retrieval_fuctions import *
+from answer_storage_functions import *
+from test_submission_functions import *
+from util_functions import *
 
 app = Flask(__name__)
 
@@ -58,7 +58,7 @@ try:
         ))
 
     # Included a local function for the database connection as well. Use Port 3306 for mySQL
-    '''def getDBLocal():
+    def getDBLocal():
         print("ABOUT TO RETURN LOCAL DATABASE CONNECTION!")
         return (pymysql.connect(
             host = os.getenv('DB_HOST'),
@@ -69,7 +69,7 @@ try:
             cursorclass = pymysql.cursors.DictCursor,
             # Use this to set the timezone of the current session's connection to the database
             init_command = "SET SESSION time_zone = '+00:00'"
-        ))'''
+        ))
 
     # Initialize Bcrypt for password hashing
     bcrypt = Bcrypt(app)
@@ -91,8 +91,8 @@ def testForm():
     if not data:
         dataError = "Backend error: No data provided for the testform route!"
         return jsonify(dataError), 400
-    mysql = getDB()
-    # mysql = getDBLocal()
+    # mysql = getDB()
+    mysql = getDBLocal()
 
     # Test print to see data
     print("HERE IS WHAT IS IN THE DATA!")
@@ -361,8 +361,8 @@ def resultDisplay():
         dataError = "Backend error: No data provided for the results route!"
         return jsonify(dataError), 400
     
-    mysql = getDB()
-    # mysql = getDBLocal()
+    # mysql = getDB()
+    mysql = getDBLocal()
 
     action = data['action']
     # First, get the proper result data by using the attempt_id in the data
@@ -457,5 +457,5 @@ def resultDisplay():
 
 # Once the app is running, it will use the port 5000 and communicate to the localhost. It will also be in debug mode
 # After the app is out of development, not needed in production
-#if __name__ == '__main__':
-#   app.run(debug=True, host="localhost", port=int("5000"))
+if __name__ == '__main__':
+   app.run(debug=True, host="localhost", port=int("5000"))
