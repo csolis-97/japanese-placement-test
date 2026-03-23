@@ -9,7 +9,7 @@ interface TimerProps {
 export default function Timer({timerOver} : TimerProps){
 
     const ONE_MINUTE = 60;
-    const ONE_HOUR = ONE_MINUTE * 1;
+    const ONE_HOUR = ONE_MINUTE * 5;
     //const ONE_HOUR = ONE_MINUTE * ONE_MINUTE;
 
     const [count, setCount] = useState<number>(ONE_HOUR);

@@ -108,7 +108,7 @@ def finalizeSubmitParams(submitTime, totalScore, entranceLevel, userId, scoreId)
 # more than 61 minutes from the start time, or less than 0 minutes from the start time. If it does, flag the record.
 def timeCheck(submitTime, scoreId, cursor, mysql):
     # These values are in minutes
-    TEST_DURATION = 1.0
+    TEST_DURATION = 5.0
     SUBMISSION_GRACE_PERIOD = 1.0
 
     # Make a snapshot of the current time and make sure it is in UTC.
