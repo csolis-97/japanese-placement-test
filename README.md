@@ -74,4 +74,4 @@ python index.py
 ######              NOTES               ######
 ######                                  ######
 
-This is not a fully complete placement test application. It is currently missing a method of properly creating a document that displays all of the results, alongside sending said results to the relevant email addresses. Furthermore, some things like dealing with what happens when users leaving/refreshing the page have not been implemented. 
+This is not a fully complete placement test application. It is currently missing a method of properly creating a document that displays all of the results, alongside sending said results to the relevant email addresses. Furthermore, some things like dealing with what happens when users leaves the page have not been implemented. 
