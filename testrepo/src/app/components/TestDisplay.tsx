@@ -5,8 +5,8 @@ import { XORShift128 } from "random-seedable";
 import TestStart from "./testStart/testStart";
 import TestTake from "./testTake/testTake";
 import { InfoData } from "./testStart/startActions";
-import { QuestionDisplaySkeleton, ButtonSkeleton } from "./skeletons";
-import { errorType, seedCreate } from "../utils/utilFunctions";
+import { TimerSkeleton, QuestionDisplaySkeleton, ButtonSkeleton } from "./skeletons";
+import { seedCreate } from "../utils/utilFunctions";
 
 //Interface below will be used for when each question itself is displayed. Fields should be the exact same as the ones in
 //the database in order to be properly displayed.
@@ -23,7 +23,7 @@ export interface TestQuestion {
 };
 
 // This component receives a prop, which uses a type of string array, as the initial question data to be used
-export default function TestDisplay({initialQuestionsPromise} : {initialQuestionsPromise: Promise<TestQuestion[]>}) {
+export default function TestDisplay() {
   
   // This useState will be used to set which component to display.
   const [currentDisplay, setCurrentDisplay] = useState<string>('start');
@@ -36,6 +36,8 @@ export default function TestDisplay({initialQuestionsPromise} : {initialQuestion
   'email' : "",
   'name' : ""
   });
+
+  const [initialQuestionsPromise, setInitialQuestionsPromise] = useState<Promise<TestQuestion[]>>();
 
   // Finally, useState for errors
   const [error, setError] = useState<Error | null>();
@@ -61,14 +63,12 @@ export default function TestDisplay({initialQuestionsPromise} : {initialQuestion
   // This useEffect will re-render whenever there is a change to initialQuestionsPromise
   // It chains to function calls, one to print the data and another to throw any errors
   useEffect(() => {
-    initialQuestionsPromise
-    .then(data => {
-        console.log("HERE IS WHAT WAS RECEIVED FROM THE SERVER: ", data);
-    })
-    /*.catch(dataError => {
-      console.log("THERE WAS AN ERROR WITH THE INITIAL TEST QUESTIONS PROMISE: ", dataError);
-      setError(dataError);
-    });*/
+    if (initialQuestionsPromise) {
+      initialQuestionsPromise
+      .then(data => {
+          console.log("HERE IS WHAT WAS RECEIVED FROM THE SERVER: ", data);
+      })
+    }
   }, [initialQuestionsPromise]);
 
   // This useEffect is merely for debug, it will display the test info whenever it changes
@@ -85,38 +85,28 @@ export default function TestDisplay({initialQuestionsPromise} : {initialQuestion
           setInitialTestInfo = {setTestInfo} 
           currentDisplay = {currentDisplay} 
           setCurrentDisplay = {setCurrentDisplay}
+          setInitialQuestionsPromise = {setInitialQuestionsPromise}
         />
       )
     }
     { // Render only once currentDisplay is switched to test, and the shuffleSeed has been set
-      currentDisplay === "test" && (
+      currentDisplay === "test" && shuffleSeed && initialQuestionsPromise && (
         <Suspense fallback = {
-          <>
-            <div className = "flex flex-col space-y-4 items-start justify-start py-32">
+          <div className = "w-full flex min-h-screen items-center">
+            <div className = "flex flex-col items-start justify-start">
+              <TimerSkeleton />
               <QuestionDisplaySkeleton />
-            </div>
-            <div className = "flex w-full justify-end">
-              <ButtonSkeleton />
-            </div>
-          </>
-        }>
-        { shuffleSeed && shuffleSeed !== null ? (
-            <TestTake 
-              shuffleSeed = {shuffleSeed} 
-              currentTestInfo = {testInfo} 
-              initialQuestionsPromise = {initialQuestionsPromise}
-            />
-          ) : (
-            <>
-              <div className = "flex flex-col space-y-6 items-start justify-start py-27">
-                <QuestionDisplaySkeleton />
-                <div className = "flex w-full justify-end">
-                  <ButtonSkeleton />
-                </div>
+              <div className = "flex w-full justify-end">
+                <ButtonSkeleton />
               </div>
-            </>
-          )
-        }
+            </div>
+          </div>
+        }>
+          <TestTake 
+            shuffleSeed = {shuffleSeed} 
+            currentTestInfo = {testInfo} 
+            initialQuestionsPromise = {initialQuestionsPromise}
+          />
         </Suspense>
       )
     }

@@ -80,7 +80,7 @@ export default function TestTake({shuffleSeed, currentTestInfo, initialQuestions
   console.log(IS_LAST_QUESTION);
 
   //These variables will apply the styling for the regular and disabled buttons
-  const buttonDefaults = "mt-4 px-8 py-4 font-semibold text-sm text-white";
+  const buttonDefaults = "flex items-center justify-center mt-4 px-8 py-4 font-semibold text-sm text-white w-36 h-14";
   const regularButton = "bg-[#d1190d] hover:bg-[#700f09]";
   const disabledButton = "bg-gray-500";
 
@@ -153,6 +153,7 @@ export default function TestTake({shuffleSeed, currentTestInfo, initialQuestions
             totalQuestions = {testHook.questions.length}
             totalCorrect = {testHook.correctTotal.current}
             testTimerOver = {testTimerOver}
+            isSubmitted = {testHook.changeHook.isSubmitted}
             onButtonChange = {testTimerOver ? (testHook.flowHook.handleForcedRouter) : (testHook.changeHook.handleNextStage)}
           />)
         }
@@ -174,15 +175,15 @@ export default function TestTake({shuffleSeed, currentTestInfo, initialQuestions
                 onChangeValue = {testHook.changeHook.handleChange}
               />)
           }
-          <div className = "flex w-full justify-end">
+          <div className = "flex w-full justify-end text-center items-center">
             { IS_LAST_QUESTION ? (
               <button 
                 type = "submit" 
                 form = "placeTest" 
                 name = "submitButton" 
                 className = {`
-                  min-w-[1rem] min-h-[1rem]
-                  ${buttonDefaults} 
+                  ${buttonDefaults}
+                  sm:w-48 sm:h-16
                   // If it is not the last question, the stage was submitted, or if the user has not selected an answer, used the disabled style. Otherwise use regular.
                   ${!IS_LAST_QUESTION || testHook.changeHook.isSubmitted || !testHook.answerArray[testHook.currentQuestion]?.userText ? (disabledButton) : (regularButton)}
                 `}
@@ -200,6 +201,7 @@ export default function TestTake({shuffleSeed, currentTestInfo, initialQuestions
                 name = "next" 
                 className = {`
                   ${buttonDefaults} 
+                  sm:h-16
                   // If the user has not selected an answer, used the disabled style. Otherwise use regular.
                   ${!testHook.answerArray[testHook.currentQuestion]?.userText ? (disabledButton) : (regularButton)}
                 `}

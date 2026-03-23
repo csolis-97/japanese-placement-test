@@ -4,9 +4,11 @@ import {
   useState, 
   useEffect, 
   Dispatch, 
-  SetStateAction 
+  SetStateAction,
 } from "react";
 import * as infoUtils from "./startActions";
+import * as testUtils from "../testTake/testActions";
+import { TestQuestion } from "../TestDisplay";
 import { 
   errorType, 
   checkEmail, 
@@ -24,6 +26,7 @@ interface TestProps {
   setInitialTestInfo: Dispatch<SetStateAction<infoUtils.InfoData>>;
   currentDisplay: string;
   setCurrentDisplay: Dispatch<SetStateAction<string>>;
+  setInitialQuestionsPromise: Dispatch<SetStateAction<Promise<TestQuestion[]> | undefined>>;
 };
 
 interface InputErrors {
@@ -36,7 +39,8 @@ export default function TestStart({
   initialTestInfo, 
   setInitialTestInfo, 
   currentDisplay, 
-  setCurrentDisplay
+  setCurrentDisplay,
+  setInitialQuestionsPromise
 } : TestProps) {
 
   // Here's a useState to ensure that the record is only created and stored AFTER the user presses the submit button
@@ -105,8 +109,7 @@ export default function TestStart({
       if (fetchedInfo) {
         console.log("HERE IS THE ID OF THE RESULTS AND ATTEMPT ID THAT WILL BE STORED WHEN SUBMITTED.");
         console.log(fetchedInfo);
-
-        //This will set the result ID (index 0) and attempt ID (index 1) for the current test.
+        // This will set the result ID (index 0) and attempt ID (index 1) for the current test.
         setInitialTestInfo((prevData) => ({
         ...prevData,
         ['resultId']: fetchedInfo[0],
@@ -119,8 +122,24 @@ export default function TestStart({
         const currentAttempt = initialTestInfo.userAttempt;
         console.log("ABOUT TO ENTER THE TEST WITH THIS ATTEMPT NUMBER!");
         console.log(currentAttempt);
+
         setCurrentDisplay('test');
         setIsSubmitted(true);
+
+        //Make a default request for fetching the first questions
+        let initialRequest: testUtils.RequestData = {
+          questionId: [0],
+          pastId: [],
+          questionCategory: "Beginner I",
+          wasCorrect: [false]
+        };
+      
+        // Fetch the initial set of questions from the backend, with 'retrieveStage' as the action to take
+        console.log("ABOUT TO FETCH THE INITIAL STAGE!");
+        const fetchedQuestion = testUtils.questionFetch('retrieveStage', initialRequest) as Promise<TestQuestion[]>;
+        console.log("FETCHED THE INITIAL STAGE!");
+        console.log(`HERE IS THE RESULT OF THE FETCHED QUESTION: ${fetchedQuestion}`);
+        setInitialQuestionsPromise(fetchedQuestion);
       }
       else {
         console.log("Error creating the record.");
