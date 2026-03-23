@@ -51,18 +51,7 @@ body {
 /* Custom styles for breakpoints at screens sm and above */
 @media (min-width: 640px) {
   .buttonStyle {
-    margin-top: 1rem;
-    font-weight: 600;
     padding-left: 2rem;
     padding-right: 2rem;
-    padding-top: 1rem;
-    padding-bottom: 1rem;
-    font-size: 0.875rem;
-    line-height: 1.25rem;
-    color: #FFFFFF;
-    background-color: #d1190d;
-  }
-  .buttonStyle:hover {
-    background-color: #700f09;
   }
 }

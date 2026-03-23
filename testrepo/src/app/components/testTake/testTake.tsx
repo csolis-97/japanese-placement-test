@@ -5,11 +5,12 @@ import { XORShift128 } from "random-seedable";
 import { useTest } from "./useTest";
 import QuestionDisplay from "../QuestionDisplay";
 import StageComplete from "../StageComplete";
+import Timer from "../Timer";
 import { InfoData } from "../testStart/startActions";
 import { TestQuestion } from "../TestDisplay";
 import { errorType } from "@/app/utils/utilFunctions";
 
-//Type defined below will be used for setting the test questions and answers
+// Type defined below will be used for setting the test questions and answers
 export type QuestionType = {
   questionId: number;
   questionText: string;
@@ -30,11 +31,23 @@ interface TestProps {
 
 export default function TestTake({shuffleSeed, currentTestInfo, initialQuestionsPromise} : TestProps) {
 
+  // useState for tracking the state of the test timer
+  const [testTimerOver, setTestTimerOver] = useState<boolean>(false);
+
   // useState for errors
   const [error, setError] = useState<Error | null>();
 
   // Get the useTest hook
   const testHook = useTest({shuffleSeed, currentTestInfo, initialQuestionsPromise});
+
+  const timerHandle = () => {
+    setTestTimerOver(true);
+  };
+
+  const timerForcedSubmission = () => {
+    testHook.changeHook.handleForceSubmit(testTimerOver);
+    testHook.flowHook.handleForcedTestForm(testTimerOver);
+  }
 
   if (error) {
     console.log("AN ERROR OCCURED IN TESTTAKE: ", error);
@@ -67,9 +80,29 @@ export default function TestTake({shuffleSeed, currentTestInfo, initialQuestions
   console.log(IS_LAST_QUESTION);
 
   //These variables will apply the styling for the regular and disabled buttons
-  const buttonDefaults = "mt-4 px-8 py-4 font-semibold text-sm text-white";
+  const buttonDefaults = "flex items-center justify-center mt-4 px-8 py-4 font-semibold text-sm text-white w-36 h-14";
   const regularButton = "bg-[#d1190d] hover:bg-[#700f09]";
   const disabledButton = "bg-gray-500";
+
+  useEffect(() => {
+    if (testTimerOver) {
+      console.log("TIME IS UP, TRIGGER THE FORCED SUBMISSION!");
+      timerForcedSubmission();
+      console.log("TEST SUBMISSION FORCED!");
+    }
+  }, [testTimerOver]);
+
+  // This useEffect will merely display a warning message if the user tries to refresh the page without submitting their info
+  useEffect(() => {
+    if (testHook.testIsSubmitted) {
+      return;
+    }
+    const beforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+    }
+    window.addEventListener("beforeunload", beforeUnload);
+    return () => window.removeEventListener("beforeunload", beforeUnload);
+  }, [testHook.testIsSubmitted]);
 
   // FOR DEBUG. This useEffect will track all current relevant info needed
   useEffect(() => {
@@ -109,21 +142,23 @@ export default function TestTake({shuffleSeed, currentTestInfo, initialQuestions
   
   //HTML return for the test form page
   return (
-    <div className="flex min-h-screen items-center justify-center font-sans dark:bg-black">
-      <main className="flex w-full max-w-3xl flex-col items-start justify-between bg-white dark:bg-black">
+    <div className = "w-full flex min-h-screen items-center">
         {
-          // Await the correct number of answers for the stage before moving on
-          testHook.changeHook.isSubmitted !== false && (
+          // Await the correct number of answers for the stage before moving on, OR if the timer runs out
+          (testHook.changeHook.isSubmitted || testTimerOver) && (
           <StageComplete
             stageNum = {testHook.stageInfo.current.stageNum}
             stagePassed = {testHook.correctTotal.current > 3 ? true : false}
-            difficultyLevel = {testHook.stageInfo.current.stageDifficulty[testHook.stageInfo.current.stageNum]}
-            totalQuestions = {testHook.stageInfo.current.stageQuestion + 1}
+            difficultyLevel = { testHook.stageInfo.current.stageDifficulty[testHook.stageInfo.current.stageNum]}
+            totalQuestions = {testHook.questions.length}
             totalCorrect = {testHook.correctTotal.current}
-            onButtonChange = {testHook.changeHook.handleNextStage}
+            testTimerOver = {testTimerOver}
+            isSubmitted = {testHook.changeHook.isSubmitted}
+            onButtonChange = {testTimerOver ? (testHook.flowHook.handleForcedRouter) : (testHook.changeHook.handleNextStage)}
           />)
         }
         <form name = "placeTest" onSubmit = {testHook.flowHook.handleTestForm} className = "flex flex-col space-y-4 items-start justify-start">
+          <Timer timerOver = {timerHandle} />
           {
             //If questions exists and its length is greater than 0, or currentQuestion is less than the length, display the current question
             testHook.questions && testHook.questions[testHook.stageInfo.current.stageQuestion] && testHook.answerArray[testHook.currentQuestion] && (
@@ -140,14 +175,15 @@ export default function TestTake({shuffleSeed, currentTestInfo, initialQuestions
                 onChangeValue = {testHook.changeHook.handleChange}
               />)
           }
-          <div className = "flex w-full justify-end">
+          <div className = "flex w-full justify-end text-center items-center">
             { IS_LAST_QUESTION ? (
               <button 
                 type = "submit" 
                 form = "placeTest" 
                 name = "submitButton" 
                 className = {`
-                  ${buttonDefaults} 
+                  ${buttonDefaults}
+                  sm:w-48 sm:h-16
                   // If it is not the last question, the stage was submitted, or if the user has not selected an answer, used the disabled style. Otherwise use regular.
                   ${!IS_LAST_QUESTION || testHook.changeHook.isSubmitted || !testHook.answerArray[testHook.currentQuestion]?.userText ? (disabledButton) : (regularButton)}
                 `}
@@ -165,6 +201,7 @@ export default function TestTake({shuffleSeed, currentTestInfo, initialQuestions
                 name = "next" 
                 className = {`
                   ${buttonDefaults} 
+                  sm:h-16
                   // If the user has not selected an answer, used the disabled style. Otherwise use regular.
                   ${!testHook.answerArray[testHook.currentQuestion]?.userText ? (disabledButton) : (regularButton)}
                 `}
@@ -178,7 +215,6 @@ export default function TestTake({shuffleSeed, currentTestInfo, initialQuestions
             )}
           </div>
         </form>
-      </main>
     </div>
   );
 }

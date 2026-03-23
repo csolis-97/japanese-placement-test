@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime, timezone
 
 # This function will take all the graded answers and check each stage to count how many were correct. Once that is done, correct percentages will be
 # assigned to the proper index of a list, representing each stage. The overall average percentage alongside the aformentioned list are returned.
@@ -77,48 +77,6 @@ def calculateScore(levelList, questionTrack, isCorrect):
     return totalScore, levelPercent
 
 
-# This will be used to place the user in the correct level based on how well they did on the exam using the values of stageArray and levelPercent
-'''def decidePlacement(levelPercent, stageArray):
-    # A list that contains the five difficulty levels as strings
-    # Index 0 for Beginner I, 1 for Beginner II, 2 for Intermediate I, 3 for Intermediate II, 4 for Advanced
-    diffList = ["Beginner I", "Beginner II", "Intermediate I", "Intermediate II", "Advanced"]
-
-    if levelPercent[3] >= 80 and stageArray[3] != "Advanced":
-        print("FIRST IF!")
-        print("LAST STAGE GRADED AT OR ABOVE 80 AND WAS NOT ADVANCED!")
-        for i, row in enumerate(diffList):
-            print(f"CURRENT row IN DIFFLIST IS {row}")
-            if row == stageArray[3]:
-                print(f"ENTRANCE LEVEL TO BE USED IS {diffList[i+1]}")
-                entranceLevel = diffList[i+1]
-    elif levelPercent[3] >= 80 and stageArray[3] == "Advanced":
-        print("SECOND IF!")
-        print("LAST STAGE GRADED AT OR ABOVE 80 AND WAS ADVANCED!")
-        print(f"ENTRANCE LEVEL TO BE USED IS {stageArray[3]}")
-        entranceLevel = stageArray[3]
-    elif levelPercent[3] >= 40 and levelPercent[3] < 80:
-        print("THIRD IF!")
-        print("LAST STAGE GRADED AT OR ABOVE 40 BUT LESS THAN 80!")
-        print(f"ENTRANCE LEVEL TO BE USED IS {stageArray[3]}")
-        entranceLevel = stageArray[3]
-    elif levelPercent[3] >= 0 and levelPercent[3] < 40 and levelPercent[2] >= 40 and stageArray[3] != "Beginner I":
-        print("FOURTH IF!")
-        print("LAST STAGE GRADED AT OR ABOVE 0 BUT LESS THAN 40 AND WAS NOT BEGINNER I, THIRD STAGE GRADED AT OR ABOVE 40!")
-        print(f"ENTRANCE LEVEL TO BE USED IS {stageArray[2]}")
-        entranceLevel = stageArray[2]
-    elif levelPercent[3] >= 0 and levelPercent[3] < 40 and levelPercent[2] >= 0 and levelPercent[2] < 40 and stageArray[3] != "Beginner I":
-        print("FIFTH IF!")
-        print("LAST STAGE GRADED AT OR ABOVE 0 BUT LESS THAN 40 AND WAS NOT BEGINNER I, THIRD STAGE GRADED AT OR ABOVE 0 BUT LESS THAN 40!")
-        print(f"ENTRANCE LEVEL TO BE USED IS {stageArray[1]}")
-        entranceLevel = stageArray[1]
-    else:
-        print ("ELSE IF!")
-        print("LAST STAGE GRADED AT OR ABOVE 0 BUT LESS THAN 40 AND WAS BEGINNER I!")
-        entranceLevel = "Beginner I"
-
-    return entranceLevel'''
-
-
 # This function will convert the date to the proper MySQL format before returning all of the necessary parameters needed to store
 # The results
 def finalizeSubmitParams(submitTime, totalScore, entranceLevel, userId, scoreId):
@@ -129,8 +87,10 @@ def finalizeSubmitParams(submitTime, totalScore, entranceLevel, userId, scoreId)
     print("SUBMIT TIME")
     print(submitTime)
     # Here, the string will be stripped of the T for Time, Z for the UTC offset, using datetime and fromisoformat
-    tempTime = datetime.datetime.fromisoformat(submitTime)
-    finalTime = str(tempTime)
+    # tempTime = datetime.fromisoformat(submitTime)
+    serverTime = datetime.now(timezone.utc)
+    # finalTime = str(tempTime)
+    finalTime = str(serverTime)
     # DEBUG CHECK FINAL TIME VALUE
     print("FINAL TIME")
     print(finalTime)
@@ -143,3 +103,70 @@ def finalizeSubmitParams(submitTime, totalScore, entranceLevel, userId, scoreId)
     paramList = [totalScore, entranceLevel, finalTime, userId, scoreId]
     print(paramList)
     return paramList
+
+# This function will be used to check any suspicions submission times. That is, test submissions with a time difference between 
+# more than 61 minutes from the start time, or less than 0 minutes from the start time. If it does, flag the record.
+def timeCheck(submitTime, scoreId, cursor, mysql):
+    # These values are in minutes
+    TEST_DURATION = 5.0
+    SUBMISSION_GRACE_PERIOD = 1.0
+
+    # Make a snapshot of the current time and make sure it is in UTC.
+    endTimeConvert = datetime.now(timezone.utc)
+    endTime = endTimeConvert.astimezone(timezone.utc)
+    print(f"THIS IS THE TIME THAT THE TEST WAS SUBMITTED: {endTime}")
+
+    # Fetch the start_time of the current record with the given score_id and store it
+    timeQuery = "SELECT S.start_time FROM scores S WHERE S.score_id = %s"
+    cursor.execute(timeQuery, scoreId)
+    startTimeData = cursor.fetchone()
+
+    # Convert the start_time to the proper format and make sure it is also in UTC.
+    startTimeConvert = datetime.fromisoformat(str(startTimeData['start_time']))
+    startTime = startTimeConvert.replace(tzinfo = timezone.utc)
+    print(f"THIS IS THE TIME THAT THE TEST WAS STARTED: {startTime}")
+
+    # Calculate the difference, and then calculate the time delta between the endTime and startTime in minutes
+    timeDiff = endTime - startTime
+    print(f"HERE IS THE DIFFERENCE BETWEEN WHEN THE TEST WAS STARTED AND SUBMITTED IN SECONDS!: {timeDiff}")
+    timeDelta = timeDiff.total_seconds() / 60
+    print(f"HERE IS THE TIME DELTA OF THE START TIME AND END TIME IN MINUTES!: {timeDelta}")
+
+    # Check that the time delta is not within the acceptable limits, a.k.a. that it lands somewhere equal to or below 0 
+    # and greater than 61 minutes. If it is outside of these limits, then mark the test record as potential cheating.
+    if timeDelta > (TEST_DURATION + SUBMISSION_GRACE_PERIOD) or timeDelta <= 0.0:
+        print(f"SUSPICIOUS SUBMISSION!")
+        messageString = "Test was not actually submitted after the timer was finished. Marked under suspicion of potential cheating."
+        paramList = [messageString, scoreId]
+
+        markQuery = "UPDATE scores S SET S.is_suspicious = 1, S.suspicious_reason = %s WHERE S.score_id = %s"
+        cursor.execute(markQuery, tuple(paramList))
+        mysql.commit()
+        print(f"SUBMISSION WAS MARKED AS SUSPICIOUS IN THE DATABASE, BUT CONTINUE")
+
+    # For anyone who tried to manipulate their system clock to evade the timer, this one goes out to you
+    # Take the client's end time, convert it, and make sure it is in UTC.
+    clientEndTimeConvert = datetime.fromisoformat(str(submitTime))
+    clientEndTime = clientEndTimeConvert.astimezone(timezone.utc)
+    print(f"THIS IS THE TIME THAT THE TEST WAS SUBMITTED, ACCORDING TO THE CLIENT: {clientEndTime}")
+
+    # Calculate the difference between the client's supposed end time and the server's end time. Then calculate the delta in minutes
+    clientTimeDiff = endTime - clientEndTime
+    print(f"HERE IS THE DIFFERENCE BETWEEN WHEN THE TEST WAS SUBMITTED ACCORDING TO THE CLIENT AND ACCORDING TO THE BACKEND!: {clientTimeDiff}")
+    clientTimeDelta = clientTimeDiff.total_seconds() / 60
+    print(f"HERE IS THE TIME DELTA OF THE CLIENT SUBMISSION TIME AND THE BACKEND SUBMISSION TIME IN MINUTES!: {clientTimeDelta}")
+
+    # Check that the time delta is not within the acceptable limits, a.k.a. that it lands somewhere below 0 or
+    # is greater than a minute. If it is outside of these limits, mark the test record as cheating.
+    if clientTimeDelta > (SUBMISSION_GRACE_PERIOD) or clientTimeDelta < 0.0:
+        print(f"SUSPICIOUS SUBMISSION!")
+        messageString = "User attempted to tamper with their local system's clock to fool the test timer. Marked for cheating."
+        paramList = [messageString, scoreId]
+
+        markQuery = "UPDATE scores S SET S.is_suspicious = 1, S.suspicious_reason = %s WHERE S.score_id = %s"
+        cursor.execute(markQuery, tuple(paramList))
+        mysql.commit()
+        print(f"SUBMISSION WAS MARKED AS SUSPICIOUS IN THE DATABASE, BUT CONTINUE")
+
+
+

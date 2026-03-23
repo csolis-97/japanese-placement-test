@@ -60,7 +60,7 @@ export async function submitTest(action: string, givenFields: SubmitData) {
     // This action will submit the test to the backend for processing
     action = "submitTest";
     // Create a snapshot of the submission time to send alongside the POST request
-    let submittedTime = new Date();
+    let submittedTime = new Date().toISOString();
     console.log("HERE IS THE SUBMISSION TIMESTAP");
     console.log(submittedTime);
     console.log("USING RESULT ID OF:");
@@ -153,11 +153,6 @@ export async function questionCheck(action: string, givenFields: ResponseData) {
 
     // This action will create the record that will be used to store the results and return the resultId to be used
     action = "sendStage";
-    // Create a snapshot of the submission time to send alongside the POST request
-    let submittedTime = new Date();
-    console.log("HERE IS THE SUBMISSION TIMESTAP");
-    console.log(submittedTime);
-
     console.log("CURRENT ANSWER");
     console.log(userText);
     console.log("CURRENT ATTEMPT");

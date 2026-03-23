@@ -6,6 +6,9 @@ import pymysql
 import os
 import datetime
 
+# Look into Flask-APScheduler for scheduling jobs. Note that two of these schedulers will be launched if Flask is in debug mode
+# so set it to false if needed.
+
 # Import all the functions defined elsewhere in the backend. Remove the dot when running locally.
 from .test_data_functions import *
 from .question_retrieval_fuctions import *
@@ -49,7 +52,9 @@ try:
             ssl_verify_cert = os.getenv('TIDB_SSL_VERIFY_CERT'),
             ssl_verify_identity = os.getenv('TIDB_SSL_VERIFY_IDENTITY'),
             ssl_ca = caPath,
-            cursorclass = pymysql.cursors.DictCursor
+            cursorclass = pymysql.cursors.DictCursor,
+            # Use this to set the timezone of the current session's connection to the database
+            init_command = "SET SESSION time_zone = '+00:00'"
         ))
 
     # Included a local function for the database connection as well. Use Port 3306 for mySQL
@@ -61,7 +66,9 @@ try:
             user = os.getenv('DB_USER'),
             password = os.getenv('DB_PASSWORD'),
             database = os.getenv('DB_NAME'),
-            cursorclass = pymysql.cursors.DictCursor
+            cursorclass = pymysql.cursors.DictCursor,
+            # Use this to set the timezone of the current session's connection to the database
+            init_command = "SET SESSION time_zone = '+00:00'"
         ))'''
 
     # Initialize Bcrypt for password hashing
@@ -105,7 +112,7 @@ def testForm():
                 initialScoreId = data['score_id']
                 email = data['email']
                 name = data['name']
-                submitTime = data['submit_time']
+                submitTime = data['start_time']
 
                 paramList = []
 
@@ -118,8 +125,10 @@ def testForm():
                 print("SUBMIT TIME")
                 print(submitTime)
                 # Here, the string will be stripped of the T for Time, Z for the UTC offset, using datetime and fromisoformat
-                tempTime = datetime.datetime.fromisoformat(submitTime)
-                finalTime = str(tempTime)
+                # tempTime = datetime.fromisoformat(submitTime)
+                serverTime = datetime.now(timezone.utc)
+                # finalTime = str(tempTime)
+                finalTime = str(serverTime)
                 # DEBUG CHECK FINAL TIME VALUE
                 print("FINAL TIME")
                 print(finalTime)
@@ -224,8 +233,11 @@ def testForm():
                 print("ANSWER DATA")
                 print(answerData)
 
+                # First, check for any questions that were not answered an assign them the value "not answered"
+                answerData = checkNoAnswer(answerData)
+
                 # Enter a function to get the correct answer info based on the question_id of the questions answered
-                results = getCorrectAnswerInfo(cursor, answerData, questionId, answerId)
+                results = getCorrectAnswerInfo(cursor, answerData, questionId, answerId, currentStage)
 
                 # Check which of the users answers were correct and store that information in isCorrect
                 isCorrect = gradeAnswers(results, questionId)
@@ -293,6 +305,9 @@ def testForm():
                 print("PARAM LIST BEFORE THE CALL!!")
                 print(paramList)
 
+                # Check if the submission time was suspicious or not. If it was, flag it
+                timeCheck(submitTime, scoreId, cursor, mysql)
+
                 # Use the data retrieved from the database query, questions answered and their results to calculate the score. The total score 
                 # and the percentage correct for each stage will be returned to the two variables.
                 totalScore, levelPercent = calculateScore(levelList, questionTrack, isCorrect)
@@ -316,7 +331,7 @@ def testForm():
                 paramList = finalizeSubmitParams(submitTime, totalScore, entranceLevel, userId, scoreId)
                 
                 # Now, the correct record will be updated with the results in the database
-                scoreQuery = "UPDATE scores SET total_score = %s, entrance_level = %s, test_status = 'COMPLETED', test_date = %s WHERE user_id = %s AND score_id = %s"
+                scoreQuery = "UPDATE scores SET total_score = %s, entrance_level = %s, test_status = 'COMPLETED', end_time = %s WHERE user_id = %s AND score_id = %s"
 
                 cursor.execute(scoreQuery, tuple(paramList))
                 mysql.commit()
@@ -361,7 +376,7 @@ def resultDisplay():
         if action == 'retrieveResults':
             try: 
                 paramList = [scoreId]
-                resultQuery = "SELECT S.total_score, S.entrance_level, S.test_date FROM scores S, user_answers U WHERE " \
+                resultQuery = "SELECT S.total_score, S.entrance_level, S.end_time FROM scores S, user_answers U WHERE " \
                 "S.score_id = U.score_id AND S.score_id = %s"
 
                 #Execute the query with the parameters, store the first entry, close the cursor, and return
@@ -374,22 +389,22 @@ def resultDisplay():
                 print("CURRENT RESULT RECORD DATA")
                 print(resultData)
 
-                # oldDate = str(resultData['test_date'])
+                # oldDate = str(resultData['end_time'])
                 # DEBUG Check the format of old date
                 # print("OLDDATE")
                 # print(oldDate)
 
                 # Use isoformat as it is the quickest way to format the date in the proper manner, add Z for UTC timezone
-                finalDate = f"{resultData['test_date'].isoformat()}Z"
+                finalDate = f"{resultData['end_time'].isoformat()}Z"
                 # DEBUG Check the updated date
                 # print("FINALDATE")
                 # print(finalDate)
                 # Set the new date in the resultData before sending
-                resultData['test_date'] = finalDate
+                resultData['end_time'] = finalDate
 
                 # DEBUG Check the final version with the updated date
                 print("FINAL RESULTS DATA")
-                # print(resultData)
+                print(resultData)
 
                 print("Before the return")
                 return jsonify(resultData), 200

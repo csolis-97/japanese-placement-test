@@ -1,5 +1,5 @@
 # This function will fetch all of the question info, alongside its respective answer info, given the user's answer and question_id
-def getCorrectAnswerInfo(cursor, answerList, questionId, answerId):
+def getCorrectAnswerInfo(cursor, answerList, questionId, answerId, currentStage):
     # The results list will store the answer information stored in the database in order to check it with the user's answers.
     results = []
     print(answerList)
@@ -18,14 +18,14 @@ def getCorrectAnswerInfo(cursor, answerList, questionId, answerId):
         checkQuestions(paramList, cursor, answerId, results)
     else: 
         for i, answeredQuestion in enumerate(answerList):
-            # DEBUG CHECK THE CURRENT QUESTION_ID VALUE
+            # DEBUG CHECK EACH QUESTION_ID VALUE
             print("HERE IS EACH QUESTION_ID")
             print(answeredQuestion)
 
             '''Here, append the current answeredQuestion value to the list of questionId.
             The SQL query will expect a value for answer_text and then question_id in that order, so the list is set accordingly.'''
             paramList = [answeredQuestion, int(questionId[i])]
-            checkQuestions(paramList, cursor, answerId, results)
+            checkQuestions(paramList, cursor, answerId, results, currentStage)
 
     # DEBUG CHECK THE LIST OF RESULTS HERE
     print("LIST OF RESULTS")
@@ -33,22 +33,34 @@ def getCorrectAnswerInfo(cursor, answerList, questionId, answerId):
     return results
 
 # A function used to append one question's answer information from the database to the results
-def checkQuestions(paramList, cursor, answerId, results): 
+def checkQuestions(paramList, cursor, answerId, results, currentStage): 
     # PRINT THE CURRENT PARAMLIST FOR DEBUG
     print("HERE IS THE CURRENT PARAMLIST")
     print(paramList)
     # Create the parameter list for the query, and build the query. All answer information is fetched for future use.
     checkQuery = "SELECT A.correct_answer, A.question_id, A.answer_id, A.answer_text, Q.question_level FROM questions Q, " \
     "answers A WHERE Q.question_id = A.question_id AND A.answer_text = %s AND A.question_id = %s ORDER BY A.question_id"
-
     # Execute the query with the paramList, fetch the first result, store it in row, then append row to results 
     cursor.execute(checkQuery, tuple(paramList))
     row = (cursor.fetchone())
-    answerId.append(row['answer_id'])
-    results.append(row)
+    # If a result was found in the database, append its answer_id to answerId and the info to results
+    if (row):
+        answerId.append(row['answer_id'])
+        results.append(row)
+    # If no result was found in the database (meaning that the user didn't provide an answer), enter the else statement
+    else:
+        # Since an answer_id is required, put 0 as that is not an actual ID
+        answerId.append(0)
+        # Manually make a record to append to results here
+        results.append({
+            'correct_answer': 0,
+            'question_id': paramList[1],
+            'answer_id': 0,
+            'answer_text': paramList[0],
+            'question_level': currentStage
+        })
     # Reset paramList for the next iteration
     paramList = []
-
 
 # This function will check the correct answer against the user's answer, outputing a list of boolean values
 def gradeAnswers(results, questionId):
@@ -159,3 +171,12 @@ def buildAnswerData(answerData, scoreId, attemptNum, questionId, isCorrect, ques
     print("HERE IS THE FINAL PARAMLIST")
     print(paramList)
     return paramList
+
+# This function is used to check the current answer list for empty values. If it finds one, it replaces it with the given string
+def checkNoAnswer(answerList):
+    for i, answeredQuestion in enumerate(answerList):
+        print(f"CURRENT ANSWEREDQUESTION HAS THIS VALUE: {answeredQuestion}")
+        if (answeredQuestion == ""):
+            print("REPLACING CURRENT EMPTY QUESTION!")
+            answerList[i] = "not answered"
+    return answerList

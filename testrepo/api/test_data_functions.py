@@ -28,7 +28,7 @@ def createScoreRecord(cursor, mysql, initialScoreId, userId, finalTime):
     if initialScoreId == 0:
         # Set the paramList for a new query
         paramList = [userId, finalTime]
-        recordQuery = "INSERT INTO scores(user_id, total_score, entrance_level, test_status, test_date) VALUES (%s, 0, 'Beginner I', 'IN_PROGRESS', %s);"
+        recordQuery = "INSERT INTO scores(user_id, total_score, entrance_level, test_status, start_time) VALUES (%s, 0, 'Beginner I', 'IN_PROGRESS', %s);"
         cursor.execute(recordQuery, tuple(paramList))
         print("EXECUTED!")
         mysql.commit()

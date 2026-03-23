@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 
 interface MessageProps {
@@ -9,9 +9,11 @@ interface MessageProps {
     difficultyLevel: string;
     totalQuestions: number;
     totalCorrect: number;
+    testTimerOver: boolean;
+    isSubmitted: boolean;
 
     //This function will handle the button
-    onButtonChange?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+    onButtonChange: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 }
 
 export default function StageComplete(props: MessageProps) {
@@ -21,10 +23,17 @@ export default function StageComplete(props: MessageProps) {
     console.log(`CURRENT DIFFICULTY: ${props.difficultyLevel}`);
     console.log(`TOTAL ANSWERS CORRECT: ${props.totalCorrect}`);
 
+    // This useState will house a toggle for transitioning to the display of the button
+    const [transitionToggle, setTransitionToggle] = useState<boolean>(false);
+
     // Create a string whose message will change depending on whether or not the user passed the current stage.
     let stageMessage, buttonText;
 
-    if (props.stageNum === 4) {
+    if (props.testTimerOver) {
+        stageMessage = "Time is up! The test was submitted."
+        buttonText = "Go to Results"
+    }
+    else if (props.stageNum === 4) {
         stageMessage = "Congratulations! You have reached the end of the test!";
         buttonText = "Submit Test";
     }
@@ -37,29 +46,47 @@ export default function StageComplete(props: MessageProps) {
         buttonText = "Submit Test";
     }
 
-    /* I had no idea you could do this until I looked it up to be honest. Use a useEffect to add overflow-hidden to the list of the document body's styles
-    once this component mounts, and then remove it once it unmounts. This will prevent the user from scrolling while the modal is on screen.
-    The arrow function used alongside the return is a cleanup function, which will only run once the component unmounts, rather than
-    immediately returning.*/
+    // This const will handle the transition after the button is pressed and the modal is closed. It will disappear 200 ms
+    // after executing onButtonChange.
+    const handleModalTransition = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        setTransitionToggle(false);
+        setTimeout(() => props.onButtonChange(event), 200);
+    }
+
+    // This useEffect will handle adding the opacity overlay for the modal, alongside removing it.
     useEffect(() => {
         document.body.classList.add("overflow-hidden");
+        // Clean up function
         return () => document.body.classList.remove("overflow-hidden");
     }, []);
 
+    // This useEffect will handle the logic behind the transition of the modal
+    useEffect(() => {
+        setTransitionToggle(true);
+    }, [props.isSubmitted, props.testTimerOver]);
+
     return createPortal(
-        <div className = "flex fixed inset-0 items-center justify-center bg-black/40">
+        <div className = {`
+            flex fixed 
+            inset-0 items-center
+            justify-center bg-black/40 
+            transition-opacity duration-500
+            ${transitionToggle ? "opacity-100" : "opacity-0"}
+        `}>
             <div className = {`
-                text-center border-8 border-gray-400 
+                border-8 border-gray-400 
                 shadow-lg rounded-lg bg-white 
-                p-4 dark:text-gray-400 
-                min-w-[4rem] sm:min-w-[10rem] 
+                text-center p-4
+                min-w-[4rem] sm:min-w-[30rem] 
                 min-h-[5rem] sm:min-h-[10rem]
+                transition-opacity duration-1000
+                ${transitionToggle ? "opacity-100" : "opacity-0"}
             `}>
                 <h1>Stage {props.stageNum + 1}: {props.difficultyLevel}</h1>
                 <h2>{stageMessage}</h2>
                 <p>{props.totalCorrect} out of {props.totalQuestions} correct!</p>
                 <button type = "submit" name = "submitButton" data-dismiss = "modal" 
-                className = {"buttonStyle"} onClick = {props.onButtonChange}>{buttonText}</button>
+                className = {"buttonStyle"} onClick = {handleModalTransition}>{buttonText}</button>
             </div>
         </div>, document.body
     );

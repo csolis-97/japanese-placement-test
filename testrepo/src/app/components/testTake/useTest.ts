@@ -30,8 +30,6 @@ export function useTest({
   const initialQuestions = use(initialQuestionsPromise) as TestQuestion[];  
   // This useState is used to store the questions received from the database
   const [questions, setQuestions] = useState<TestQuestion[]>(() => {
-    //let initialQuestionsShuffle = JSON.parse(JSON.stringify(initialQuestions));
-    //seedShuffle(shuffleInitial, shuffleSeed);
     const shuffleInitial = shuffleList(initialQuestions, shuffleSeed);
     console.log("INITIAL QUESTION ANSWER OPTIONS HAVE BEEN SHUFFLED!");
     for (let i = shuffleInitial.length - 1; i > -1; i--) {
@@ -45,8 +43,11 @@ export function useTest({
   // This useState is used to track the current question
   const [currentQuestion, setCurrentQuestion] = useState<number>(0);
 
-  //This useState is used for storing the info for the user's answers
+  // This useState is used for storing the info for the user's answers
   const [answerArray, setAnswerArray] = useState<QuestionType[]>([]);
+
+  // This useState simply tracks whether or not the test has been submitted
+  const [testIsSubmitted, setTestIsSubmitted] = useState<boolean>(false);
 
   //Finally, useState for errors
   const [error, setError] = useState<Error | null>();
@@ -85,14 +86,17 @@ export function useTest({
     answerArray, 
     setAnswerArray, 
     currentQuestion, 
-    setCurrentQuestion, 
+    setCurrentQuestion,
+    setTestIsSubmitted,
     stageInfo, 
     correctTotal, 
     gradedAnswers, 
     handleCorrectCount: flowHook.handleCorrectCount, 
     handleQuestionRetrieve: flowHook.handleQuestionRetrieve, 
     handleQuestionSubmit: flowHook.handleQuestionSubmit, 
-    handleTestForm: flowHook.handleTestForm
+    handleTestForm: flowHook.handleTestForm,
+    handleForcedTestForm: flowHook.handleForcedTestForm,
+    handleForcedRouter: flowHook.handleForcedRouter
   });
   
   if (error) {
@@ -136,7 +140,8 @@ export function useTest({
   return { 
     questions, 
     currentQuestion, 
-    answerArray, 
+    answerArray,
+    testIsSubmitted, 
     error, 
     stageInfo, 
     gradedAnswers, 

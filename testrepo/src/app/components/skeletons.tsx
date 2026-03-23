@@ -86,20 +86,33 @@ export function ResultInfoSkeleton() {
     );
 }
 
+// Skeleton used as a placeholder for the timer during the test
+export function TimerSkeleton() {
+    return (
+        <div className = {`
+            mb-8 sm:mb-12
+            bg-gray-100 rounded-lg 
+            shadow-md
+            min-w-[10.175rem] sm:min-w-[14rem] min-h-[4rem]
+        `}>
+        </div>
+    );
+}
+
 // Skeleton used as a placeholder for individual buttons, such as the one used in TestTake
 export function ButtonSkeleton() {
     return (
         <button 
             className = {`
                 mt-2 px-4 sm:px-8 
-                py-4 font-semibold text-sm 
-                text-white sticky 
+                py-4 sticky 
                 top-0 bg-gray-300
+                w-36 h-14 
+                sm:h-16
             `}  
             type = "button" 
             disabled
         >
-            <div className = "h-5 w-8"></div>
         </button>
     )
 }

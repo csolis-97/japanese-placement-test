@@ -98,24 +98,22 @@ interface testQuestion {
   //HTML return for the results page
   return (
     <div className = {`
-      flex sm:min-h-screen 
-      items-center justify-center 
-      bg-[#d1190d] font-sans 
-      dark:bg-black
+      flex justify-center 
+      bg-[#d1190d] font-sans
     `}>
       <main className = {`
-        flex sm:min-h-screen 
+        flex 
         w-full sm:max-w-3xl 
         flex-col items-center 
-        justify-between py-16 sm:py-32 
-        px-16 bg-white dark:bg-black
+        py-16 sm:py-32 
+        px-16 bg-white
       `}>
         <Suspense fallback = {
           <>
-            <div className = "flex flex-col items-center gap-6 p-12 text-center sm:items-start sm:text-left">
+            <div className = "flex flex-col gap-6 p-12">
               <ResultInfoSkeleton />
             </div>
-            <div className = "flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
+            <div className = "flex flex-col gap-6">
               <QuestionDisplaySkeleton />
               <QuestionDisplaySkeleton />
               <QuestionDisplaySkeleton />
