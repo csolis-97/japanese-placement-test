@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { formatResultsDate } from "../utils/utilFunctions";
 
 //Define the props used for displaying results
 interface InfoProps {
@@ -12,28 +13,10 @@ interface InfoProps {
 };
 
 // Component to display the results of the test
-export default function resultinfo(props: InfoProps) {
+export default function ResultInfo(props: InfoProps) {
 
-    // This const will be used in order to get a localeString with the correct info
-    const dateOptions: Intl.DateTimeFormatOptions = {
-        weekday: "short",
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-        hour: "numeric",
-        minute: "numeric"
-    };
-
-    let formattedDate = props.testDate.toLocaleString("en-US", dateOptions);
-    /* This is the first time I've formally learned method chaining in Typescript so, here goes
-        editFormat is initially assigned to the value of formattedDate, and two method calls are chained
-        and the result of them returned to editFormat. I decided to go with this, since the alternative
-        was two different if statements with the same function being called. Note that the semicolon
-        is added only at the end of the last chained method */
-    const editFormat = formattedDate
-        .replace("AM", "A.M.")
-        .replace("PM", "P.M.");
-    formattedDate = editFormat;
+    // Format the date first
+    const formattedDate = formatResultsDate(props.testDate);
     
     return (
         <div className = {`

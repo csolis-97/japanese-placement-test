@@ -9,7 +9,9 @@ import {
 } from "react";
 import QuestionDisplay from "./QuestionDisplay";
 import ResultInfo from "./ResultInfo";
+import CreateResultsPDF from "./CreateResultsPDF";
 import { QuestionDisplaySkeleton } from "./skeletons";
+import dynamic from "next/dynamic";
 
 //Interface below will be used for when each question itself is displayed. Fields should be the exact same as the ones in
 //the database in order to be properly displayed.
@@ -31,19 +33,17 @@ interface ResultQuestion {
 interface TestResult {
   attempt_id: number;
   total_score: number;
-  totalQuestions?: number;
+  totalQuestions: number;
   entrance_level: string;
   end_time: Date;
 };
 
 interface ResultsProps {
-  attemptNum: number;
   answersPromise: Promise<ResultQuestion[]>;
   resultsPromise: Promise<TestResult>;
 };
 
 export default function ResultsDisplay({
-  attemptNum, 
   answersPromise, 
   resultsPromise 
 } : ResultsProps) {
@@ -58,6 +58,14 @@ export default function ResultsDisplay({
 
   // This const will be used as a ref value for the div that contains the ResultInfo component, to which the button will return
   const topDivRef = useRef<HTMLDivElement>(null);
+
+  // Dynamically import PDFDownloadLink, so that the pdfs can work without issue.
+  // Note that dynamic imports return a promise, which is why I chained with a .then to return it since it is a named export.
+  // ssr is set to false so that the server does not try to render this component
+  const PDFDownloadLink = dynamic(() => import('@react-pdf/renderer').then((module) => module.PDFDownloadLink), {
+    ssr: false,
+    loading: () => <p>Now Loading...</p>
+  });
 
   // This const contains an arrow function that defines how the page will scroll from the button all the way to the top
   const topScroll = () => {
@@ -94,13 +102,22 @@ export default function ResultsDisplay({
   
   return (
     <>
+      <PDFDownloadLink 
+        document = {<CreateResultsPDF TestResultProps = {results} ResultQuestionProps = {questions}/>} 
+        fileName = "results.pdf"
+      >
+        {
+          // This is a function call that destructures the loading boolean, instead of using all of the props
+          ({ loading }) => loading ? (<p>Cooking up your PDF...</p>) : (<p>Click Here!</p>)
+        }
+      </PDFDownloadLink>
       <div className = "p-12" ref = {topDivRef}>
         { //DEBUG ONLY, TEST THE RESULTINFO SKELETON
           // <skeletons.ResultInfoSkeleton />
         }
         {
           <ResultInfo
-            attemptId = {attemptNum}
+            attemptId = {results.attempt_id}
             totalScore = { // The total_score stored is actually the percentage of overall correct questions, so calculate the correct number here
               (results.total_score / 100) * questions.length
             }

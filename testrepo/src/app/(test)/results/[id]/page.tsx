@@ -6,74 +6,60 @@ import ResultsDisplay from "@/app/components/ResultDisplay";
 import { ResultInfoSkeleton, QuestionDisplaySkeleton } from "@/app/components/skeletons";
 import { shuffleList, seedCreate } from "@/app/utils/utilFunctions";
 
-export default async function Results({ searchParams } : { searchParams: Promise<{ [key : string] : string | string[] | undefined }> }) {
-  // Here, the search Params will be dealt with, determining the current resultID alongside the user's current attempt number.
-  const filterParams = await searchParams;
-  const attemptNum = filterParams ? Number(filterParams.attempt) : 0;
-  const resultNum = filterParams ? Number(filterParams.r) : 0;
-  //const seed = filterParams ? Number(filterParams.s) : 0;
-  // const seed = String(`${attemptNum + (attemptNum % resultNum) * resultNum}`);
-  console.log("ABOUT TO SET THE SHUFFLE SEED!");
-  // const seed = resultNum !== 0 && attemptNum !== 0 ? seedCreate([attemptNum, (attemptNum % resultNum), resultNum]) : new XORShift128();
-  // console.log(`SEED SET TO ${seed}`);
-  //console.log(`HERE IS THE ATTEMPT NUMBER: ${attemptNum}, RECORD NUMBER: ${resultNum} AND SEED: ${seed} IN THE RESULTS PAGE FROM THE SEARCH PARAMS WITHIN THE PAGE.TSX!`);
-  console.log(attemptNum);
-  console.log(resultNum);
-  //console.log(seed);
+export default async function Results({ params } : { params: Promise<{ id : string }> }) {
+  // Here, the slugging params will be dealt with
+  const { id } = await params;
+  const urlString = id ? id : "";
 
-  let answersFormat: resultUtils.AnswerData = {    
-    'questionId' : 0,
-    'questionText' : '',
-    'questionBody' : '',
-    'questionCategory' : '',
-    'answerId' : [],
-    'answerText' : [],
-    'attemptId' : attemptNum,
-    'resultId' : resultNum,
-    'correctAnswer' : [],
-    'userText' : '',
-    'wasCorrect' : false
-  };
-
-  let resultsFormat: resultUtils.ResultData = {
-    'resultId' : resultNum,
-    'attemptId' : attemptNum,
-    'totalScore' : 0,
-    'entranceLevel' : '',
-    'testDate' : new Date()
+  let resultsFormat: resultUtils.ResultRequest = {
+    'testDate' : new Date(),
+    'urlId' : urlString
   };
 
   //Interface below will be used for when each question itself is displayed. Fields should be the exact same as the ones in
-//the database in order to be properly displayed.
-interface testQuestion {
-  question_id: number;
-  question_text: string;
-  question_body: string;
-  question_level: string;
-  answer_id: number[];
-  answer_text: string[];
-  already_answered?: boolean;
-  correct_answer?: boolean[];
-  user_answer_text: string;
-  user_was_correct?: boolean;
-  response_order: number;
-};
+  //the database in order to be properly displayed.
+  interface testQuestion {
+    question_id: number;
+    question_text: string;
+    question_body: string;
+    question_level: string;
+    answer_id: number[];
+    answer_text: string[];
+    already_answered?: boolean;
+    correct_answer?: boolean[];
+    user_answer_text: string;
+    user_was_correct?: boolean;
+    response_order: number;
+  };
+
+  const resultsPromise = resultUtils.resultsData('retrieveResults', resultsFormat);
 
   // If the data is successfully retrieved, then the following HTML will return If not, error.tsx will catch the error
-  const answersPromise = resultUtils.answersData('retrieveAnswers', answersFormat)
+  const answersPromise = resultsPromise.then(async infoData => {
+    const resultNum = infoData.score_id;
+    const attemptNum = infoData.attempt_id;
+    console.log(`CURRENT VALUE OF RESULTNUM: ${resultNum}`);
+    console.log(`CURRENT VALUE OF ATTEMPTNUM: ${attemptNum}`);
+
+    let answersFormat: resultUtils.AnswersRequest = {    
+      'attemptId' : attemptNum,
+      'resultId' : resultNum
+    };
+
+    return resultUtils.answersData('retrieveAnswers', answersFormat)
     .then(answerData => {
       // You can change the logic of stage size here if there are more than 5 questions per stage
-      const stageSize = 5;
+      const STAGE_SIZE = 5;
 
       console.log(`ANSWER DATA LENGTH: ${answerData.length}`);
-      console.log(`ANSWER DATA STAGE SIZES: ${stageSize}`);
+      console.log(`ANSWER DATA STAGE SIZES: ${STAGE_SIZE}`);
       // Here is some syntax I somehow did not know about. In order to initialize an empty array of numbers,
       // do varName: number[] = [];
       let tempData: testQuestion[] = [];
-      for (let i = 0; i < stageSize; i++) {
-        console.log(`CURRENT SLICE INDICES TO BE USED ${i * stageSize} AND ${stageSize * (i + 1)}`);
-        console.log(`CURRENT SLICE OF ANSWER DATA TO BE USED: ${answerData.slice(i * stageSize, stageSize * (i + 1))}`);
-        let subData = JSON.parse(JSON.stringify(answerData.slice(i * stageSize, stageSize * (i + 1))));
+      for (let i = 0; i < STAGE_SIZE; i++) {
+        console.log(`CURRENT SLICE INDICES TO BE USED ${i * STAGE_SIZE} AND ${STAGE_SIZE * (i + 1)}`);
+        console.log(`CURRENT SLICE OF ANSWER DATA TO BE USED: ${answerData.slice(i * STAGE_SIZE, STAGE_SIZE * (i + 1))}`);
+        let subData = JSON.parse(JSON.stringify(answerData.slice(i * STAGE_SIZE, STAGE_SIZE * (i + 1))));
 
         const seed = seedCreate([attemptNum, (attemptNum % resultNum), resultNum]);
         //seedShuffle(subData, seed);
@@ -92,8 +78,8 @@ interface testQuestion {
       }
       //return answerData;
       return tempData;
-    }) as Promise<testQuestion[]>;
-  const resultsPromise = resultUtils.resultsData('retrieveResults', resultsFormat);
+    });
+  }) as Promise<testQuestion[]>;
 
   //HTML return for the results page
   return (
@@ -122,8 +108,7 @@ interface testQuestion {
             </div>            
           </>                
         }>
-          <ResultsDisplay 
-            attemptNum = {attemptNum} 
+          <ResultsDisplay
             answersPromise = {answersPromise} 
             resultsPromise = {resultsPromise} 
           />

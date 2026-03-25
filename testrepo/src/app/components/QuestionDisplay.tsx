@@ -19,7 +19,7 @@ const regularRadio = "ml-2 text-gray-600";
 const correctRadio = "ml-2 text-green-600";
 const wrongRadio = "ml-2 text-red-600";
 
-export default function questionDisplay(props : QuestionDisplayProps) {
+export default function QuestionDisplay(props : QuestionDisplayProps) {
     console.log("ALREADY ANSWERED?");
     console.log(props.alreadyAnswered);
     console.log("LOG THE CORRECT ANSWERS IF ANY!!");

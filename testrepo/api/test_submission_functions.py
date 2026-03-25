@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+import uuid
 
 # This function will take all the graded answers and check each stage to count how many were correct. Once that is done, correct percentages will be
 # assigned to the proper index of a list, representing each stage. The overall average percentage alongside the aformentioned list are returned.
@@ -74,12 +75,12 @@ def calculateScore(levelList, questionTrack, isCorrect):
     print(f"HERE IS THE TOTAL NUMBER OF QUESTIONS CORRECT PER CATEGORY {correctArray}")
 
     totalScore = averageTotal
-    return totalScore, levelPercent
+    return totalScore
 
 
 # This function will convert the date to the proper MySQL format before returning all of the necessary parameters needed to store
 # The results
-def finalizeSubmitParams(submitTime, totalScore, entranceLevel, userId, scoreId):
+def finalizeSubmitParams(submitTime, totalScore, entranceLevel, urlId, scoreId):
     # NOW FINALIZE THE PARAMLIST
     # Empty the paramList again for future use
     paramList = []
@@ -100,7 +101,7 @@ def finalizeSubmitParams(submitTime, totalScore, entranceLevel, userId, scoreId)
     print("ENTRANCE LEVEL")
     print(entranceLevel)
     # Set the paramList's arguments to totalScore, entranceLevel, and finalTime
-    paramList = [totalScore, entranceLevel, finalTime, userId, scoreId]
+    paramList = [totalScore, entranceLevel, finalTime, urlId, scoreId]
     print(paramList)
     return paramList
 
@@ -167,6 +168,28 @@ def timeCheck(submitTime, scoreId, cursor, mysql):
         cursor.execute(markQuery, tuple(paramList))
         mysql.commit()
         print(f"SUBMISSION WAS MARKED AS SUSPICIOUS IN THE DATABASE, BUT CONTINUE")
+
+# This function is merely to check if the UUID is unique or not. If not, reassign a new one until it is unique.
+def checkUUID(urlId, cursor):
+    # Set the paramList, the query, and the flag for the while loop
+    paramList = [urlId]
+    duplicateQuery = "SELECT url_id FROM scores WHERE url_id = %s"
+    notUnique = True
+
+    # This will continue to loop until a unique UUID is found and the flag is set to false
+    while (notUnique):
+        cursor.execute(duplicateQuery, tuple(paramList))
+        duplicateCheck = cursor.fetchone()
+        if (duplicateCheck is not None):
+            print("THE CURRENT UUID ALREADY EXISTS IN THE DATABASE, GENERATE A NEW ONE!")
+            urlId = str(uuid.uuid4())
+            print(f"NEW UUID: {urlId}")
+            paramList = [urlId]
+        # Unique UUID was found, exit the while loop
+        else:
+            print("THE CURRENT UUID DOES NOT EXIST IN THE DATABASE, ALL GOOD TO GO!")
+            notUnique = False
+
 
 
 

@@ -5,41 +5,20 @@ import { getURL, responseMessage } from "@/app/utils/utilFunctions";
 console.log(`"HERE IS THE URL BEING USED!" ${getURL()}`);
 
 //Define a type for storing the test form data
-export type AnswerData = {
-    questionId: number;
-    questionText: string;
-    questionBody: string;
-    questionCategory: string;
-    answerId: number[];
-    answerText: string[];
-    correctAnswer: boolean[];
+export type AnswersRequest = {
     attemptId: number;
     resultId: number;
-    userText: string;
-    wasCorrect: boolean;
 };
 
-export type ResultData = {
-    resultId:  number;
-    attemptId: number;
-    totalScore: number;
-    entranceLevel: string;
+export type ResultRequest = {
     testDate: Date;
+    urlId: string;
 };
 
-export async function answersData(action: string, givenFields: AnswerData) {
+export async function answersData(action: string, givenFields: AnswersRequest) {
     //Divide the form data into separate variables
-    const questionId = givenFields.questionId;
-    const questionText = givenFields.questionText;
-    const questionBody = givenFields.questionBody;
-    const questionCategory = givenFields.questionCategory;
-    const answerId = givenFields.answerId;
-    const answerText = givenFields.answerText;
-    const correctAnswer = givenFields.correctAnswer;
     const attemptId = givenFields.attemptId;
     const resultId = givenFields.resultId;
-    const userText = givenFields.userText;
-    const wasCorrect = givenFields.wasCorrect;
 
 
     console.log("BEGIN ANSWER DATA RETRIEVAL");
@@ -54,16 +33,7 @@ export async function answersData(action: string, givenFields: AnswerData) {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                'action' : action, 
-                'question_category' : questionCategory, 
-                'question_id' : questionId, 
-                'question_text' : questionText, 
-                'question_body' : questionBody, 
-                'answer_id' : answerId, 
-                'answer_text' : answerText, 
-                'correct_answer' : correctAnswer, 
-                'user_answer_text' : userText, 
-                'user_was_correct' : wasCorrect,
+                'action' : action,
                 'attempt_id' : attemptId, 
                 'score_id' : resultId
             })
@@ -85,12 +55,9 @@ export async function answersData(action: string, givenFields: AnswerData) {
     }
 }
 
-export async function resultsData(action: string, givenFields: ResultData) {
+export async function resultsData(action: string, givenFields: ResultRequest) {
     //Divide the form data into separate variables
-    const resultId = givenFields.resultId;
-    const attemptId = givenFields.attemptId;
-    const totalScore = givenFields.totalScore;
-    const entranceLevel = givenFields.entranceLevel;
+    const urlId = givenFields.urlId;
     let testDate = givenFields.testDate;
 
     console.log("BEGIN RESULTS DATA RETRIEVAL");
@@ -106,11 +73,8 @@ export async function resultsData(action: string, givenFields: ResultData) {
             },
             body: JSON.stringify({
                 'action' : action, 
-                'score_id' : resultId, 
-                'attempt_id' : attemptId, 
-                'total_score' : totalScore,
-                'entrance_level' : entranceLevel, 
-                'end_time' : testDate
+                'end_time' : testDate,
+                'url_id' : urlId
             })
         });
 
