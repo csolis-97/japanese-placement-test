@@ -52,7 +52,8 @@ in order to connect to the database instance which you create, which can be done
 
 2. In your terminal, install the dependencies for TypeScript:
 '''pnpm install random-seedable
-pnpm install sqids'''
+pnpm install sqids
+pnpm add @react-pdf/renderer'''
 
 3. In your terminal, install the dependencies for Python by doing the following (if the file cannot be found, make sure you did "cd testrepo first):
 '''pip install -r requirements.txt'''
@@ -74,4 +75,4 @@ python index.py
 ######              NOTES               ######
 ######                                  ######
 
-This is not a fully complete placement test application. It is currently missing a method of properly creating a document that displays all of the results, alongside sending said results to the relevant email addresses. Furthermore, some things like dealing with what happens when users leaves the page have not been implemented. 
+This is not a fully complete placement test application. It is currently missing a method of properly sending test results to the relevant email addresses. Furthermore, some things like dealing with what happens when users leaves the page have not been implemented. 

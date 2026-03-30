@@ -9,14 +9,13 @@ import {
   RefObject
 } from "react";
 import * as testUtils from "./testActions";
-import { QuestionType } from "./testTake";
-import { TestQuestion } from "../TestDisplay";
-import { InfoData } from "../testStart/startActions";
 import { 
   errorType,
   shuffleList, 
   seedCreate
 } from "@/app/utils/utilFunctions";
+import { TestQuestion } from "@/app/types/sharedInterface";
+import { InfoData, QuestionType } from "@/app/types/sharedType";
 
 type TestFlowProps = {
   currentTestInfo: InfoData;

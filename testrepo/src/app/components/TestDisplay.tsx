@@ -4,23 +4,10 @@ import { useState, useEffect, Suspense } from "react";
 import { XORShift128 } from "random-seedable";
 import TestStart from "./testStart/testStart";
 import TestTake from "./testTake/testTake";
-import { InfoData } from "./testStart/startActions";
 import { TimerSkeleton, QuestionDisplaySkeleton, ButtonSkeleton } from "./skeletons";
 import { seedCreate } from "../utils/utilFunctions";
-
-//Interface below will be used for when each question itself is displayed. Fields should be the exact same as the ones in
-//the database in order to be properly displayed.
-export interface TestQuestion {
-  question_id: number;
-  question_text: string;
-  question_body: string;
-  question_level: string;
-  answer_id: number[];
-  answer_text: string[];
-  already_answered?: boolean;
-  correct_answer?: boolean[];
-  is_correct?: boolean;
-};
+import { TestQuestion } from "@/app/types/sharedInterface";
+import { InfoData } from "@/app/types/sharedType";
 
 // This component receives a prop, which uses a type of string array, as the initial question data to be used
 export default function TestDisplay() {

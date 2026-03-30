@@ -10,9 +10,8 @@ import { XORShift128 } from "random-seedable";
 import * as testUtils from "./testActions";
 import { useTestFlow } from "./useTestFlow";
 import { useHandleChange } from "./useHandleChange";
-import { QuestionType } from "./testTake";
-import { TestQuestion } from "../TestDisplay";
-import { InfoData } from "../testStart/startActions";
+import { TestQuestion } from "@/app/types/sharedInterface";
+import { InfoData, QuestionType } from "@/app/types/sharedType";
 import { errorType, shuffleList } from "@/app/utils/utilFunctions";
 
 type HookProps = {

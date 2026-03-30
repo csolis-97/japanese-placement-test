@@ -6,24 +6,25 @@ import {
   Dispatch, 
   SetStateAction,
 } from "react";
-import * as infoUtils from "./startActions";
+import { createRecord } from "./startActions";
 import * as testUtils from "../testTake/testActions";
-import { TestQuestion } from "../TestDisplay";
 import { 
   errorType, 
   checkEmail, 
   checkName 
 } from "@/app/utils/utilFunctions";
+import { TestQuestion } from "@/app/types/sharedInterface";
+import { InfoData } from "@/app/types/sharedType";
 
 //These variables will apply the styling for the regular and disabled buttons
-const buttonDefaults = "mt-4 px-8 py-4 font-semibold text-sm text-white";
+const buttonDefaults = "mt-4 px-8 py-4 font-semibold text-sm text-white cursor-pointer disabled:pointer-events-none";
 const regularButton = "bg-[#d1190d] hover:bg-[#700f09]";
 const disabledButton = "bg-gray-500";
 
 // This interface will be used to properly receive the two useState which are passed to the component
 interface TestProps {
-  initialTestInfo: infoUtils.InfoData;
-  setInitialTestInfo: Dispatch<SetStateAction<infoUtils.InfoData>>;
+  initialTestInfo: InfoData;
+  setInitialTestInfo: Dispatch<SetStateAction<InfoData>>;
   currentDisplay: string;
   setCurrentDisplay: Dispatch<SetStateAction<string>>;
   setInitialQuestionsPromise: Dispatch<SetStateAction<Promise<TestQuestion[]> | undefined>>;
@@ -104,7 +105,7 @@ export default function TestStart({
     }
 
     try {
-      const fetchedInfo = await infoUtils.createRecord('createRecord', initialTestInfo);
+      const fetchedInfo = await createRecord('createRecord', initialTestInfo);
       // If the current result's ID in the database was successfully retrieved, set the value to resultId. Otherwise log an error.
       if (fetchedInfo) {
         console.log("HERE IS THE ID OF THE RESULTS AND ATTEMPT ID THAT WILL BE STORED WHEN SUBMITTED.");

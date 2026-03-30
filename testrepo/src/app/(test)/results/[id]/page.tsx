@@ -1,10 +1,14 @@
 export const dynamic = 'force-dynamic';
 
 import { Suspense } from "react";
-import * as resultUtils from "./displayActions";
+import * as resultUtils from "./actions";
 import ResultsDisplay from "@/app/components/ResultDisplay";
+import ResultInfo from "@/app/components/ResultInfo";
+import DownloadButtonPDF from "@/app/components/pdf/DownloadButtonPDF";
+import QuestionDisplay from "@/app/components/QuestionDisplay";
 import { ResultInfoSkeleton, QuestionDisplaySkeleton } from "@/app/components/skeletons";
 import { shuffleList, seedCreate } from "@/app/utils/utilFunctions";
+import { ResultQuestion, TestResult } from "@/app/types/sharedInterface";
 
 export default async function Results({ params } : { params: Promise<{ id : string }> }) {
   // Here, the slugging params will be dealt with
@@ -16,23 +20,9 @@ export default async function Results({ params } : { params: Promise<{ id : stri
     'urlId' : urlString
   };
 
-  //Interface below will be used for when each question itself is displayed. Fields should be the exact same as the ones in
-  //the database in order to be properly displayed.
-  interface testQuestion {
-    question_id: number;
-    question_text: string;
-    question_body: string;
-    question_level: string;
-    answer_id: number[];
-    answer_text: string[];
-    already_answered?: boolean;
-    correct_answer?: boolean[];
-    user_answer_text: string;
-    user_was_correct?: boolean;
-    response_order: number;
-  };
+  let totalQuestions = 0;
 
-  const resultsPromise = resultUtils.resultsData('retrieveResults', resultsFormat);
+  const resultsPromise = resultUtils.resultsData('retrieveResults', resultsFormat) as Promise<TestResult>;
 
   // If the data is successfully retrieved, then the following HTML will return If not, error.tsx will catch the error
   const answersPromise = resultsPromise.then(async infoData => {
@@ -50,25 +40,25 @@ export default async function Results({ params } : { params: Promise<{ id : stri
     .then(answerData => {
       // You can change the logic of stage size here if there are more than 5 questions per stage
       const STAGE_SIZE = 5;
+      totalQuestions = answerData.length;
 
-      console.log(`ANSWER DATA LENGTH: ${answerData.length}`);
+      console.log(`ANSWER DATA LENGTH: ${totalQuestions}`);
       console.log(`ANSWER DATA STAGE SIZES: ${STAGE_SIZE}`);
-      // Here is some syntax I somehow did not know about. In order to initialize an empty array of numbers,
-      // do varName: number[] = [];
-      let tempData: testQuestion[] = [];
+
+      let tempData: ResultQuestion[] = [];
       for (let i = 0; i < STAGE_SIZE; i++) {
         console.log(`CURRENT SLICE INDICES TO BE USED ${i * STAGE_SIZE} AND ${STAGE_SIZE * (i + 1)}`);
         console.log(`CURRENT SLICE OF ANSWER DATA TO BE USED: ${answerData.slice(i * STAGE_SIZE, STAGE_SIZE * (i + 1))}`);
         let subData = JSON.parse(JSON.stringify(answerData.slice(i * STAGE_SIZE, STAGE_SIZE * (i + 1))));
 
         const seed = seedCreate([attemptNum, (attemptNum % resultNum), resultNum]);
-        //seedShuffle(subData, seed);
         const shuffledSubData = shuffleList(subData, seed);
         tempData = [...tempData, ...shuffledSubData];
         console.log(`RESULTS OF CONCATINATING STAGE ${i + 1}'S QUESTIONS: ${tempData}`);
       }
+
       answerData = tempData;
-      //seedShuffle(answerData, seed);   
+      // DEBUG Check the shuffled answer data to confirm that the answer options have been shuffled
       console.log("INITIAL QUESTION ANSWER OPTIONS HAVE BEEN SHUFFLED!");
       for (let j = answerData.length - 1; j > -1; j--) {
         console.log(`HERE IS THE QUESTION ID FOR THE CURRENT QUESTION: ${answerData[j].question_id}`);
@@ -76,10 +66,9 @@ export default async function Results({ params } : { params: Promise<{ id : stri
         console.log(`HERE ARE THE ANSWER TEXTS FOR THE CURRENT QUESTION: ${answerData[j].answer_text}`);
         console.log(`HERE ARE THE CORRECT ANSWERS FOR THE CURRENT QUESTION: ${answerData[j].correct_answer}`);
       }
-      //return answerData;
       return tempData;
     });
-  }) as Promise<testQuestion[]>;
+  }) as Promise<ResultQuestion[]>;
 
   //HTML return for the results page
   return (
@@ -108,10 +97,21 @@ export default async function Results({ params } : { params: Promise<{ id : stri
             </div>            
           </>                
         }>
-          <ResultsDisplay
-            answersPromise = {answersPromise} 
-            resultsPromise = {resultsPromise} 
-          />
+          { 
+            /*I've never used this before, so allow me to explain. To avoid long prop drilling, I decided to pass these components as children, 
+            thereby bypassing the need for excessive prop drilling. This means that the parent components have a children prop, and that is
+            called where the components themselves were originally placed. In order to achieve this, the parent component must have a closing
+            tag, with the child component inside.*/ 
+          }
+          <ResultsDisplay answersPromise = {answersPromise}>
+            <ResultInfo
+              resultsPromise = {resultsPromise}
+              // await the answersPromise to get the total number of questions so that it can be passed as a prop
+              totalQuestions = {await answersPromise.then(answers => answers.length)}
+            >
+              <DownloadButtonPDF resultsPromise = {resultsPromise} answersPromise = {answersPromise} />
+            </ResultInfo>
+          </ResultsDisplay>
         </Suspense>
       </main>
     </div>

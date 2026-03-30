@@ -28,13 +28,13 @@ export default function MessageModal( { messageText, buttonText, reset } : Messa
                     max-w-xl text-center
                 `}>
                     <h1>{messageText}</h1>
-                    <Link href = "/" className = "buttonStyle absolute left-6 sm:left-10 bottom-5">
+                    <Link href = "/" className = "button-style absolute left-6 sm:left-10 bottom-5">
                         {buttonText}
                     </Link>
                     { // Only render this button if there was a reset function passed to the component
                         reset && (
                             <div className = "absolute right-6 sm:right-10 bottom-5">
-                                <button className = {"buttonStyle"} onClick = {() => reset()}>
+                                <button className = {"button-style"} onClick = {() => reset()}>
                                     Reload the Page
                                 </button>
                             </div>

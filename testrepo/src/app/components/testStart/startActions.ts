@@ -1,16 +1,9 @@
 "use server";
 
+import { InfoData } from "@/app/types/sharedType";
 import { getURL, responseMessage } from "@/app/utils/utilFunctions";
 
 console.log(`"HERE IS THE URL BEING USED!" ${getURL()}`);
-
-//Define a type that will be used to store and send necessary background info for the current test.
-export type InfoData = {
-    resultId: number;
-    userAttempt: number;
-    email: string;
-    name: string;
-};
 
 export async function createRecord(action: string, givenFields: InfoData) {
     // This action will create the record that will be used to store the results and return the resultId to be used

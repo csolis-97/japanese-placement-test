@@ -86,7 +86,7 @@ export default function StageComplete(props: MessageProps) {
                 <h2>{stageMessage}</h2>
                 <p>{props.totalCorrect} out of {props.totalQuestions} correct!</p>
                 <button type = "submit" name = "submitButton" data-dismiss = "modal" 
-                className = {"buttonStyle"} onClick = {handleModalTransition}>{buttonText}</button>
+                className = {"button-style cursor-pointer"} onClick = {handleModalTransition}>{buttonText}</button>
             </div>
         </div>, document.body
     );

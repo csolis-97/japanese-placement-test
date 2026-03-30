@@ -1,4 +1,4 @@
-import { TestQuestion } from "@/app/components/TestDisplay";
+import { TestQuestion } from "@/app/types/sharedInterface";
 import { XORShift128 } from "random-seedable";
 import Sqids from "sqids";
 
