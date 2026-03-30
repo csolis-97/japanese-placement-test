@@ -6,28 +6,16 @@ import { useTest } from "./useTest";
 import QuestionDisplay from "../QuestionDisplay";
 import StageComplete from "../StageComplete";
 import Timer from "../Timer";
-import { InfoData } from "../testStart/startActions";
-import { TestQuestion } from "../TestDisplay";
+import { TestQuestion } from "@/app/types/sharedInterface";
+import { InfoData } from "@/app/types/sharedType";
 import { errorType } from "@/app/utils/utilFunctions";
-
-// Type defined below will be used for setting the test questions and answers
-export type QuestionType = {
-  questionId: number;
-  questionText: string;
-  questionBody: string;
-  questionCategory: string;
-  answerId: number[];
-  answerText: string[];
-  userText: string;
-  alreadyAnswered: boolean;
-}
 
 // This interface will be used to properly receive the useState and data which are passed to the component
 interface TestProps {
   shuffleSeed: XORShift128;
   currentTestInfo: InfoData;
   initialQuestionsPromise: Promise<TestQuestion[]>;
-}
+};
 
 export default function TestTake({shuffleSeed, currentTestInfo, initialQuestionsPromise} : TestProps) {
 
@@ -80,7 +68,7 @@ export default function TestTake({shuffleSeed, currentTestInfo, initialQuestions
   console.log(IS_LAST_QUESTION);
 
   //These variables will apply the styling for the regular and disabled buttons
-  const buttonDefaults = "flex items-center justify-center mt-4 px-8 py-4 font-semibold text-sm text-white w-36 h-14";
+  const buttonDefaults = "flex items-center justify-center mt-4 px-8 py-4 font-semibold text-sm text-white w-36 h-14 cursor-pointer disabled:pointer-events-none";
   const regularButton = "bg-[#d1190d] hover:bg-[#700f09]";
   const disabledButton = "bg-gray-500";
 

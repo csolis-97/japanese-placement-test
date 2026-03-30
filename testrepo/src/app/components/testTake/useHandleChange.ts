@@ -8,8 +8,8 @@ import {
   RefObject
 } from "react";
 import * as testUtils from "./testActions";
-import { QuestionType } from "./testTake";
-import { TestQuestion } from "../TestDisplay";
+import { TestQuestion } from "@/app/types/sharedInterface";
+import { QuestionType } from "@/app/types/sharedType";
 import { errorType } from "@/app/utils/utilFunctions";
 
 type HandleChangeProps = {

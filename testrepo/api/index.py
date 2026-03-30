@@ -72,7 +72,7 @@ try:
         ))'''
 
     # Initialize Bcrypt for password hashing
-    bcrypt = Bcrypt(app)
+    # bcrypt = Bcrypt(app)
 
 # If there were any errors during the initial setup, go here
 except Exception as e:
@@ -277,6 +277,7 @@ def testForm():
                 isCorrect = data['was_correct']
                 stageArray = data ['stage_array']
                 questionTrack = data['past_id']
+                urlId = data['url_id']
                 paramList = []
                 # Fetch the submission date and time from the data and convert it into a string, since the format must be changed
                 submitTime = data['date']
@@ -288,7 +289,12 @@ def testForm():
                 print(questionTrack)
                 print(f"SCORE ID IS: {scoreId}!")
                 print(f"ATTEMPT NUMBER IS: {attemptNum}!")
+                print(f"THE CURRENT URLID: {urlId}")
+
+                # First, check that the urlId is a unique value that is currently not in the database. If it is, reassign it
+                checkUUID(urlId, cursor)
                 
+                # Now begin
                 paramList = [scoreId, attemptNum]
 
                 # Make a query to get all the question levels for each question the user answered based on the questionTrack and the score_id
@@ -310,7 +316,7 @@ def testForm():
 
                 # Use the data retrieved from the database query, questions answered and their results to calculate the score. The total score 
                 # and the percentage correct for each stage will be returned to the two variables.
-                totalScore, levelPercent = calculateScore(levelList, questionTrack, isCorrect)
+                totalScore = calculateScore(levelList, questionTrack, isCorrect)
 
                 # Set entranceLevel to the last difficulty value in stageArray
                 print(f"THE USER WENT THROUGH THE FOLLOWING STAGES: {stageArray}")
@@ -328,10 +334,11 @@ def testForm():
                 userId = userInfo['id']
 
                 # Use the submission time, the total score, and the entrance level to finalize the params
-                paramList = finalizeSubmitParams(submitTime, totalScore, entranceLevel, userId, scoreId)
+                paramList = finalizeSubmitParams(submitTime, totalScore, entranceLevel, urlId, scoreId)
                 
                 # Now, the correct record will be updated with the results in the database
-                scoreQuery = "UPDATE scores SET total_score = %s, entrance_level = %s, test_status = 'COMPLETED', end_time = %s WHERE user_id = %s AND score_id = %s"
+                scoreQuery = "UPDATE scores SET total_score = %s, entrance_level = %s, test_status = 'COMPLETED', end_time = %s, url_id = %s " \
+                "WHERE score_id = %s"
 
                 cursor.execute(scoreQuery, tuple(paramList))
                 mysql.commit()
@@ -365,19 +372,16 @@ def resultDisplay():
     # mysql = getDBLocal()
 
     action = data['action']
-    # First, get the proper result data by using the attempt_id in the data
-    attemptId = data['attempt_id']
-    scoreId = data['score_id']
-    print("ATTEMPTID FOR CURRENT RETRIEVAL")
-    print(attemptId)
 
     with mysql.cursor() as cursor:
-        # If the action is "retrieveResults", fetch the correct result record from the database based on the current user's user_id and attempt_id.
+        # If the action is "retrieveResults", fetch the correct result record from the database based on the current user's url_id.
         if action == 'retrieveResults':
             try: 
-                paramList = [scoreId]
-                resultQuery = "SELECT S.total_score, S.entrance_level, S.end_time FROM scores S, user_answers U WHERE " \
-                "S.score_id = U.score_id AND S.score_id = %s"
+                urlId = data['url_id']
+                print(f"THE CURRENT URLID: {urlId}")
+                paramList = [urlId]
+                resultQuery = "SELECT S.score_id, U.attempt_id, S.total_score, S.entrance_level, S.end_time FROM scores S, user_answers U" \
+                " WHERE S.score_id = U.score_id AND S.url_id = %s"
 
                 #Execute the query with the parameters, store the first entry, close the cursor, and return
                 cursor.execute(resultQuery, tuple(paramList))
@@ -417,6 +421,11 @@ def resultDisplay():
         # Else if the action is "retrieveAnswers", fetch the correct question, answer, and user response info based on provided attempt_id and user_id
         elif action == 'retrieveAnswers':
             try:
+                # First, get the proper result data by using the attempt_id in the data
+                attemptId = data['attempt_id']
+                scoreId = data['score_id']
+                print("ATTEMPTID FOR CURRENT RETRIEVAL")
+                print(attemptId)
                 paramList = [scoreId]
                 # This simple query will select all question and answer info only for the questions the user answered on their current attempt.
                 # The DISTINCT keyword is used so that duplicate records are not obtained.

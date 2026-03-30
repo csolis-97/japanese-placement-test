@@ -1,39 +1,23 @@
 "use client";
 
 import Link from "next/link";
+import { use } from "react";
+import { TestResult } from "@/app/types/sharedInterface";
+import { formatResultsDate } from "../utils/utilFunctions";
 
 //Define the props used for displaying results
 interface InfoProps {
-    attemptId: number;
-    totalScore: number;
+    resultsPromise: Promise<TestResult>;
     totalQuestions: number;
-    entranceLevel: string;
-    testDate: Date;
+    children: React.ReactNode;
 };
 
 // Component to display the results of the test
-export default function resultinfo(props: InfoProps) {
-
-    // This const will be used in order to get a localeString with the correct info
-    const dateOptions: Intl.DateTimeFormatOptions = {
-        weekday: "short",
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-        hour: "numeric",
-        minute: "numeric"
-    };
-
-    let formattedDate = props.testDate.toLocaleString("en-US", dateOptions);
-    /* This is the first time I've formally learned method chaining in Typescript so, here goes
-        editFormat is initially assigned to the value of formattedDate, and two method calls are chained
-        and the result of them returned to editFormat. I decided to go with this, since the alternative
-        was two different if statements with the same function being called. Note that the semicolon
-        is added only at the end of the last chained method */
-    const editFormat = formattedDate
-        .replace("AM", "A.M.")
-        .replace("PM", "P.M.");
-    formattedDate = editFormat;
+export default function ResultInfo(props: InfoProps) {
+    // Take the resultsPromise prop and use it to get the results data
+    const results = use(props.resultsPromise) as TestResult;
+    // Format the date too
+    const formattedDate = formatResultsDate(results.end_time);
     
     return (
         <div className = {`
@@ -43,24 +27,29 @@ export default function resultinfo(props: InfoProps) {
         w-full min-w-[16rem] sm:min-w-[32rem] 
         min-h-[10rem] sm:min-h-[14rem]
         `}>
-            <h2 className = "text-gray-800 font-semibold mt-2">Test Attempt #{props.attemptId} Results</h2>
+            <h2 className = "text-gray-800 font-semibold mt-2">Test Attempt #{results.attempt_id} Results</h2>
             <p className = "text-gray-600">Test Date: {formattedDate}</p>
-            <p className = "text-gray-600">Total Score: {Math.round(props.totalScore)} / {props.totalQuestions}</p>
-            <p className = "text-gray-600">Your Suggested Entrance Level: {props.entranceLevel}</p>
-            <Link 
-                href = "/testform" 
-                className = {`
-                    buttonStyle 
-                    flex justify-center 
-                    items-center
-                    w-[14rem]
-                    sm:w-[16rem] 
-                    h-[3.375rem]
-                    sm:h-[3.375rem]
-                `}
-                type = "button">
-                Click here to retake the test.
-            </Link>
+            <p className = "text-gray-600">Total Score: {(Math.round(results.total_score) / 100) * props.totalQuestions} / {props.totalQuestions}</p>
+            <p className = "text-gray-600">Your Suggested Entrance Level: {results.entrance_level}</p>
+            <div className = "flex flex-col sm:flex-row items-center sm:gap-6">
+                <Link 
+                    href = "/testform" 
+                    className = {`
+                        button-style 
+                        flex justify-center 
+                        items-center
+                        w-[14rem]
+                        sm:w-[16rem] 
+                        h-[3.375rem]
+                        sm:h-[3.375rem]
+                    `}
+                    type = "button">
+                    Click here to retake the test.
+                </Link>
+                {
+                    props.children
+                }
+            </div>
         </div>
     );
 }

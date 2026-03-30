@@ -9,14 +9,13 @@ import {
   RefObject
 } from "react";
 import * as testUtils from "./testActions";
-import { QuestionType } from "./testTake";
-import { TestQuestion } from "../TestDisplay";
-import { InfoData } from "../testStart/startActions";
 import { 
   errorType,
   shuffleList, 
   seedCreate
 } from "@/app/utils/utilFunctions";
+import { TestQuestion } from "@/app/types/sharedInterface";
+import { InfoData, QuestionType } from "@/app/types/sharedType";
 
 type TestFlowProps = {
   currentTestInfo: InfoData;
@@ -48,6 +47,9 @@ export function useTestFlow({
 
   let currentRequest: testUtils.RequestData;
   let currentAnswer: testUtils.ResponseData;
+
+  // Create a random UUID to display the properly test results later on
+  const randomUrlId = useRef<string>(crypto.randomUUID())
 
   //Finally, useState for errors
   const [error, setError] = useState<Error | null>();
@@ -270,13 +272,15 @@ export function useTestFlow({
 
   async function handleTestSubmit() {
     try {
+      console.log(`HERE IS THE RANDOMLY GENERATED UUID TO BE USED TO FETCH THE RESULTS: ${randomUrlId}`);
       if (currentTestInfo.userAttempt !== 0) {
         let submitInfo: testUtils.SubmitData = {
           resultId: currentTestInfo.resultId,
           pastId: questionIdTrack.current,
           userAttempt: currentTestInfo.userAttempt,
           isCorrect: gradedAnswers.current,
-          stageArray: stageInfo.current.stageDifficulty
+          stageArray: stageInfo.current.stageDifficulty,
+          urlId: randomUrlId.current
         };
         const fetchedResponse = await testUtils.submitTest('submitTest', submitInfo);
         console.log(fetchedResponse);
@@ -296,14 +300,12 @@ export function useTestFlow({
   async function handleRouter() {
     try {
       if (currentTestInfo.userAttempt !== 0) {
-        const currentAttempt = currentTestInfo.userAttempt;
-        const currentRecord = currentTestInfo.resultId;
+        const currentUrlId = randomUrlId.current;
         const urlParams = new URLSearchParams();
-        urlParams.set('attempt', currentAttempt.toString());
-        urlParams.set('r', currentRecord.toString());
+        urlParams.set('id', currentUrlId);
 
-        console.log(`ABOUT TO PUSH THROUGH ROUTE WITH THIS ATTEMPT NUMBER: ${currentAttempt} AND THIS RECORD NUMBER: ${currentRecord}!`);
-        router.push(`/results?${urlParams.toString()}`);
+        console.log(`ABOUT TO PUSH THROUGH ROUTE WITH THIS ID VALUE: ${currentUrlId}!`);
+        router.push(`/results/${currentUrlId.toString()}`);
       }
       else {
         console.log("THERE WAS AN ERROR IN THE HANDLEROUTER OF THE USETESTFLOW HOOK!");

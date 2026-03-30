@@ -15,11 +15,13 @@ interface QuestionDisplayProps {
 };
 
 // These strings will be used for determining the className styling for the radio buttons
-const regularRadio = "ml-2 text-gray-600";
-const correctRadio = "ml-2 text-green-600";
-const wrongRadio = "ml-2 text-red-600";
+const regularRadio = "text-gray-600 has-[:checked]:bg-blue-500";
+const correctRadio = "text-green-600 bg-green-600";
+const wrongRadio = "text-red-600 bg-red-600";
+const regularNumberLabel = "text-gray-600 peer-checked:text-white";
+const coloredNumberLabel = "text-white";
 
-export default function questionDisplay(props : QuestionDisplayProps) {
+export default function QuestionDisplay(props : QuestionDisplayProps) {
     console.log("ALREADY ANSWERED?");
     console.log(props.alreadyAnswered);
     console.log("LOG THE CORRECT ANSWERS IF ANY!!");
@@ -49,47 +51,89 @@ export default function questionDisplay(props : QuestionDisplayProps) {
                 </div>
                 <div className = "p-4 sm:pt-10">
                     <fieldset disabled = {props.alreadyAnswered} className = "sm:text-xl" >
-                        {props.answerText?.map((answer, index) => (
-                        //fieldset should only be disabled if the question has already been answered.
-                        //checked tracks which radio option the user has selected by setting selectedAnswer to the value of answer
-                        //readOnly is enabled only during the results page, as no onChange will be provided
-                        //Although booleans in the data, convert correctAnswers to numbers for comparison.
-                        //Each radio option will only be colored correct IF the user chose that option, or if it was actually correct.
-                        //If the user chose the wrong option, color only that radio red.
+                        { 
+                            props.answerText?.map((answer, index) => {
 
-                        //flex items-start is used to properly algin the radio buttons and the answer text
-                        <div key = {index} className = "flex mt-2 text-sm sm:text-base">
-                            <input type = "radio" 
-                                id = {`answer-${props.answerId[index]}`} 
-                                name = {`question-${props.questionId}`} 
-                                value = {answer || props.selectedAnswer}
-                                className = {`
-                                    ${props.selectedAnswer === props.answerText[index] && Number(props.wasCorrect) === 1 || 
-                                    Number(props.correctAnswer?.[index]) === 1 ? (correctRadio) : (regularRadio)}
-                                `}
-                                onChange = {props.onChangeValue} 
-                                checked = { props.selectedAnswer === answer}
-                                readOnly = {props.alreadyAnswered} 
-                            />
-                            <label 
-                                htmlFor ={`answer-${props.answerId[index]}`} 
-                                className = {`
-                                    ${props.selectedAnswer === props.answerText[index] && Number(props.wasCorrect) === 1 || 
-                                    Number(props.correctAnswer?.[index]) === 1 ? (correctRadio) : props.selectedAnswer === props.answerText[index] && 
-                                    Number(props.wasCorrect) === 0 ? (wrongRadio) : (regularRadio)}
-                            `}>
-                                {props.answerText[index]}
-                            </label>
-                        </div>
-                        ))
-                    }
+                                // Determine the boolean values for whether the answer is correct or incorrect, for styling purposes.
+                                const userChoseThisAnswer = props.selectedAnswer === answer;
+                                const isAnswerCorrect = Number(props.correctAnswer?.[index]) === 1;
+                                const userInCorrect = userChoseThisAnswer && Number(props.wasCorrect) === 0;
+                                const cursorStatus = props.alreadyAnswered ? "pointer-events-none" : "cursor-pointer";
+
+                                return (
+                                //checked tracks which radio option the user has selected by setting selectedAnswer to the value of answer
+                                //readOnly is enabled only during the results page, as no onChange will be provided
+                                //Although booleans in the data, convert correctAnswers to numbers for comparison.
+                                //Each radio option will only be colored correct IF the user chose that option, or if it was actually correct.
+                                //If the user chose the wrong option, color only that radio red.
+                                <div key = {index} className = {`
+                                    flex flex-row 
+                                    mt-2 relative
+                                    text-sm sm:text-base 
+                                    items-stretch
+                                    bg-gray-200 rounded-lg
+                                    shadow-md p-1
+                                    min-w-[2rem] sm:min-w-[35rem] 
+                                    min-h-[2rem] sm:min-h-[4rem]
+                                    ${isAnswerCorrect ? (correctRadio) : userInCorrect ? (wrongRadio) : (regularRadio)}
+                                `}>
+                                    <input type = "radio" 
+                                        id = {`answer-${props.answerId[index]}`} 
+                                        name = {`question-${props.questionId}`} 
+                                        value = {answer || props.selectedAnswer}
+                                        className = {`
+                                            absolute appearance-none
+                                            w-full h-full
+                                            peer
+                                            ${cursorStatus}
+                                        `}
+                                        onChange = {props.onChangeValue} 
+                                        checked = { props.selectedAnswer === answer}
+                                        readOnly = {props.alreadyAnswered} 
+                                    />
+                                    <p className = {`flex items-center font-semibold ml-4 ${isAnswerCorrect || userInCorrect ? coloredNumberLabel : regularNumberLabel}`}>
+                                        {index + 1}
+                                    </p>
+                                    <label 
+                                        htmlFor ={`answer-${props.answerId[index]}`} 
+                                        className = {`
+                                            flex relative
+                                            flex-1
+                                            p-2 ml-4
+                                            items-center
+                                            rounded-sm bg-white
+                                            ${cursorStatus}
+                                            ${isAnswerCorrect ? (correctRadio) : userInCorrect ? (wrongRadio) : (regularRadio)}
+                                    `}>
+                                        {props.answerText[index]}
+                                    </label>
+                                </div>
+                                );
+                            })
+                        }
                     </fieldset>
                 {   // Check if the question was not answered by the user during the test, and display this message.
                     // "not answered" is the text assigned as a default to answers that were received as empty in the backend
                     props.selectedAnswer === "not answered" ? (
-                        <h1 className = "flex p-4 mt-6 bg-gray-200 rounded shadow-md font-semibold justify-center text-red-600 text-sm sm:text-base">
-                            X Question was not answered.
-                        </h1>
+                        <div className = {`
+                            flex p-4
+                            mt-6 bg-red-600
+                            rounded shadow-md 
+                            font-semibold justify-center
+                            items-stretch
+                        `}>
+                            <h1 className = {`
+                                flex
+                                flex-1
+                                p-2
+                                rounded-sm bg-white
+                                text-center text-red-600
+                                text-sm sm:text-base
+                                justify-center items-center
+                            `}>
+                                X Question was not answered.
+                            </h1>
+                        </div>
                     ) : (
                         <>
                         </>

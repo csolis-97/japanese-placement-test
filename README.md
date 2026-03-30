@@ -37,7 +37,7 @@ If you are interested in running this program locally, please ensure that the fo
 3. pnpm
 4. Python, pip, & the required dependencies (listed inside of the requirements.txt)
 5. mySQL Server
-6. git, random-seedable, sqids
+6. git, random-seedable, sqids, @react-pdf/renderer
 
 Also, ensure that you have a .env file with credentials for the database as well. The flask application in the backend will search for the proper info
 in order to connect to the database instance which you create, which can be done through a tool like MySQL Workbench.
@@ -52,7 +52,8 @@ in order to connect to the database instance which you create, which can be done
 
 2. In your terminal, install the dependencies for TypeScript:
 '''pnpm install random-seedable
-pnpm install sqids'''
+pnpm install sqids
+pnpm add @react-pdf/renderer'''
 
 3. In your terminal, install the dependencies for Python by doing the following (if the file cannot be found, make sure you did "cd testrepo first):
 '''pip install -r requirements.txt'''
@@ -74,4 +75,4 @@ python index.py
 ######              NOTES               ######
 ######                                  ######
 
-This is not a fully complete placement test application. It is currently missing a method of properly creating a document that displays all of the results, alongside sending said results to the relevant email addresses. Furthermore, some things like dealing with what happens when users leaves the page have not been implemented. 
+This is not a fully complete placement test application. It is currently missing a method of properly sending test results to the relevant email addresses. Furthermore, some things like dealing with what happens when users leaves the page have not been implemented. 

@@ -30,15 +30,15 @@ export function QuestionDisplaySkeleton() {
                     {/* Question Body */}
                     <div className = "bg-gray-200 rounded h-4 sm:h-6 w-44 sm:w-75 mt-4 mb-5"></div>                       
                 </div>
-                <div className = "flex flex-col p-6 pt-4 sm:pt-10 gap-2 sm:gap-3 mt-2 w-40">
+                <div className = "flex flex-col pt-4 sm:pt-10 gap-2 sm:gap-2 mt-2 justify-center items-center">
                     {/* Option 1 */}
-                    <div className = "bg-gray-300 rounded h-5"></div>                
+                    <div className = "bg-gray-300 rounded-lg min-w-[2rem] sm:min-w-[38.5rem] min-h-[2rem] sm:min-h-[4rem]"></div>                
                     {/* Option 2 */}
-                    <div className = "bg-gray-200 rounded h-5"></div>
+                    <div className = "bg-gray-200 rounded-lg min-w-[2rem] sm:min-w-[38.5rem] min-h-[2rem] sm:min-h-[4rem]"></div>
                     {/* Option 3 */}
-                    <div className = "bg-gray-300 rounded h-5"></div>
+                    <div className = "bg-gray-300 rounded-lg min-w-[2rem] sm:min-w-[38.5rem] min-h-[2rem] sm:min-h-[4rem]"></div>
                     {/* Option 4 */}
-                    <div className = "bg-gray-200 rounded h-5"></div>
+                    <div className = "bg-gray-200 rounded-lg min-w-[2rem] sm:min-w-[38.5rem] min-h-[2rem] sm:min-h-[4rem]"></div>
                 </div>
             </div>
         </div>
@@ -69,19 +69,28 @@ export function ResultInfoSkeleton() {
             <div className = "bg-gray-200 rounded h-5 w-46 sm:w-78"></div>
             {/* Your Suggested Entrance Level Line 2*/}
             <div className = "sm:hidden bg-gray-200 rounded h-5 w-30 sm:w-87"></div>
-            <button 
-                className = {`
-                    mt-4 px-4 sm:px-8 
-                    py-4 font-semibold text-sm 
-                    text-white sticky 
-                    top-0 bg-gray-300
-                    w-[14rem] sm:w-[16rem] 
-                    h-[3.375rem] sm:h-[3.375rem]
-                `} 
-                type = "button" 
-                disabled
-            >
-            </button>
+            <div className = "flex flex-col sm:flex-row items-center sm:gap-6 mt-4">
+                <button 
+                    className = {` 
+                        bg-gray-300
+                        w-[14rem] sm:w-[16rem] 
+                        h-[3.375rem]
+                    `} 
+                    type = "button" 
+                    disabled
+                >
+                </button>
+                <button 
+                    className = {`
+                        bg-gray-300
+                        w-[8.125rem] sm:w-[10.125rem] 
+                        h-[3.375rem]
+                    `}
+                    type = "button" 
+                    disabled
+                >
+                </button>
+            </div>
         </div>
     );
 }

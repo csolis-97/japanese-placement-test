@@ -1,4 +1,4 @@
-import { TestQuestion } from "@/app/components/TestDisplay";
+import { TestQuestion } from "@/app/types/sharedInterface";
 import { XORShift128 } from "random-seedable";
 import Sqids from "sqids";
 
@@ -139,4 +139,28 @@ export function seedCreate(seed: number[]) {
     console.log(`FINISHED SETTING UP THE REPLACE STRING: ${finalString}`);
     const seedRNG = new XORShift128(Number(finalString));
     return seedRNG;
+}
+
+// This function will convert a Date object to the proper format used in the results screen
+export function formatResultsDate(testDate: Date) {
+    // This const will be used in order to get a localeString with the correct info
+    const dateOptions: Intl.DateTimeFormatOptions = {
+        weekday: "short",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "numeric",
+        minute: "numeric"
+    };
+
+    let formattedDate = testDate.toLocaleString("en-US", dateOptions);
+    /* This is the first time I've formally learned method chaining in Typescript so, here goes
+        editFormat is initially assigned to the value of formattedDate, and two method calls are chained
+        and the result of them returned to editFormat. I decided to go with this, since the alternative
+        was two different if statements with the same function being called. Note that the semicolon
+        is added only at the end of the last chained method */
+    const editFormat = formattedDate
+        .replace("AM", "A.M.")
+        .replace("PM", "P.M.");
+    return editFormat;
 }

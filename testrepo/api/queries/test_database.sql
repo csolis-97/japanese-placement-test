@@ -88,6 +88,7 @@ CREATE TABLE scores (
     test_status ENUM ('IN_PROGRESS', 'COMPLETED') NOT NULL,
     start_time DATETIME NOT NULL,
     end_time DATETIME NULL,
+    url_id VARCHAR(36) DEFAULT NULL UNIQUE,
     is_suspicious BOOLEAN DEFAULT FALSE,
     suspicious_reason VARCHAR(500) DEFAULT NULL,
     PRIMARY KEY (score_id, user_id),

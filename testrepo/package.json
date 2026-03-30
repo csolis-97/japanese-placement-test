@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@react-pdf/renderer": "^4.3.2",
     "next": "^16.1.1",
     "pnpm": "^10.30.3",
     "random-seedable": "^1.0.8",

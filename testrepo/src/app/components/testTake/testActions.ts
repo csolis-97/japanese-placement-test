@@ -47,15 +47,17 @@ export type SubmitData = {
     pastId: number[];
     isCorrect: boolean[];
     stageArray: string[];
+    urlId: string;
 };
 
 export async function submitTest(action: string, givenFields: SubmitData) {
-    //Divide the form data into separate variables
+    // Divide the form data into separate variables
     const isCorrect = givenFields.isCorrect;
     const resultId = givenFields.resultId;
     const userAttempt = givenFields.userAttempt;
     const pastId = givenFields.pastId;
     const stageArray = givenFields.stageArray;
+    const urlId = givenFields.urlId;
 
     // This action will submit the test to the backend for processing
     action = "submitTest";
@@ -81,7 +83,8 @@ export async function submitTest(action: string, givenFields: SubmitData) {
                 'score_id' : resultId,
                 'user_attempt' : userAttempt, 
                 'past_id' : pastId, 
-                'stage_array' : stageArray
+                'stage_array' : stageArray,
+                'url_id' : urlId,
             })
         });
 
