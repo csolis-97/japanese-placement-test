@@ -17,7 +17,7 @@ export default function TestDisplay() {
   // the email they entered, and their name.
   const [testInfo, setTestInfo] = useState<InfoData>({
   'resultId' : 0,
-  'userAttempt' : 0,
+  'attemptId' : 0,
   'email' : "",
   'name' : ""
   });
@@ -27,7 +27,7 @@ export default function TestDisplay() {
   // Finally, useState for errors
   const [error, setError] = useState<Error | null>();
 
-  // The shuffleSeed variable will hold the seed for the test, once the userAttempt and resultId fields have been set
+  // The shuffleSeed variable will hold the seed for the test, once the attemptId and resultId fields have been set
   let shuffleSeed: XORShift128 | null = null;
 
   if (error) {
@@ -35,11 +35,11 @@ export default function TestDisplay() {
     throw error;
   }
 
-  if (testInfo.resultId !== 0 && testInfo.userAttempt !== 0 && shuffleSeed == null) {
+  if (testInfo.resultId !== 0 && testInfo.attemptId !== 0 && shuffleSeed == null) {
     console.log("ABOUT TO SET THE SHUFFLE SEED!");
     shuffleSeed = seedCreate([
-      testInfo.userAttempt, 
-      (testInfo.userAttempt % testInfo.resultId), 
+      testInfo.attemptId, 
+      (testInfo.attemptId % testInfo.resultId), 
       testInfo.resultId
     ]);
     console.log(`SHUFFLE SEED SET TO ${shuffleSeed}`);

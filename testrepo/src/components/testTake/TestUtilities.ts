@@ -49,5 +49,5 @@ export function expandAnswerArray(prevData: UserAnswerType[], fetchedQuestion: T
         'userText' : '',
         'alreadyAnswered' : false,
     }));
-    return stageNum === 0 ? newArray : [...prevData, ...newArray];
+    return [...prevData, ...newArray];
 }

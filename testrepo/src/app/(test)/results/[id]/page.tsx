@@ -2,12 +2,13 @@ export const dynamic = 'force-dynamic';
 
 import { Suspense } from "react";
 import * as resultUtils from "./actions";
+import { ActionKey, apiAction } from "@/utils/apiUtilFunctions";
 import ResultsDisplay from "@/components/ResultDisplay";
 import ResultInfo from "@/components/ResultInfo";
 import DownloadButtonPDF from "@/components/pdf/DownloadButtonPDF";
 import { ResultInfoSkeleton, QuestionDisplaySkeleton } from "@/components/skeletons";
 import { shuffleList, seedCreate } from "@/utils/utilFunctions";
-import { ResultQuestion, TestResult } from "@/types/sharedInterface";
+import { ResultQuestion, TestQuestion, TestResult } from "@/types/sharedInterface";
 
 export default async function Results({ params } : { params: Promise<{ id : string }> }) {
   // Here, the slugging params will be dealt with
@@ -21,7 +22,13 @@ export default async function Results({ params } : { params: Promise<{ id : stri
 
   let totalQuestions = 0;
 
-  const resultsPromise = resultUtils.resultsData('retrieveResults', resultsFormat) as Promise<TestResult>;
+  const resultsRecord: ActionKey = {
+    action: 'retrieveResults',
+    givenFields: resultsFormat
+  };
+
+  const resultsPromise = apiAction(resultsRecord) as Promise<TestResult>;
+  //const resultsPromise = resultUtils.resultsData('retrieveResults', resultsFormat) as Promise<TestResult>;
 
   // If the data is successfully retrieved, then the following HTML will return If not, error.tsx will catch the error
   const answersPromise = resultsPromise.then(async infoData => {
@@ -35,7 +42,13 @@ export default async function Results({ params } : { params: Promise<{ id : stri
       'resultId' : resultNum
     };
 
-    return resultUtils.answersData('retrieveAnswers', answersFormat)
+    const answersRecord: ActionKey = {
+      action: 'retrieveAnswers',
+      givenFields: answersFormat
+    };
+
+    return apiAction(answersRecord)
+    //return resultUtils.answersData('retrieveAnswers', answersFormat)
     .then(answerData => {
       // You can change the logic of stage size here if there are more than 5 questions per stage
       const STAGE_SIZE = 5;

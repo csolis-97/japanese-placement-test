@@ -1,3 +1,5 @@
+"use server";
+
 import { getURL, responseMessage } from "./utilFunctions";
 import { 
     InfoData, 
@@ -8,14 +10,14 @@ import {
     ResultRequest 
 } from "@/types/sharedType";
 
-type ActionKey = {
-    action: string,
-    givenFields: InfoData | ResponseData | RequestData | SubmitData | AnswersRequest | ResultRequest
-};
-
 type PossibleDataTypes = InfoData | ResponseData | RequestData | SubmitData | AnswersRequest | ResultRequest;
 
-export async function testAction(params: ActionKey) {
+export type ActionKey = {
+    action: string,
+    givenFields: PossibleDataTypes
+};
+
+export async function apiAction(params: ActionKey) {
     const mappedValues = translateMap(params.action, params.givenFields);
 
     const jsonBody = mappedValues.jsonBody;
@@ -95,6 +97,8 @@ function translateMap(action: string, givenFields: PossibleDataTypes) {
         // Fields unique to RequestData
         questionId: 'question_id',
         questionCategory: 'question_category',
+        // Duplicate of isCorrect, fix it later
+        wasCorrect: 'was_correct',
         // Fields unique to ResponseData
         userText: 'user_answer_text',
         currentStageNum: 'current_stage_num',

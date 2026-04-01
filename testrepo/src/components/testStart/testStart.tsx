@@ -6,15 +6,14 @@ import {
   Dispatch, 
   SetStateAction,
 } from "react";
-import { createRecord } from "./startActions";
-import * as testUtils from "../testTake/testActions";
 import { TestQuestion } from "@/types/sharedInterface";
-import { InfoData } from "@/types/sharedType";
+import { InfoData, RequestData } from "@/types/sharedType";
 import { 
   errorType, 
   checkEmail, 
   checkName 
 } from "@/utils/utilFunctions";
+import { ActionKey, apiAction } from "@/utils/apiUtilFunctions";
 
 //These variables will apply the styling for the regular and disabled buttons
 const buttonDefaults = "mt-4 px-8 py-4 font-semibold text-sm text-white cursor-pointer disabled:pointer-events-none";
@@ -102,7 +101,12 @@ export default function TestStart({
     }
 
     try {
-      const fetchedInfo = await createRecord('createRecord', initialTestInfo);
+      const infoRecord: ActionKey = {
+        action: 'createRecord',
+        givenFields: initialTestInfo
+      };
+      //const fetchedInfo = await createRecord('createRecord', initialTestInfo);
+      const fetchedInfo = await apiAction(infoRecord);
       // If the current result's ID in the database was successfully retrieved, set the value to resultId. Otherwise log an error.
       if (fetchedInfo) {
         console.log("HERE IS THE ID OF THE RESULTS AND ATTEMPT ID THAT WILL BE STORED WHEN SUBMITTED.");
@@ -111,18 +115,15 @@ export default function TestStart({
         setInitialTestInfo((prevData) => ({
           ...prevData,
           ['resultId']: fetchedInfo[0],
-          ['userAttempt']: fetchedInfo[1]
+          ['attemptId']: fetchedInfo[1]
         }));
-        console.log("Current resultId and userAttempt fetched and set.");
+        console.log("Current resultId and attemptId fetched and set.");
         console.log("RECORD WAS CREATED!");
         console.log("PLEASE CHECK HERE FOR FINALIZED USER INFO BEFORE STARTING");
         console.log(initialTestInfo);
 
-        setCurrentDisplay('test');
-        setIsSubmitted(true);
-
         //Make a default request for fetching the first questions
-        let initialRequest: testUtils.RequestData = {
+        let initialRequest: RequestData = {
           questionId: [0],
           pastId: [],
           questionCategory: "Beginner I",
@@ -131,10 +132,17 @@ export default function TestStart({
       
         // Fetch the initial set of questions from the backend, with 'retrieveStage' as the action to take
         console.log("ABOUT TO FETCH THE INITIAL STAGE!");
-        const fetchedQuestion = testUtils.questionFetch('retrieveStage', initialRequest) as Promise<TestQuestion[]>;
+        //const fetchedQuestion = testUtils.questionFetch('retrieveStage', initialRequest) as Promise<TestQuestion[]>;
+        const initialQuestionRecord: ActionKey = {
+          action: 'retrieveStage',
+          givenFields: initialRequest
+        }
+        const fetchedQuestion = apiAction(initialQuestionRecord) as Promise<TestQuestion[]>;
         console.log("FETCHED THE INITIAL STAGE!");
         console.log(`HERE IS THE RESULT OF THE FETCHED QUESTION: ${fetchedQuestion}`);
         setInitialQuestionsPromise(fetchedQuestion);
+        setIsSubmitted(true);
+        setCurrentDisplay('test');
       }
       else {
         console.log("Error creating the record.");
