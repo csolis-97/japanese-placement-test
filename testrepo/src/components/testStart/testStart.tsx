@@ -8,13 +8,13 @@ import {
 } from "react";
 import { createRecord } from "./startActions";
 import * as testUtils from "../testTake/testActions";
+import { TestQuestion } from "@/types/sharedInterface";
+import { InfoData } from "@/types/sharedType";
 import { 
   errorType, 
   checkEmail, 
   checkName 
-} from "@/app/utils/utilFunctions";
-import { TestQuestion } from "@/app/types/sharedInterface";
-import { InfoData } from "@/app/types/sharedType";
+} from "@/utils/utilFunctions";
 
 //These variables will apply the styling for the regular and disabled buttons
 const buttonDefaults = "mt-4 px-8 py-4 font-semibold text-sm text-white cursor-pointer disabled:pointer-events-none";
@@ -25,7 +25,6 @@ const disabledButton = "bg-gray-500";
 interface TestProps {
   initialTestInfo: InfoData;
   setInitialTestInfo: Dispatch<SetStateAction<InfoData>>;
-  currentDisplay: string;
   setCurrentDisplay: Dispatch<SetStateAction<string>>;
   setInitialQuestionsPromise: Dispatch<SetStateAction<Promise<TestQuestion[]> | undefined>>;
 };
@@ -38,8 +37,7 @@ interface InputErrors {
 // The parameters will be the testInfo useState alongside its setter function. Since I am using an interface, add a colon and assign it to testProps
 export default function TestStart({
   initialTestInfo, 
-  setInitialTestInfo, 
-  currentDisplay, 
+  setInitialTestInfo,
   setCurrentDisplay,
   setInitialQuestionsPromise
 } : TestProps) {
@@ -68,8 +66,7 @@ export default function TestStart({
 
   // FOR DEBUG. This useEffect will track all current relevant info needed
   useEffect(() => {
-      console.log(`CURRENT TEST INFO: ${initialTestInfo}`);
-      console.log(`CURRENT DISPLAY VALUE?: ${currentDisplay}`);
+      console.log("CURRENT TEST INFO: ", initialTestInfo);
       console.log(`USER INFO SUBMITTED?: ${isSubmitted}`);
   }, [initialTestInfo, isSubmitted]);
 
@@ -112,17 +109,14 @@ export default function TestStart({
         console.log(fetchedInfo);
         // This will set the result ID (index 0) and attempt ID (index 1) for the current test.
         setInitialTestInfo((prevData) => ({
-        ...prevData,
-        ['resultId']: fetchedInfo[0],
-        ['userAttempt']: fetchedInfo[1]
+          ...prevData,
+          ['resultId']: fetchedInfo[0],
+          ['userAttempt']: fetchedInfo[1]
         }));
         console.log("Current resultId and userAttempt fetched and set.");
         console.log("RECORD WAS CREATED!");
         console.log("PLEASE CHECK HERE FOR FINALIZED USER INFO BEFORE STARTING");
         console.log(initialTestInfo);
-        const currentAttempt = initialTestInfo.userAttempt;
-        console.log("ABOUT TO ENTER THE TEST WITH THIS ATTEMPT NUMBER!");
-        console.log(currentAttempt);
 
         setCurrentDisplay('test');
         setIsSubmitted(true);

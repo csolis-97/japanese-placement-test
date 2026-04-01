@@ -6,9 +6,9 @@ import { useTest } from "./useTest";
 import QuestionDisplay from "../QuestionDisplay";
 import StageComplete from "../StageComplete";
 import Timer from "../Timer";
-import { TestQuestion } from "@/app/types/sharedInterface";
-import { InfoData } from "@/app/types/sharedType";
-import { errorType } from "@/app/utils/utilFunctions";
+import { TestQuestion } from "@/types/sharedInterface";
+import { InfoData } from "@/types/sharedType";
+import { errorType } from "@/utils/utilFunctions";
 
 // This interface will be used to properly receive the useState and data which are passed to the component
 interface TestProps {
@@ -18,10 +18,8 @@ interface TestProps {
 };
 
 export default function TestTake({shuffleSeed, currentTestInfo, initialQuestionsPromise} : TestProps) {
-
   // useState for tracking the state of the test timer
   const [testTimerOver, setTestTimerOver] = useState<boolean>(false);
-
   // useState for errors
   const [error, setError] = useState<Error | null>();
 
@@ -33,7 +31,7 @@ export default function TestTake({shuffleSeed, currentTestInfo, initialQuestions
   };
 
   const timerForcedSubmission = () => {
-    testHook.changeHook.handleForceSubmit(testTimerOver);
+    testHook.changeHook.handleForcedStageSubmit(testTimerOver);
     testHook.flowHook.handleForcedTestForm(testTimerOver);
   }
 
@@ -58,7 +56,7 @@ export default function TestTake({shuffleSeed, currentTestInfo, initialQuestions
   // RIGHT NOW EACH STAGE IS HARDCODED TO BE JUST 5 QUESTIONS, SO CHECK HERE IF THAT EVER CHANGES!
   const STAGE_SIZE = testHook.questions.length;
 
-  //These variables will be used for checking when to disable and enable certain buttons
+  // These variables will be used for checking when to disable and enable certain buttons
   const IS_FIRST_QUESTION = testHook.stageInfo.current.stageQuestion === 0;
   const IS_LAST_QUESTION = testHook.stageInfo.current.stageQuestion >= STAGE_SIZE - 1;
 
@@ -67,7 +65,7 @@ export default function TestTake({shuffleSeed, currentTestInfo, initialQuestions
   console.log("IS_LAST_QUESTION?");
   console.log(IS_LAST_QUESTION);
 
-  //These variables will apply the styling for the regular and disabled buttons
+  // These variables will apply the styling for the regular and disabled buttons
   const buttonDefaults = "flex items-center justify-center mt-4 px-8 py-4 font-semibold text-sm text-white w-36 h-14 cursor-pointer disabled:pointer-events-none";
   const regularButton = "bg-[#d1190d] hover:bg-[#700f09]";
   const disabledButton = "bg-gray-500";
@@ -124,16 +122,15 @@ export default function TestTake({shuffleSeed, currentTestInfo, initialQuestions
   }, [
     testHook.changeHook.selectedAnswer, 
     testHook.questions, testHook.currentQuestion, 
-    testHook.answerArray, 
-    testHook.changeHook.isSubmitted
+    testHook.answerArray, testHook.changeHook.isSubmitted
   ]);
   
   //HTML return for the test form page
   return (
     <div className = "w-full flex min-h-screen items-center">
-        {
-          // Await the correct number of answers for the stage before moving on, OR if the timer runs out
-          (testHook.changeHook.isSubmitted || testTimerOver) && (
+      {
+        // Await the correct number of answers for the stage before moving on, OR if the timer runs out
+        (testHook.changeHook.isSubmitted || testTimerOver) && (
           <StageComplete
             stageNum = {testHook.stageInfo.current.stageNum}
             stagePassed = {testHook.correctTotal.current > 3 ? true : false}
@@ -143,28 +140,31 @@ export default function TestTake({shuffleSeed, currentTestInfo, initialQuestions
             testTimerOver = {testTimerOver}
             isSubmitted = {testHook.changeHook.isSubmitted}
             onButtonChange = {testTimerOver ? (testHook.flowHook.handleForcedRouter) : (testHook.changeHook.handleNextStage)}
-          />)
+          />
+        )
+      }
+      <form name = "placeTest" onSubmit = {testHook.flowHook.handleTestForm} className = "flex flex-col space-y-4 items-start justify-start">
+        <Timer timerOver = {timerHandle} />
+        {
+          // If questions exists and its length is greater than 0, or currentQuestion is less than the length, display the current question
+          testHook.questions && testHook.questions[testHook.stageInfo.current.stageQuestion] && testHook.answerArray[testHook.currentQuestion] && (
+            <QuestionDisplay
+              questionId = {testHook.currentQuestion + 1}
+              questionText = {testHook.questions[testHook.stageInfo.current.stageQuestion].question_text}
+              questionBody = {testHook.questions[testHook.stageInfo.current.stageQuestion].question_body}
+              questionCategory = {testHook.questions[testHook.stageInfo.current.stageQuestion].question_level}
+              answerId = {testHook.questions[testHook.stageInfo.current.stageQuestion].answer_id}
+              answerText = {testHook.questions[testHook.stageInfo.current.stageQuestion].answer_text}
+              selectedAnswer = {testHook.answerArray[testHook.currentQuestion]?.userText}
+              alreadyAnswered = {testHook.answerArray[testHook.currentQuestion]?.alreadyAnswered}
+              //Send the handleChange const as the value for onChangeValue so that the onChange field can be properly handled
+              onChangeValue = {testHook.changeHook.handleChange}
+            />
+          )
         }
-        <form name = "placeTest" onSubmit = {testHook.flowHook.handleTestForm} className = "flex flex-col space-y-4 items-start justify-start">
-          <Timer timerOver = {timerHandle} />
-          {
-            //If questions exists and its length is greater than 0, or currentQuestion is less than the length, display the current question
-            testHook.questions && testHook.questions[testHook.stageInfo.current.stageQuestion] && testHook.answerArray[testHook.currentQuestion] && (
-              <QuestionDisplay
-                questionId = {testHook.currentQuestion + 1}
-                questionText = {testHook.questions[testHook.stageInfo.current.stageQuestion].question_text}
-                questionBody = {testHook.questions[testHook.stageInfo.current.stageQuestion].question_body}
-                questionCategory = {testHook.questions[testHook.stageInfo.current.stageQuestion].question_level}
-                answerId = {testHook.questions[testHook.stageInfo.current.stageQuestion].answer_id}
-                answerText = {testHook.questions[testHook.stageInfo.current.stageQuestion].answer_text}
-                selectedAnswer = {testHook.answerArray[testHook.currentQuestion]?.userText}
-                alreadyAnswered = {testHook.answerArray[testHook.currentQuestion]?.alreadyAnswered}
-                //Send the handleChange const as the value for onChangeValue so that the onChange field can be properly handled
-                onChangeValue = {testHook.changeHook.handleChange}
-              />)
-          }
-          <div className = "flex w-full justify-end text-center items-center">
-            { IS_LAST_QUESTION ? (
+        <div className = "flex w-full justify-end text-center items-center">
+          { 
+            IS_LAST_QUESTION ? (
               <button 
                 type = "submit" 
                 form = "placeTest" 
@@ -200,9 +200,10 @@ export default function TestTake({shuffleSeed, currentTestInfo, initialQuestions
               >
                 Next
               </button>
-            )}
-          </div>
-        </form>
+            )
+          }
+        </div>
+      </form>
     </div>
   );
 }

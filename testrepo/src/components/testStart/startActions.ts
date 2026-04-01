@@ -1,27 +1,27 @@
 "use server";
 
-import { InfoData } from "@/app/types/sharedType";
-import { getURL, responseMessage } from "@/app/utils/utilFunctions";
+import { InfoData } from "@/types/sharedType";
+import { getURL, responseMessage } from "@/utils/utilFunctions";
 
 console.log(`"HERE IS THE URL BEING USED!" ${getURL()}`);
 
 export async function createRecord(action: string, givenFields: InfoData) {
     // This action will create the record that will be used to store the results and return the resultId to be used
     const resultId = givenFields.resultId;
-    const userAttempt = givenFields.userAttempt;
+    const attemptId = givenFields.attemptId;
     const email = givenFields.email;
     const name = givenFields.name;
 
     console.log("HERE ARE THE VALUES TO BE SENT TO THE BACKEND TO CREATE THE RECORD");
     console.log(resultId);
-    console.log(userAttempt);
+    console.log(attemptId);
     console.log(email);
     console.log(name);
 
     // Create a snapshot of the submission time to send alongside the POST request
-    let submittedTime = new Date().toISOString();
+    const startTime = new Date().toISOString();
     console.log("HERE IS THE SUBMISSION TIMESTAP");
-    console.log(submittedTime);
+    console.log(startTime);
 
     action = "createRecord";
     console.log("CREATE A RECORD IN THE SCORES DATABASE ALONGSIDE FETCHING CURRENT ATTEMPT ID");
@@ -35,10 +35,10 @@ export async function createRecord(action: string, givenFields: InfoData) {
             body: JSON.stringify({
                 'action' : action, 
                 'score_id' : resultId, 
-                'user_attempt' : userAttempt,
+                'attempt_id' : attemptId,
                 'email' : email, 
                 'name' : name, 
-                'start_time' : submittedTime
+                'start_time' : startTime
             })
         });
 

@@ -10,18 +10,18 @@ import datetime
 # so set it to false if needed.
 
 # Import all the functions defined elsewhere in the backend. Remove the dot when running locally.
-from .test_data_functions import *
-from .question_retrieval_fuctions import *
-from .answer_storage_functions import *
-from .test_submission_functions import *
-from .util_functions import *
+#from .test_data_functions import *
+#from .question_retrieval_fuctions import *
+#from .answer_storage_functions import *
+#from .test_submission_functions import *
+#from .util_functions import *
 
 # Import all the functions defined elsewhere in the backend. Remove the dot when running locally.
-#from test_data_functions import *
-#from question_retrieval_fuctions import *
-#from answer_storage_functions import *
-#from test_submission_functions import *
-#from util_functions import *
+from test_data_functions import *
+from question_retrieval_fuctions import *
+from answer_storage_functions import *
+from test_submission_functions import *
+from util_functions import *
 
 app = Flask(__name__)
 
@@ -58,7 +58,7 @@ try:
         ))
 
     # Included a local function for the database connection as well. Use Port 3306 for mySQL
-    '''def getDBLocal():
+    def getDBLocal():
         print("ABOUT TO RETURN LOCAL DATABASE CONNECTION!")
         return (pymysql.connect(
             host = os.getenv('DB_HOST'),
@@ -69,7 +69,7 @@ try:
             cursorclass = pymysql.cursors.DictCursor,
             # Use this to set the timezone of the current session's connection to the database
             init_command = "SET SESSION time_zone = '+00:00'"
-        ))'''
+        ))
 
     # Initialize Bcrypt for password hashing
     # bcrypt = Bcrypt(app)
@@ -91,8 +91,8 @@ def testForm():
     if not data:
         dataError = "Backend error: No data provided for the testform route!"
         return jsonify(dataError), 400
-    mysql = getDB()
-    # mysql = getDBLocal()
+    # mysql = getDB()
+    mysql = getDBLocal()
 
     # Test print to see data
     print("HERE IS WHAT IS IN THE DATA!")
@@ -108,7 +108,7 @@ def testForm():
         # If the action is createRecord, create a record for the results, and send the attempt_id and score_id back
         if action == 'createRecord':
             try:
-                initialAttempt = data['user_attempt']
+                initialAttempt = data['attempt_id']
                 initialScoreId = data['score_id']
                 email = data['email']
                 name = data['name']
@@ -219,10 +219,10 @@ def testForm():
                 # Store the user's answer data that was retrieved and get the current attemptNum from the database
                 questionId = data['question_id']
                 answerData = data['user_answer_text']
-                attemptNum = data['user_attempt']
+                attemptNum = data['attempt_id']
                 questionTrack = data['past_id']
                 scoreId = data['score_id']
-                currentStage = data['current_stage']
+                currentStageNum = data['current_stage_num']
 
                 # ALL OF THE BELOW IS DEBUG TO CHECK THE VALUES
                 print(data)
@@ -237,7 +237,7 @@ def testForm():
                 answerData = checkNoAnswer(answerData)
 
                 # Enter a function to get the correct answer info based on the question_id of the questions answered
-                results = getCorrectAnswerInfo(cursor, answerData, questionId, answerId, currentStage)
+                results = getCorrectAnswerInfo(cursor, answerData, questionId, answerId, currentStageNum)
 
                 # Check which of the users answers were correct and store that information in isCorrect
                 isCorrect = gradeAnswers(results, questionId)
@@ -247,7 +247,7 @@ def testForm():
                     # Assign valueQuery to the returned array
                     valueQuery = buildValueQuery(answerData)
                     # Then assign paramList to the array that was built in the function
-                    paramList = buildAnswerData(answerData, scoreId, attemptNum, questionId, isCorrect, questionTrack, currentStage)
+                    paramList = buildAnswerData(answerData, scoreId, attemptNum, questionId, isCorrect, questionTrack, currentStageNum)
                     # Build the query using valueQuery, with paramList as its values
                     storeQuery = f"INSERT INTO user_answers(score_id, attempt_id, question_id, response_order, stage_answered, user_answer_text, user_was_correct) VALUES {" ".join(valueQuery)}"
 
@@ -273,9 +273,9 @@ def testForm():
             try:
                 # Store the data retrieved from the JSON into separate variables
                 scoreId = data['score_id']
-                attemptNum = data['user_attempt']
+                attemptNum = data['attempt_id']
                 isCorrect = data['was_correct']
-                stageArray = data ['stage_array']
+                stageDifficultyArray = data ['stage_difficulty_array']
                 questionTrack = data['past_id']
                 urlId = data['url_id']
                 paramList = []
@@ -318,9 +318,9 @@ def testForm():
                 # and the percentage correct for each stage will be returned to the two variables.
                 totalScore = calculateScore(levelList, questionTrack, isCorrect)
 
-                # Set entranceLevel to the last difficulty value in stageArray
-                print(f"THE USER WENT THROUGH THE FOLLOWING STAGES: {stageArray}")
-                entranceLevel = stageArray[len(stageArray) - 1]
+                # Set entranceLevel to the last difficulty value in stageDifficultyArray
+                print(f"THE USER WENT THROUGH THE FOLLOWING STAGES: {stageDifficultyArray}")
+                entranceLevel = stageDifficultyArray[len(stageDifficultyArray) - 1]
                 print(f"ENTRANCE LEVEL TO BE USED: {entranceLevel}")
 
                 # Next, get the correct user_id based on the result id and the attempt id
@@ -368,8 +368,8 @@ def resultDisplay():
         dataError = "Backend error: No data provided for the results route!"
         return jsonify(dataError), 400
     
-    mysql = getDB()
-    # mysql = getDBLocal()
+    # mysql = getDB()
+    mysql = getDBLocal()
 
     action = data['action']
 
@@ -466,5 +466,5 @@ def resultDisplay():
 
 # Once the app is running, it will use the port 5000 and communicate to the localhost. It will also be in debug mode
 # After the app is out of development, not needed in production
-#if __name__ == '__main__':
-#   app.run(debug=True, host="localhost", port=int("5000"))
+if __name__ == '__main__':
+   app.run(debug=True, host="localhost", port=int("5000"))

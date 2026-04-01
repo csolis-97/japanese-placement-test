@@ -2,7 +2,7 @@
 
 import { use } from "react";
 import CreateResultsPDF from "./CreateResultsPDF";
-import { ResultQuestion, TestResult } from "@/app/types/sharedInterface";
+import { ResultQuestion, TestResult } from "@/types/sharedInterface";
 import dynamic from "next/dynamic";
 
 interface DownloadButtonPDFProps {

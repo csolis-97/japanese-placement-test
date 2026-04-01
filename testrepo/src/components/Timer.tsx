@@ -6,17 +6,19 @@ interface TimerProps {
     timerOver: () => void;
 };
 
-export default function Timer({timerOver} : TimerProps){
+// These consts will handle the duration of the test, change it if anything is needed
+const ONE_MINUTE = 60;
+const ONE_HOUR = ONE_MINUTE * 5;
+//const ONE_HOUR = ONE_MINUTE * ONE_MINUTE;
 
-    const ONE_MINUTE = 60;
-    const ONE_HOUR = ONE_MINUTE * 5;
-    //const ONE_HOUR = ONE_MINUTE * ONE_MINUTE;
-
+export default function Timer({ timerOver } : TimerProps){
+    // This useState will be used to track the current value of time timer, which starts at the value of ONE_HOUR
     const [count, setCount] = useState<number>(ONE_HOUR);
 
     // EndTime is the current date, plus the value of ONE_HOUR multipled by 1000, or 1 second
     const [endTime, setEndTime] = useState<number>(Date.now() + ONE_HOUR * 1000);
 
+    // These consts will be used to calculate how the minutes and seconds are displayed.
     const second = count % ONE_MINUTE;
     const secondDisplay = String(second).padStart(2, "0");
     const minute = Math.floor(count / ONE_MINUTE);
@@ -28,14 +30,14 @@ export default function Timer({timerOver} : TimerProps){
     useEffect(() => {
         const startTimer = setInterval(() => setCount(prev => {
             if (prev > 0) {
-                console.log(`CURRENT PREV VALUE: ${prev}`);
+                //console.log(`CURRENT PREV VALUE: ${prev}`);
                 const timeStamp = Date.now();
-                console.log(`CURRENT TIMESTAMP: ${timeStamp}`);
+                //console.log(`CURRENT TIMESTAMP: ${timeStamp}`);
                 const timeDifference = (endTime - timeStamp);
-                console.log(`CURRENT DIFFERENCE BETWEEN TIMESTAMP AND ENDTIME: ${timeDifference}`);
+                //console.log(`CURRENT DIFFERENCE BETWEEN TIMESTAMP AND ENDTIME: ${timeDifference}`);
                 // To avoid display errors, if the value of timeDifference goes under 0, newVal is set to 0 instead
                 const newVal = (Math.max(0, Math.ceil(timeDifference / 1000)));
-                console.log(`NEW VALUE OF COUNT: ${newVal}`);
+                //console.log(`NEW VALUE OF COUNT: ${newVal}`);
                 return newVal;
             }
             else {
@@ -59,10 +61,10 @@ export default function Timer({timerOver} : TimerProps){
         }
     }, [count, timerOver]);
 
-    // DEBUG,  This useEffect will be used to track the current values of each useState
+    // DEBUG, this useEffect will be used to track the current values of each useState
     useEffect(() => {
-        console.log(`CURRENT VALUE OF COUNT: ${count}`);
-        console.log(`CURRENT VALUE OF ENDTIME: ${endTime}`);
+        //console.log(`CURRENT VALUE OF COUNT: ${count}`);
+        //console.log(`CURRENT VALUE OF ENDTIME: ${endTime}`);
     }, [count, endTime, timerOver]);
 
     return (

@@ -6,7 +6,7 @@ import {
 } from "@react-pdf/renderer";
 import ResultInfoPDF from "./ResultInfoPDF";
 import QuestionDisplayPDF from "./QuestionDisplayPDF";
-import { ResultQuestion, TestResult } from "@/app/types/sharedInterface";
+import { ResultQuestion, TestResult } from "@/types/sharedInterface";
 
 // Default font does not support Japanese, so register one for PDF use
 Font.register({ 

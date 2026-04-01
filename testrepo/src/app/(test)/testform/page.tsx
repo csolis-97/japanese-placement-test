@@ -1,6 +1,6 @@
 export const dynamic = 'force-dynamic';
 
-import TestDisplay from "@/app/components/TestDisplay";
+import TestDisplay from "@/components/TestDisplay";
 
 export default async function Test() {
   

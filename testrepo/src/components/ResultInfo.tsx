@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { use } from "react";
-import { TestResult } from "@/app/types/sharedInterface";
+import { TestResult } from "@/types/sharedInterface";
 import { formatResultsDate } from "../utils/utilFunctions";
 
 //Define the props used for displaying results
@@ -16,8 +16,9 @@ interface InfoProps {
 export default function ResultInfo(props: InfoProps) {
     // Take the resultsPromise prop and use it to get the results data
     const results = use(props.resultsPromise) as TestResult;
-    // Format the date too
+    // Format the date and calculate the number of correct answers
     const formattedDate = formatResultsDate(results.end_time);
+    const numberOfCorrect = (Math.round(props.totalQuestions * (results.total_score / 100)));
     
     return (
         <div className = {`
@@ -29,7 +30,7 @@ export default function ResultInfo(props: InfoProps) {
         `}>
             <h2 className = "text-gray-800 font-semibold mt-2">Test Attempt #{results.attempt_id} Results</h2>
             <p className = "text-gray-600">Test Date: {formattedDate}</p>
-            <p className = "text-gray-600">Total Score: {(Math.round(results.total_score) / 100) * props.totalQuestions} / {props.totalQuestions}</p>
+            <p className = "text-gray-600">Total Score: {numberOfCorrect} / {props.totalQuestions}</p>
             <p className = "text-gray-600">Your Suggested Entrance Level: {results.entrance_level}</p>
             <div className = "flex flex-col sm:flex-row items-center sm:gap-6">
                 <Link 

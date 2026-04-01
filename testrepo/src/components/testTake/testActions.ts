@@ -1,39 +1,18 @@
 "use server";
 
-import { getURL, responseMessage } from "@/app/utils/utilFunctions";
+import { getURL, responseMessage } from "@/utils/utilFunctions";
 
-console.log(`"HERE IS THE URL BEING USED!" ${getURL()}`);
-
-//Type defined below will be used for tracking each stage's info, including each stage's difficulty,
-//The current stage number, the current question of the stage, and the current stage's question_ids.
-export type StageData = {
-    stageDifficulty: string[];
-    stageNum: number;
-    stageQuestion: number;
-    stageQuestionId: number[];
-};
-
-//Define a type for storing the test form data
-export type TestFormData = {
-    questionId: number;
-    questionText: string;
-    questionBody: string;
-    questionCategory: string;
-    answerId: number[];
-    answerText: string[];
-    userAttempt: number;
-    resultId: number;
-};
-
+// Type defined below will be used to store and send necessary info to grade the current stage
 export type ResponseData = {
     questionId: number[];
     pastId: number[];
     userText: string[];
-    userAttempt: number;
+    attemptId: number;
     resultId: number;
-    currentStage: number;
+    currentStageNum: number;
 };
 
+// Type defined below will be used to store and send necessary info to fetch the next stage
 export type RequestData = {
     questionId: number[];
     pastId: number[];
@@ -41,22 +20,25 @@ export type RequestData = {
     wasCorrect: boolean[];
 };
 
+// Type defined below will be used to store and send info for submitting the test
 export type SubmitData = {
     resultId: number;
-    userAttempt: number;
+    attemptId: number;
     pastId: number[];
     isCorrect: boolean[];
-    stageArray: string[];
+    stageDifficultyArray: string[];
     urlId: string;
 };
+
+console.log(`"HERE IS THE URL BEING USED!" ${getURL()}`);
 
 export async function submitTest(action: string, givenFields: SubmitData) {
     // Divide the form data into separate variables
     const isCorrect = givenFields.isCorrect;
     const resultId = givenFields.resultId;
-    const userAttempt = givenFields.userAttempt;
+    const attemptId = givenFields.attemptId;
     const pastId = givenFields.pastId;
-    const stageArray = givenFields.stageArray;
+    const stageDifficultyArray = givenFields.stageDifficultyArray;
     const urlId = givenFields.urlId;
 
     // This action will submit the test to the backend for processing
@@ -81,9 +63,9 @@ export async function submitTest(action: string, givenFields: SubmitData) {
                 'date' : submittedTime, 
                 'was_correct' : isCorrect, 
                 'score_id' : resultId,
-                'user_attempt' : userAttempt, 
+                'attempt_id' : attemptId, 
                 'past_id' : pastId, 
-                'stage_array' : stageArray,
+                'stage_difficulty_array' : stageDifficultyArray,
                 'url_id' : urlId,
             })
         });
@@ -150,16 +132,16 @@ export async function questionCheck(action: string, givenFields: ResponseData) {
     const questionId = givenFields.questionId;
     const pastId = givenFields.pastId;
     const userText = givenFields.userText;
-    const userAttempt = givenFields.userAttempt;
+    const attemptId = givenFields.attemptId;
     const resultId = givenFields.resultId;
-    const currentStage = givenFields.currentStage;
+    const currentStageNum = givenFields.currentStageNum;
 
     // This action will create the record that will be used to store the results and return the resultId to be used
     action = "sendStage";
     console.log("CURRENT ANSWER");
     console.log(userText);
     console.log("CURRENT ATTEMPT");
-    console.log(userAttempt);
+    console.log(attemptId);
     console.log("RESULT ID");
     console.log(resultId);
     console.log("CURRENT QUESTION ID");
@@ -177,9 +159,9 @@ export async function questionCheck(action: string, givenFields: ResponseData) {
                 'question_id' : questionId, 
                 'past_id' : pastId, 
                 'user_answer_text' : userText, 
-                'user_attempt' : userAttempt, 
+                'attempt_id' : attemptId, 
                 'score_id' : resultId,
-                'current_stage' : currentStage
+                'current_stage_num' : currentStageNum
             })
         });
 

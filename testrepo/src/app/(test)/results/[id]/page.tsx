@@ -2,13 +2,12 @@ export const dynamic = 'force-dynamic';
 
 import { Suspense } from "react";
 import * as resultUtils from "./actions";
-import ResultsDisplay from "@/app/components/ResultDisplay";
-import ResultInfo from "@/app/components/ResultInfo";
-import DownloadButtonPDF from "@/app/components/pdf/DownloadButtonPDF";
-import QuestionDisplay from "@/app/components/QuestionDisplay";
-import { ResultInfoSkeleton, QuestionDisplaySkeleton } from "@/app/components/skeletons";
-import { shuffleList, seedCreate } from "@/app/utils/utilFunctions";
-import { ResultQuestion, TestResult } from "@/app/types/sharedInterface";
+import ResultsDisplay from "@/components/ResultDisplay";
+import ResultInfo from "@/components/ResultInfo";
+import DownloadButtonPDF from "@/components/pdf/DownloadButtonPDF";
+import { ResultInfoSkeleton, QuestionDisplaySkeleton } from "@/components/skeletons";
+import { shuffleList, seedCreate } from "@/utils/utilFunctions";
+import { ResultQuestion, TestResult } from "@/types/sharedInterface";
 
 export default async function Results({ params } : { params: Promise<{ id : string }> }) {
   // Here, the slugging params will be dealt with

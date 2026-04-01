@@ -11,13 +11,12 @@ interface MessageProps {
     totalCorrect: number;
     testTimerOver: boolean;
     isSubmitted: boolean;
-
     //This function will handle the button
     onButtonChange: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 }
 
 export default function StageComplete(props: MessageProps) {
-
+    // DEBUG, log the values to check the current values
     console.log(`CURRENT STAGE: ${props.stageNum}`);
     console.log(`STAGE PASSED? ${props.stagePassed}`);
     console.log(`CURRENT DIFFICULTY: ${props.difficultyLevel}`);
@@ -30,8 +29,8 @@ export default function StageComplete(props: MessageProps) {
     let stageMessage, buttonText;
 
     if (props.testTimerOver) {
-        stageMessage = "Time is up! The test was submitted."
-        buttonText = "Go to Results"
+        stageMessage = "Time is up! The test was submitted.";
+        buttonText = "Go to Results";
     }
     else if (props.stageNum === 4) {
         stageMessage = "Congratulations! You have reached the end of the test!";

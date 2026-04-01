@@ -9,7 +9,7 @@ import {
 } from "react";
 import QuestionDisplay from "./QuestionDisplay";
 import { QuestionDisplaySkeleton } from "./skeletons";
-import { ResultQuestion } from "@/app/types/sharedInterface";
+import { ResultQuestion } from "@/types/sharedInterface";
 
 interface ResultsProps {
   answersPromise: Promise<ResultQuestion[]>;
@@ -17,7 +17,7 @@ interface ResultsProps {
 };
 
 export default function ResultsDisplay({ answersPromise, children } : ResultsProps) {
-
+  // Store the answers received
   const questions = use(answersPromise);
 
   // This useState will be used to track whether or not the button that allows the user to go back to the top of the page
@@ -30,9 +30,9 @@ export default function ResultsDisplay({ answersPromise, children } : ResultsPro
   // This const contains an arrow function that defines how the page will scroll from the button all the way to the top
   const topScroll = () => {
     if (topDivRef.current) {
-    topDivRef.current.scrollIntoView({behavior : "smooth", inline : "start"})
+      topDivRef.current.scrollIntoView({behavior : "smooth", inline : "start"});
     }
-  }
+  };
 
   // I haven't really needed to use EventListener, so let my explain. scroll is the type of event, handleScroll is the function called
   // if window.scrollY is greater than 2000 pixels, then display the button to go the top. Otherwise, do not
@@ -53,12 +53,11 @@ export default function ResultsDisplay({ answersPromise, children } : ResultsPro
 
   }, []);
 
-  //Fetch the user's graded responses from the test page
-  console.log("ABOUT TO ENTER THE HTML!");
-  console.log("HERE IS THE QUESTION AND ANSWER INFORMATION");
-  //console.log(questions);
-  console.log("QUESTIONS.LENGTH");
-  //console.log(questions.length);
+  // This useEffect is merely for debugging, check the values of the questions alongside its length
+  useEffect(() => {
+    console.log(`CURRENT VALUE OF QUESTIONS IN RESULTSDISPLAY: ${questions}`);
+    console.log(`CURRENT LENGTH OF QUESTIONS: ${questions.length}`);
+  }, []);
   
   return (
     <>
@@ -115,9 +114,9 @@ export default function ResultsDisplay({ answersPromise, children } : ResultsPro
             cursor-pointer justify-center 
             items-center text-center
           `}
-            type = "button" 
-            onClick = {topScroll}
-            disabled = {!showTopButton}
+          type = "button" 
+          onClick = {topScroll}
+          disabled = {!showTopButton}
         >
           Back to the Top
         </button>            

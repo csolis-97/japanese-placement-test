@@ -6,12 +6,10 @@ import TestStart from "./testStart/testStart";
 import TestTake from "./testTake/testTake";
 import { TimerSkeleton, QuestionDisplaySkeleton, ButtonSkeleton } from "./skeletons";
 import { seedCreate } from "../utils/utilFunctions";
-import { TestQuestion } from "@/app/types/sharedInterface";
-import { InfoData } from "@/app/types/sharedType";
+import { TestQuestion } from "@/types/sharedInterface";
+import { InfoData } from "@/types/sharedType";
 
-// This component receives a prop, which uses a type of string array, as the initial question data to be used
 export default function TestDisplay() {
-  
   // This useState will be used to set which component to display.
   const [currentDisplay, setCurrentDisplay] = useState<string>('start');
 
@@ -47,7 +45,7 @@ export default function TestDisplay() {
     console.log(`SHUFFLE SEED SET TO ${shuffleSeed}`);
   }
 
-  // This useEffect will re-render whenever there is a change to initialQuestionsPromise
+  // This useEffect will re-render whenever there is a change to initialQuestionsPromise.
   // It chains to function calls, one to print the data and another to throw any errors
   useEffect(() => {
     if (initialQuestionsPromise) {
@@ -59,43 +57,45 @@ export default function TestDisplay() {
   }, [initialQuestionsPromise]);
 
   // This useEffect is merely for debug, it will display the test info whenever it changes
+  // For objects, make sure that they are passed as a seperate argument
   useEffect(() => {
-    console.log(`HERE IS THE CURRENT VALUES OF TESTINFO: ${testInfo}`);
-  }, [testInfo]);
+    console.log("HERE IS THE CURRENT VALUES OF TESTINFO: ", testInfo);
+    console.log(`CURRENT DISPLAY VALUE?: ${currentDisplay}`);
+  }, [testInfo, currentDisplay]);
 
   return (
     <>
-    { // Render on start
-      currentDisplay === "start" && (
-        <TestStart 
-          initialTestInfo = {testInfo} 
-          setInitialTestInfo = {setTestInfo} 
-          currentDisplay = {currentDisplay} 
-          setCurrentDisplay = {setCurrentDisplay}
-          setInitialQuestionsPromise = {setInitialQuestionsPromise}
-        />
-      )
-    }
-    { // Render only once currentDisplay is switched to test, and the shuffleSeed has been set
-      currentDisplay === "test" && shuffleSeed && initialQuestionsPromise && (
-        <Suspense fallback = {
-          <div className = "w-full flex min-h-screen items-center">
-            <div className = "flex flex-col items-start justify-start">
-              <TimerSkeleton />
-              <QuestionDisplaySkeleton />
-              <div className = "flex w-full justify-end">
-                <ButtonSkeleton />
+      { // Render on start
+        currentDisplay === "start" && (
+          <TestStart 
+            initialTestInfo = {testInfo} 
+            setInitialTestInfo = {setTestInfo} 
+            setCurrentDisplay = {setCurrentDisplay}
+            setInitialQuestionsPromise = {setInitialQuestionsPromise}
+          />
+        )
+      }
+      { // Render only once currentDisplay is switched to test, and the shuffleSeed has been set
+        currentDisplay === "test" && shuffleSeed && initialQuestionsPromise && (
+          <Suspense fallback = {
+            <div className = "w-full flex min-h-screen items-center">
+              <div className = "flex flex-col items-start justify-start">
+                <TimerSkeleton />
+                <QuestionDisplaySkeleton />
+                <div className = "flex w-full justify-end">
+                  <ButtonSkeleton />
+                </div>
               </div>
             </div>
-          </div>
-        }>
-          <TestTake 
-            shuffleSeed = {shuffleSeed} 
-            currentTestInfo = {testInfo} 
-            initialQuestionsPromise = {initialQuestionsPromise}
-          />
-        </Suspense>
-      )
-    }
-    </>)
+          }>
+            <TestTake 
+              shuffleSeed = {shuffleSeed} 
+              currentTestInfo = {testInfo} 
+              initialQuestionsPromise = {initialQuestionsPromise}
+            />
+          </Suspense>
+        )
+      }
+    </>
+  );
 }

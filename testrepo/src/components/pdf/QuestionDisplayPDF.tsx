@@ -3,7 +3,7 @@ import {
     View, 
     StyleSheet
 } from "@react-pdf/renderer";
-import { ResultQuestion } from "@/app/types/sharedInterface";
+import { ResultQuestion } from "@/types/sharedInterface";
 
 // This const lists all of the styles used for the PDF. It tries to mimic all of the styling used in the actual components as closely as possible
 const styles = StyleSheet.create({

@@ -4,7 +4,7 @@ import {
     StyleSheet
 } from "@react-pdf/renderer";
 import { formatResultsDate } from "../../utils/utilFunctions";
-import { TestResult } from "@/app/types/sharedInterface";
+import { TestResult } from "@/types/sharedInterface";
 
 // This const lists all of the styles used for the PDF. It tries to mimic all of the styling used in the actual components as closely as possible
 const styles = StyleSheet.create({

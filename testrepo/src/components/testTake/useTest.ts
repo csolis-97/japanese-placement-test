@@ -7,35 +7,27 @@ import {
   use 
 } from "react";
 import { XORShift128 } from "random-seedable";
-import * as testUtils from "./testActions";
 import { useTestFlow } from "./useTestFlow";
 import { useHandleChange } from "./useHandleChange";
-import { TestQuestion } from "@/app/types/sharedInterface";
-import { InfoData, QuestionType } from "@/app/types/sharedType";
-import { errorType, shuffleList } from "@/app/utils/utilFunctions";
+import { TestQuestion } from "@/types/sharedInterface";
+import { InfoData, StageData, UserAnswerType} from "@/types/sharedType";
+import { errorType, shuffleList, shuffleResultsPrint } from "@/utils/utilFunctions";
 
 type HookProps = {
   shuffleSeed: XORShift128;
   currentTestInfo: InfoData;
   initialQuestionsPromise: Promise<TestQuestion[]>;
-}
+};
 
-export function useTest({
-  shuffleSeed, 
-  currentTestInfo, 
-  initialQuestionsPromise
-} : HookProps) {
-
+export function useTest({ shuffleSeed, currentTestInfo, initialQuestionsPromise } : HookProps) {
+  // Store the initial questions received
   const initialQuestions = use(initialQuestionsPromise) as TestQuestion[];  
   // This useState is used to store the questions received from the database
   const [questions, setQuestions] = useState<TestQuestion[]>(() => {
     const shuffleInitial = shuffleList(initialQuestions, shuffleSeed);
     console.log("INITIAL QUESTION ANSWER OPTIONS HAVE BEEN SHUFFLED!");
-    for (let i = shuffleInitial.length - 1; i > -1; i--) {
-      console.log(`HERE IS THE QUESTION ID FOR THE CURRENT QUESTION: ${shuffleInitial[i].question_id}`);
-      console.log(`HERE ARE THE ANSWER IDS FOR THE CURRENT QUESTION: ${shuffleInitial[i].answer_id}`);
-      console.log(`HERE ARE THE ANSWER TEXTS FOR THE CURRENT QUESTION: ${shuffleInitial[i].answer_text}`);
-    }
+    // DEBUG, print the shuffled questions to ensure it worked properly
+    shuffleResultsPrint(shuffleInitial);
     return shuffleInitial;
   });
 
@@ -43,59 +35,48 @@ export function useTest({
   const [currentQuestion, setCurrentQuestion] = useState<number>(0);
 
   // This useState is used for storing the info for the user's answers
-  const [answerArray, setAnswerArray] = useState<QuestionType[]>([]);
+  const [answerArray, setAnswerArray] = useState<UserAnswerType[]>([]);
 
   // This useState simply tracks whether or not the test has been submitted
   const [testIsSubmitted, setTestIsSubmitted] = useState<boolean>(false);
 
-  //Finally, useState for errors
+  // Finally, useState for errors
   const [error, setError] = useState<Error | null>();
 
-  //This useRef will be used to track all info of the stages of the test. Since the number of questions asked is
-  //dynamic, use the current question number modulus 5 to determine the current question index.
-  let stageInfo = useRef<testUtils.StageData>({
+  // This useRef will be used to track all info of the stages of the test. Since the number of questions asked is
+  // dynamic, use the current question number modulus 5 to determine the current question index.
+  let stageInfo = useRef<StageData>({
     'stageDifficulty': [initialQuestions[0].question_level],
     'stageNum' : 0,
     'stageQuestion' : currentQuestion % 5,
     'stageQuestionId' : initialQuestions.map((question: any) => question.question_id)
   });
 
-  //This useRef will track the user's graded answers
+  // This useRef will track all of the question IDs used, regardless of stage
+  const questionIdTrack = useRef<number[]>([]);
+
+  // This useRef will track the user's graded answers
   const gradedAnswers = useRef<boolean[]>([]);
 
-  //This useRef is used for storing the total number of answers correct per stage
+  // This useRef is used for storing the total number of answers correct per stage
   const correctTotal = useRef<number>(0);
 
-  // Make a const that holds a hook that handles the form operations here
   const flowHook = useTestFlow({
-    currentTestInfo, 
-    questions, 
-    setQuestions, 
-    answerArray, 
-    setAnswerArray, 
-    currentQuestion, 
-    stageInfo, 
-    gradedAnswers, 
-    correctTotal
+    state: { currentTestInfo, questions, currentQuestion, answerArray },
+    setState: { setQuestions, setAnswerArray },
+    ref: { stageInfo, questionIdTrack, gradedAnswers, correctTotal }
   });
 
   // Make another const for handling the changes in the UI here
   const changeHook = useHandleChange({
-    questions, 
-    answerArray, 
-    setAnswerArray, 
-    currentQuestion, 
-    setCurrentQuestion,
-    setTestIsSubmitted,
-    stageInfo, 
-    correctTotal, 
-    gradedAnswers, 
-    handleCorrectCount: flowHook.handleCorrectCount, 
-    handleQuestionRetrieve: flowHook.handleQuestionRetrieve, 
-    handleQuestionSubmit: flowHook.handleQuestionSubmit, 
-    handleTestForm: flowHook.handleTestForm,
-    handleForcedTestForm: flowHook.handleForcedTestForm,
-    handleForcedRouter: flowHook.handleForcedRouter
+    state: { questions, currentQuestion, answerArray },
+    setState: { setCurrentQuestion, setAnswerArray, setTestIsSubmitted },
+    ref: { stageInfo, gradedAnswers, correctTotal },
+    func: { 
+      handleQuestionRetrieve: flowHook.handleQuestionRetrieve, 
+      handleQuestionSubmit: flowHook.handleQuestionSubmit, 
+      handleTestForm: flowHook.handleTestForm 
+    }
   });
   
   if (error) {
@@ -122,13 +103,8 @@ export function useTest({
   // This useEffect will populate the answerArray ONLY when the answerArray is shorter than questions, and questions is not empty
   useEffect(() => {
     if (questions.length > 0 && answerArray.length < questions.length) {
-      const initialArray = questions.map((question: any) => ({
+      const initialArray = questions.map((question: TestQuestion) => ({
         'questionId' : question.question_id,
-        'questionText' : '',
-        'questionBody' : '',
-        'questionCategory' : '',
-        'answerId' : [],
-        'answerText' : [],
         'userText' : '',
         'alreadyAnswered' : false,
       }));
@@ -137,15 +113,9 @@ export function useTest({
   }, [questions]);
 
   return { 
-    questions, 
-    currentQuestion, 
-    answerArray,
-    testIsSubmitted, 
-    error, 
-    stageInfo, 
-    gradedAnswers, 
-    correctTotal,
-    flowHook,
-    changeHook 
+    questions, currentQuestion, answerArray,
+    testIsSubmitted, error, stageInfo, 
+    gradedAnswers, correctTotal,
+    flowHook, changeHook
   };
 }

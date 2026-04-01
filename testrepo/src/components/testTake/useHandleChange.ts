@@ -7,45 +7,39 @@ import {
   SetStateAction, 
   RefObject
 } from "react";
-import * as testUtils from "./testActions";
-import { TestQuestion } from "@/app/types/sharedInterface";
-import { QuestionType } from "@/app/types/sharedType";
-import { errorType } from "@/app/utils/utilFunctions";
+import { updateCurrentAnswer } from "./TestUtilities";
+import { TestQuestion } from "@/types/sharedInterface";
+import { StageData, UserAnswerType } from "@/types/sharedType";
+import { errorType } from "@/utils/utilFunctions";
 
 type HandleChangeProps = {
-  questions: TestQuestion[];
-  answerArray: QuestionType[];
-  setAnswerArray: Dispatch<SetStateAction<QuestionType[]>>;
-  currentQuestion: number;
-  setCurrentQuestion: Dispatch<SetStateAction<number>>;
-  setTestIsSubmitted: Dispatch<SetStateAction<boolean>>;
-  stageInfo: RefObject<testUtils.StageData>;
-  correctTotal: RefObject<number>;
-  gradedAnswers: RefObject<boolean[]>;
-  handleCorrectCount: (gradedAnswers: boolean[]) => Promise<void>;
-  handleQuestionRetrieve: (event: React.SyntheticEvent) => Promise<void>;
-  handleQuestionSubmit: (event?: React.SyntheticEvent, forcedSubmit?: boolean) => Promise<void>;
-  handleTestForm: (event: React.SyntheticEvent) => Promise<void>;
-  handleForcedTestForm: (forcedSubmit: boolean) => Promise<void>;
-  handleForcedRouter: (event: React.SyntheticEvent) => Promise<void>;
+  state: {
+    questions: TestQuestion[];
+    currentQuestion: number;
+    answerArray: UserAnswerType[]; 
+  },
+  setState: {
+    setAnswerArray: Dispatch<SetStateAction<UserAnswerType[]>>;
+    setCurrentQuestion: Dispatch<SetStateAction<number>>;
+    setTestIsSubmitted: Dispatch<SetStateAction<boolean>>;
+  },
+  ref: {
+    stageInfo: RefObject<StageData>;
+    correctTotal: RefObject<number>;
+    gradedAnswers: RefObject<boolean[]>;
+  },
+  func: {
+    handleQuestionRetrieve: (event: React.SyntheticEvent) => Promise<void>;
+    handleQuestionSubmit: (event?: React.SyntheticEvent, forcedSubmit?: boolean) => Promise<void>;
+    handleTestForm: (event: React.SyntheticEvent) => Promise<void>;
+  }
 };
 
-export function useHandleChange({ 
-  questions, 
-  answerArray, 
-  setAnswerArray, 
-  currentQuestion, 
-  setCurrentQuestion,
-  setTestIsSubmitted, 
-  stageInfo, 
-  correctTotal, 
-  gradedAnswers, 
-  handleCorrectCount, 
-  handleQuestionRetrieve, 
-  handleQuestionSubmit, 
-  handleTestForm,
-  handleForcedTestForm 
-} : HandleChangeProps) {
+export function useHandleChange({ state, setState, ref, func } : HandleChangeProps) {
+  const { questions, currentQuestion, answerArray } = state;
+  const { setAnswerArray, setCurrentQuestion, setTestIsSubmitted} = setState;
+  const { stageInfo, gradedAnswers, correctTotal } = ref;
+  const { handleQuestionRetrieve, handleQuestionSubmit, handleTestForm } = func;
 
   // This useState will track the user's selected answer for each question
   // THIS USESTATE IS MERELY FOR DEBUG
@@ -142,74 +136,62 @@ export function useHandleChange({
     //Take the name of the event that cause the current call to handleButtonChange
     const {name} = event.currentTarget;
 
-    //Call the setter function with prevData as its argument, then use it to map each answer to an index. If the index matches currentQuestion,
-    //set alreadyAnswered to true, the questionId to the current question in the stage, and keep the other attributes as is, otherwise do just answer.
-    setAnswerArray((prevData) =>
-      prevData.map((answer, index) =>
-      index === currentQuestion ? {
-        ...answer, 
-        questionId: questions[stageInfo.current.stageQuestion].question_id, 
-        alreadyAnswered: true
-      } : answer
-    ));
+    // setAnswerArray using prevData to update the currentQuestion's value and its question_id
+    setAnswerArray((prevData) => {
+      const newAnswerArray = updateCurrentAnswer(prevData, currentQuestion, questions[stageInfo.current.stageQuestion].question_id);
+      return newAnswerArray;
+    });
 
-    //Logic for the Test Submit Button
+    // Logic for the Test Submit Button
     if (name === 'submitButton') {
-      // Wait for the question to be submitted before going any further
-      await handleQuestionSubmit(event);
-
-      // Await the correct number of answers for the stage before moving on
-      await handleCorrectCount(gradedAnswers.current);
-
-      //Set submitted to true so that the modal can be displayed
-      setIsSubmitted(true);
+      try {
+        await handleQuestionSubmit(event);
+        // Set submitted to true so that the modal can be displayed
+        setIsSubmitted(true);
+      }
+      catch (error) {
+        console.log("ERROR WAS CAUGHT IN THE HANDLEBUTTONCHANGE OF THE USEHANDLECHANGE HOOK!");
+        setError(errorType(error));
+        console.log("ERROR WAS SET!");    
+      }
     }
     // Logic for the Next button
     else {
       setCurrentQuestion(prev => prev + 1);
-      //Also set the current stage's question too
+      // Also set the current stage's question too
       stageInfo.current.stageQuestion = stageInfo.current.stageQuestion + 1;
     }
   };
 
   // This function is similar to part of the code inhandleButtonChange, except for forced submissions, so it has no arguments
-  const handleForceSubmit = async (forcedSubmit: boolean) => {
-    // Call the setter function with prevData as its argument, then use it to map each answer to an index. If the index matches currentQuestion,
-    // set alreadyAnswered to true, the questionId to the current question in the stage, and keep the other attributes as is, otherwise do just answer.
-    setAnswerArray((prevData) =>
-      prevData.map((answer, index) =>
-      index === currentQuestion ? {
-        ...answer, 
-        questionId: questions[stageInfo.current.stageQuestion].question_id, 
-        alreadyAnswered: true
-      } : answer
-    ));
+  const handleForcedStageSubmit = async (forcedSubmit: boolean) => {
+    // setAnswerArray using prevData to update the currentQuestion's value and its question_id
+    setAnswerArray((prevData) => {
+      const newAnswerArray = updateCurrentAnswer(prevData, currentQuestion, questions[stageInfo.current.stageQuestion].question_id);
+      return newAnswerArray;
+    });
 
     // Use this const to check if the answers were already graded. If so, skip the await functions below
     const alreadyGradedCheck = gradedAnswers.current.filter(Boolean).length;
     console.log(`HERE ARE THE RESULTS OF ALREADYGRADEDCHECK: ${alreadyGradedCheck}`);
-    if (gradedAnswers.current.length != answerArray.length) {
-    // Wait for the question to be submitted before going any further. Since we are not using an event here, make the first argument undefined
-    await handleQuestionSubmit(undefined, forcedSubmit);
-
-    // Await the correct number of answers for the stage before moving on
-    await handleCorrectCount(gradedAnswers.current);
-
-    //Set submitted to true so that the modal can be displayed
-    setIsSubmitted(true);
-
-    // Set the test as submitted
-    setTestIsSubmitted(true);
+    try {
+      // no event, so make it undefined here
+      await handleQuestionSubmit(undefined, forcedSubmit);
+        // Set submitted to true so that the modal can be displayed
+        setIsSubmitted(true);
+        // Set the test as submitted
+        setTestIsSubmitted(true);
+    }
+    catch (error) {
+      console.log("ERROR WAS CAUGHT IN THE HANDLEBUTTONCHANGE OF THE USEHANDLECHANGE HOOK!");
+      setError(errorType(error));
+      console.log("ERROR WAS SET!");    
     }
   }
 
   return {
-    selectedAnswer,
-    isSubmitted,
-    isPending,
-    handleChange, 
-    handleNextStage, 
-    handleButtonChange,
-    handleForceSubmit
+    selectedAnswer, isSubmitted, isPending,
+    handleChange, handleNextStage, 
+    handleButtonChange, handleForcedStageSubmit
   };
 }

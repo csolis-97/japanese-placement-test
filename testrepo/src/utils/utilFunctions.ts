@@ -1,4 +1,4 @@
-import { TestQuestion } from "@/app/types/sharedInterface";
+import { TestQuestion } from "@/types/sharedInterface";
 import { XORShift128 } from "random-seedable";
 import Sqids from "sqids";
 
@@ -77,30 +77,27 @@ export function shuffleList(givenList: TestQuestion[], seedRNG: XORShift128) {
             //indexList.push(givenList[i].answer_id[j]);
             indexList.push(j);
         }
-        console.log(`FINISHED GETTING THE INDICES FOR THE INDEX LIST OF THE CURRENT TEST QUESTION: ${indexList}`);
+        //console.log(`FINISHED GETTING THE INDICES FOR THE INDEX LIST OF THE CURRENT TEST QUESTION: ${indexList}`);
         let shuffleIndex = JSON.parse(JSON.stringify(indexList));
         seedRNG.shuffle(shuffleIndex);
-        console.log(`FINISHED SHUFFLING THE INDICES FOR THE INDEX LIST OF THE CURRENT TEST QUESTION: ${shuffleIndex}`);
+        //console.log(`FINISHED SHUFFLING THE INDICES FOR THE INDEX LIST OF THE CURRENT TEST QUESTION: ${shuffleIndex}`);
         //Object.values(cloneSublist as testQuestion).map((value: testQuestion, index: number) => {
         const answerId = cloneSublist.answer_id.map((value: number, index: number) => {
-            //value = shuffleIndex[index];
             value = givenList[i].answer_id[shuffleIndex[index]];
-            console.log(`MAPPED ${givenList[i].answer_id[index]} AT INDEX ${index} OF GIVENLIST TO ${value} AT INDEX ${index} OF SHUFFLE INDEX!`);
+            //console.log(`MAPPED ${givenList[i].answer_id[index]} AT INDEX ${index} OF GIVENLIST TO ${value} AT INDEX ${index} OF SHUFFLE INDEX!`);
             return value;
         });
         const answerText = cloneSublist.answer_text.map((value: string, index: number) => {
-            //value = givenList[i].answer_text[shuffleIndex[index] - 1];
             value = givenList[i].answer_text[shuffleIndex[index]];
-            console.log(`MAPPED ${givenList[i].answer_text[index]} AT INDEX ${index} TO ${value} AT INDEX ${index} OF SHUFFLE INDEX!`);
+            //console.log(`MAPPED ${givenList[i].answer_text[index]} AT INDEX ${index} TO ${value} AT INDEX ${index} OF SHUFFLE INDEX!`);
             return value;
         });
         // Make a const so it can define if the correct_answer array is null or not below
         const correctValues = givenList[i].correct_answer;
         if (correctValues) {
             const correctAnswer = cloneSublist.correct_answer.map((value: boolean, index: number) => {
-                //value = correctValues[shuffleIndex[index] - 1];
                 value = correctValues[shuffleIndex[index]];
-                console.log(`MAPPED ${correctValues[index]} AT INDEX ${index} TO ${value} AT INDEX ${index} OF SHUFFLE INDEX!`);
+                //console.log(`MAPPED ${correctValues[index]} AT INDEX ${index} TO ${value} AT INDEX ${index} OF SHUFFLE INDEX!`);
                 return value;
             });
             // Set the shuffled array of correct_answer
@@ -111,10 +108,10 @@ export function shuffleList(givenList: TestQuestion[], seedRNG: XORShift128) {
         cloneSublist.answer_id = answerId;
         cloneSublist.answer_text = answerText;
 
-        console.log(`FINALIZED VERSION OF CLONESUBLIST LOOKS LIKE THIS AT THE CURRENT INDEX ${i}: ${JSON.stringify(cloneSublist)}`);
-        console.log(`FOR REFERENCE, ORIGINAL VERSION LOOKS LIKE THIS AT THE CURRENT INDEX ${i}: ${JSON.stringify(givenList[i])}`);
+        //console.log(`FINALIZED VERSION OF CLONESUBLIST LOOKS LIKE THIS AT THE CURRENT INDEX ${i}: ${JSON.stringify(cloneSublist)}`);
+        //console.log(`FOR REFERENCE, ORIGINAL VERSION LOOKS LIKE THIS AT THE CURRENT INDEX ${i}: ${JSON.stringify(givenList[i])}`);
         cloneList[i] = cloneSublist;
-        console.log(`REPLACED VALUES AT INDEX ${i} OF CLONELIST WITH THIS: ${JSON.stringify(cloneList[i])}`);
+        //console.log(`REPLACED VALUES AT INDEX ${i} OF CLONELIST WITH THIS: ${JSON.stringify(cloneList[i])}`);
     }
     // After exiting the for loops
     console.log(`NEW CLONELIST: ${JSON.stringify(cloneList)}`);
@@ -163,4 +160,14 @@ export function formatResultsDate(testDate: Date) {
         .replace("AM", "A.M.")
         .replace("PM", "P.M.");
     return editFormat;
+}
+
+// This function is purely for debugging. Print the question ids, answers ids, and the answer texts of each question after shuffling, to ensure
+// that they were shuffled properly.
+export function shuffleResultsPrint(givenList: TestQuestion[]) {
+    for (let i = givenList.length - 1; i > -1; i--) {
+        console.log(`HERE IS THE QUESTION ID FOR THE CURRENT QUESTION: ${givenList[i].question_id}`);
+        console.log(`HERE ARE THE ANSWER IDS FOR THE CURRENT QUESTION: ${givenList[i].answer_id}`);
+        console.log(`HERE ARE THE ANSWER TEXTS FOR THE CURRENT QUESTION: ${givenList[i].answer_text}`);
+    }   
 }

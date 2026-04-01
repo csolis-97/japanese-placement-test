@@ -1,6 +1,6 @@
 "use server";
 
-import { getURL, responseMessage } from "@/app/utils/utilFunctions";
+import { getURL, responseMessage } from "@/utils/utilFunctions";
 
 console.log(`"HERE IS THE URL BEING USED!" ${getURL()}`);
 

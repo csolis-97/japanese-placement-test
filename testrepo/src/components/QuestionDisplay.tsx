@@ -21,7 +21,8 @@ const wrongRadio = "text-red-600 bg-red-600";
 const regularNumberLabel = "text-gray-600 peer-checked:text-white";
 const coloredNumberLabel = "text-white";
 
-export default function QuestionDisplay(props : QuestionDisplayProps) {
+export default function QuestionDisplay(props: QuestionDisplayProps) {
+    // DEBUG, Log the values to check the current values
     console.log("ALREADY ANSWERED?");
     console.log(props.alreadyAnswered);
     console.log("LOG THE CORRECT ANSWERS IF ANY!!");
@@ -32,7 +33,6 @@ export default function QuestionDisplay(props : QuestionDisplayProps) {
     console.log(props.wasCorrect);
 
     return (
-        // Here, min-h-[40.625rem] is used to ensure that the height is a minimum of 650px, but will grow if content is bigger than that using h-fit.
         <div className = 
             {`
                 flex flex-col 
@@ -53,7 +53,6 @@ export default function QuestionDisplay(props : QuestionDisplayProps) {
                     <fieldset disabled = {props.alreadyAnswered} className = "sm:text-xl" >
                         { 
                             props.answerText?.map((answer, index) => {
-
                                 // Determine the boolean values for whether the answer is correct or incorrect, for styling purposes.
                                 const userChoseThisAnswer = props.selectedAnswer === answer;
                                 const isAnswerCorrect = Number(props.correctAnswer?.[index]) === 1;
