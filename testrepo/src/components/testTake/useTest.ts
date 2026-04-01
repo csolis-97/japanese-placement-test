@@ -34,7 +34,6 @@ export function useTest({ shuffleSeed, currentTestInfo, initialQuestionsPromise 
   const [currentQuestion, setCurrentQuestion] = useState<number>(0);
 
   // This useState is used for storing the info for the user's answers
-  // const [answerArray, setAnswerArray] = useState<UserAnswerType[]>([]);
   const [answerArray, setAnswerArray] = useState<UserAnswerType[]>(() => {
     const initialArray = questions.map((question: TestQuestion) => ({
     'questionId' : question.question_id,
