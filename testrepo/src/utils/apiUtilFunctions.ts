@@ -17,6 +17,8 @@ export type ActionKey = {
     givenFields: PossibleDataTypes
 };
 
+// This function is used to handle all the API calls to the backend, for fetching
+// and submitting
 export async function apiAction(params: ActionKey) {
     const mappedValues = translateMap(params.action, params.givenFields);
 
@@ -80,6 +82,8 @@ export async function apiAction(params: ActionKey) {
     }
 }
 
+// The helper function for apiAction, it handles all the mapping of values from
+// their names in the frontend to how they are referred to in the backend
 function translateMap(action: string, givenFields: PossibleDataTypes) {
     // This const will be used to properly match each possible field across the data types to the name it referred to as in JSON
     // when received in the backend

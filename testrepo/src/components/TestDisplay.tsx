@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { XORShift128 } from "random-seedable";
-import TestStart from "./testStart/testStart";
+import TestStart from "./TestStart";
 import TestTake from "./testTake/testTake";
 import { TimerSkeleton, QuestionDisplaySkeleton, ButtonSkeleton } from "./skeletons";
 import { seedCreate } from "../utils/utilFunctions";

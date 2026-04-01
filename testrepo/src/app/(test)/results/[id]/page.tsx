@@ -1,7 +1,6 @@
 export const dynamic = 'force-dynamic';
 
 import { Suspense } from "react";
-import * as resultUtils from "./actions";
 import { ActionKey, apiAction } from "@/utils/apiUtilFunctions";
 import ResultsDisplay from "@/components/ResultDisplay";
 import ResultInfo from "@/components/ResultInfo";
@@ -9,13 +8,14 @@ import DownloadButtonPDF from "@/components/pdf/DownloadButtonPDF";
 import { ResultInfoSkeleton, QuestionDisplaySkeleton } from "@/components/skeletons";
 import { shuffleList, seedCreate } from "@/utils/utilFunctions";
 import { ResultQuestion, TestQuestion, TestResult } from "@/types/sharedInterface";
+import { ResultRequest, AnswersRequest } from "@/types/sharedType";
 
 export default async function Results({ params } : { params: Promise<{ id : string }> }) {
   // Here, the slugging params will be dealt with
   const { id } = await params;
   const urlString = id ? id : "";
 
-  let resultsFormat: resultUtils.ResultRequest = {
+  let resultsFormat: ResultRequest = {
     'testDate' : new Date(),
     'urlId' : urlString
   };
@@ -37,7 +37,7 @@ export default async function Results({ params } : { params: Promise<{ id : stri
     console.log(`CURRENT VALUE OF RESULTNUM: ${resultNum}`);
     console.log(`CURRENT VALUE OF ATTEMPTNUM: ${attemptNum}`);
 
-    let answersFormat: resultUtils.AnswersRequest = {    
+    let answersFormat: AnswersRequest = {    
       'attemptId' : attemptNum,
       'resultId' : resultNum
     };
