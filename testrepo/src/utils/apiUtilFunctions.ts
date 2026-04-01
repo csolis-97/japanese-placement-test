@@ -59,7 +59,6 @@ export async function apiAction(params: ActionKey) {
 
         // If there were any errors in the response, it will be stored in this const and caught.
         const errorMessage = await responseMessage(response);
-
         const data = await response.json();
         console.log("Here is the response from the database:");
         console.log(data);
@@ -72,7 +71,6 @@ export async function apiAction(params: ActionKey) {
             params.givenFields.testDate = newTestDate;
             data['end_time'] = params.givenFields.testDate;
         }
-
         return data;
     }
     //If an error occured during retrieval, catch it and log it

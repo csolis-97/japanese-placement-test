@@ -35,7 +35,15 @@ export function useTest({ shuffleSeed, currentTestInfo, initialQuestionsPromise 
   const [currentQuestion, setCurrentQuestion] = useState<number>(0);
 
   // This useState is used for storing the info for the user's answers
-  const [answerArray, setAnswerArray] = useState<UserAnswerType[]>([]);
+  // const [answerArray, setAnswerArray] = useState<UserAnswerType[]>([]);
+  const [answerArray, setAnswerArray] = useState<UserAnswerType[]>(() => {
+    const initialArray = questions.map((question: TestQuestion) => ({
+    'questionId' : question.question_id,
+    'userText' : '',
+    'alreadyAnswered' : false,
+  }));
+    return initialArray;
+  });
 
   // This useState simply tracks whether or not the test has been submitted
   const [testIsSubmitted, setTestIsSubmitted] = useState<boolean>(false);
@@ -99,18 +107,6 @@ export function useTest({ shuffleSeed, currentTestInfo, initialQuestionsPromise 
     setError(errorType(error));
     console.log("ERROR WAS SET!");
   }
-
-  // This useEffect will populate the answerArray ONLY when the answerArray is shorter than questions, and questions is not empty
-  useEffect(() => {
-    if (questions.length > 0 && answerArray.length < questions.length) {
-      const initialArray = questions.map((question: TestQuestion) => ({
-        'questionId' : question.question_id,
-        'userText' : '',
-        'alreadyAnswered' : false,
-      }));
-      setAnswerArray(initialArray);
-    }
-  }, [questions]);
 
   return { 
     questions, currentQuestion, answerArray,

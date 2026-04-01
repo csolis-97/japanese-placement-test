@@ -1,18 +1,9 @@
 "use client";
 
-import { 
-  useState, 
-  useEffect, 
-  Dispatch, 
-  SetStateAction,
-} from "react";
+import { useState, useEffect, Dispatch, SetStateAction } from "react";
 import { TestQuestion } from "@/types/sharedInterface";
 import { InfoData, RequestData } from "@/types/sharedType";
-import { 
-  errorType, 
-  checkEmail, 
-  checkName 
-} from "@/utils/utilFunctions";
+import { errorType, checkEmail, checkName } from "@/utils/utilFunctions";
 import { ActionKey, apiAction } from "@/utils/apiUtilFunctions";
 
 //These variables will apply the styling for the regular and disabled buttons
@@ -34,11 +25,9 @@ interface InputErrors {
 };
 
 // The parameters will be the testInfo useState alongside its setter function. Since I am using an interface, add a colon and assign it to testProps
-export default function TestStart({
-  initialTestInfo, 
-  setInitialTestInfo,
-  setCurrentDisplay,
-  setInitialQuestionsPromise
+export default function TestStart({ 
+  initialTestInfo, setInitialTestInfo,
+  setCurrentDisplay, setInitialQuestionsPromise
 } : TestProps) {
 
   // Here's a useState to ensure that the record is only created and stored AFTER the user presses the submit button
@@ -50,7 +39,7 @@ export default function TestStart({
     emailError: ''
   });
 
-  //Finally, useState for errors
+  // Finally, useState for errors
   const [error, setError] = useState<Error | null>();
 
   // These two variables will be used to store the error messages (if any) returned from checking the user's email and name
@@ -81,7 +70,7 @@ export default function TestStart({
     return () => window.removeEventListener("beforeunload", beforeUnload);
   }, [isSubmitted]);
 
-  //Function to handle the submission form itself, once the user presses the submit button
+  // Function to handle the submission form itself, once the user presses the submit button
   async function handleSubmission(event: React.SubmitEvent) {
     // Default behavior of form submission, to send data and reload the page, is prevented here.
     event.preventDefault();
@@ -105,7 +94,6 @@ export default function TestStart({
         action: 'createRecord',
         givenFields: initialTestInfo
       };
-      //const fetchedInfo = await createRecord('createRecord', initialTestInfo);
       const fetchedInfo = await apiAction(infoRecord);
       // If the current result's ID in the database was successfully retrieved, set the value to resultId. Otherwise log an error.
       if (fetchedInfo) {
@@ -132,7 +120,6 @@ export default function TestStart({
       
         // Fetch the initial set of questions from the backend, with 'retrieveStage' as the action to take
         console.log("ABOUT TO FETCH THE INITIAL STAGE!");
-        //const fetchedQuestion = testUtils.questionFetch('retrieveStage', initialRequest) as Promise<TestQuestion[]>;
         const initialQuestionRecord: ActionKey = {
           action: 'retrieveStage',
           givenFields: initialRequest
@@ -156,19 +143,19 @@ export default function TestStart({
     }
   }
 
-  //Here the change in the user's input is tracked and handled.
+  // Here the change in the user's input is tracked and handled.
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     // This line refers to the name and value fields of an HTML input tag, and uses object destructuring to assign them values from
     // event.target, which itself refers to the HTML element that triggered the event in the first place.
     const {name, value} = event.target;
-    //Set the test info based off of the previous data, if there are any changes.
+    // Set the test info based off of the previous data, if there are any changes.
     setInitialTestInfo((prevData) => ({
-        ...prevData,
-        [name] : value
+      ...prevData,
+      [name] : value
     }));
   };
     
-  //HTML return for the test start
+  // HTML return for the test start
   return (
     <div className="sm:px-12 flex flex-col min-h-screen items-center justify-center gap-6">
       <h1 className = "text-2xl sm:text-3xl font-semibold text-black text-center">Japanese Placement Test</h1>

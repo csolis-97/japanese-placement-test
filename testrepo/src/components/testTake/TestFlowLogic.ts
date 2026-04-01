@@ -1,5 +1,5 @@
-import { ActionKey, apiAction } from "@/utils/apiUtilFunctions";
 import { handleStageInfoUpdate, expandAnswerArray } from "./TestUtilities";
+import { ActionKey, apiAction } from "@/utils/apiUtilFunctions";
 import { TestQuestion } from "@/types/sharedInterface";
 import { InfoData, SubmitData, StageData, UserAnswerType } from "@/types/sharedType";
 import { shuffleList, seedCreate, shuffleResultsPrint } from "@/utils/utilFunctions";
@@ -50,7 +50,6 @@ export async function stageRetrieve(params: StageRetrieveParams) {
       givenFields: currentRequest
     }
     const fetchedQuestion = await apiAction(fetchQuestionRecord);
-    //const fetchedQuestion = await testUtils.questionFetch('retrieveStage', currentRequest);
     if (fetchedQuestion) {
       console.log("FETCHED THE NEXT STAGE!");
       const nextStage = prepareStage(fetchedQuestion, params);
@@ -124,7 +123,6 @@ export async function stageSubmit(params: StageSubmitParams) {
       givenFields: currentAnswers
     }
     const fetchedGradedAnswer = await apiAction(fetchGradedRecord);
-    //const fetchedGradedAnswer = await testUtils.questionCheck('sendStage', currentAnswers);
     if (fetchedGradedAnswer) {
       console.log("ANSWERS FOR THE CURRENT STAGE SUBMITTED SUBMITTED!");
       const latestGradedAnswers = prepareGradedAnswers(fetchedGradedAnswer, gradedAnswers, STAGE_SIZE);
@@ -169,7 +167,6 @@ export async function testSubmit(params: TestSubmitParams) {
       givenFields: submitInfo
     }
     const fetchedResponse = await apiAction(testRecord);
-    //const fetchedResponse = await testUtils.submitTest('submitTest', submitInfo);
     console.log(fetchedResponse);
   }
   else {

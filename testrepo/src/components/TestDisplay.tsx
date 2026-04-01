@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from "react";
 import { XORShift128 } from "random-seedable";
 import TestStart from "./TestStart";
-import TestTake from "./testTake/testTake";
+import TestTake from "./TestTake/TestTake";
 import { TimerSkeleton, QuestionDisplaySkeleton, ButtonSkeleton } from "./skeletons";
 import { seedCreate } from "../utils/utilFunctions";
 import { TestQuestion } from "@/types/sharedInterface";
@@ -16,10 +16,10 @@ export default function TestDisplay() {
   // This useState will track test info, specifically the score ID used in the database for the record, alongside the user's current attempt number,
   // the email they entered, and their name.
   const [testInfo, setTestInfo] = useState<InfoData>({
-  'resultId' : 0,
-  'attemptId' : 0,
-  'email' : "",
-  'name' : ""
+    'resultId' : 0,
+    'attemptId' : 0,
+    'email' : "",
+    'name' : ""
   });
 
   const [initialQuestionsPromise, setInitialQuestionsPromise] = useState<Promise<TestQuestion[]>>();
