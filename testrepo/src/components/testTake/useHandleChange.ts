@@ -170,10 +170,6 @@ export function useHandleChange({ state, setState, ref, func } : HandleChangePro
       const newAnswerArray = updateCurrentAnswer(prevData, currentQuestion, questions[stageInfo.current.stageQuestion].question_id);
       return newAnswerArray;
     });
-
-    // Use this const to check if the answers were already graded. If so, skip the await functions below
-    const alreadyGradedCheck = gradedAnswers.current.filter(Boolean).length;
-    console.log(`HERE ARE THE RESULTS OF ALREADYGRADEDCHECK: ${alreadyGradedCheck}`);
     try {
       // no event, so make it undefined here
       await handleQuestionSubmit(undefined, forcedSubmit);

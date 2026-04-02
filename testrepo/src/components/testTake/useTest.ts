@@ -1,10 +1,6 @@
 "use client";
 
-import { 
-  useState, 
-  useRef, 
-  use 
-} from "react";
+import { useState, useRef, use } from "react";
 import { XORShift128 } from "random-seedable";
 import { useTestFlow } from "./useTestFlow";
 import { useHandleChange } from "./useHandleChange";
