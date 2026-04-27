@@ -94,8 +94,10 @@ export function generateFurigana(questionField: string, furigana: string | undef
             kanjiCounter++;
             lastCharIndex = lastKanjiIndex;
             lastKanjiIndex = index + 1;
-            // Now check if the kanji should not have furigana based on the question level. If it doesn't, return an empty fragment
-            if (furiganaNotNeeded) {
+            // Now check if the kanji should not have furigana based on the question level, or if the furigana is a dash 
+            // (for kanji compounds with irregular readings, the furigana is given to the kanji that is learned last, thus the dash).
+            // If it doesn't, return an empty fragment
+            if (furiganaNotNeeded || furiganaList[kanjiCounter - 1] === "ー") {
                 return (
                     <Fragment key = {String(index)}>{questionField.slice(lastCharIndex, index + 1)}</Fragment>
                 );

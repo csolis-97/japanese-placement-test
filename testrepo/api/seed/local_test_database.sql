@@ -16,10 +16,7 @@ DROP TABLE IF EXISTS users;
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     email VARCHAR(255) NOT NULL UNIQUE,
-    password VARCHAR(255),
-    username VARCHAR(255) UNIQUE,
     fullname VARCHAR(255) NOT NULL,
-    verified_status BOOLEAN,
     created_at DATETIME NOT NULL
 );
 
