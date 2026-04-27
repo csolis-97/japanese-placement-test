@@ -1,13 +1,13 @@
-export const dynamic = 'force-dynamic';
+"use server";
 
 import { Suspense } from "react";
-import { ActionKey, apiAction } from "@/utils/apiUtilFunctions";
+import { ActionKey, apiAction } from "@/utils/sharedApiRouter";
 import ResultsDisplay from "@/components/ResultDisplay";
 import ResultInfo from "@/components/ResultInfo";
 import DownloadButtonPDF from "@/components/pdf/DownloadButtonPDF";
 import { ResultInfoSkeleton, QuestionDisplaySkeleton } from "@/components/skeletons";
 import { shuffleList, seedCreate } from "@/utils/utilFunctions";
-import { ResultQuestion, TestQuestion, TestResult } from "@/types/sharedInterface";
+import { ResultQuestion, TestResult } from "@/types/sharedInterface";
 import { ResultRequest, AnswersRequest } from "@/types/sharedType";
 
 export default async function Results({ params } : { params: Promise<{ id : string }> }) {
@@ -48,7 +48,6 @@ export default async function Results({ params } : { params: Promise<{ id : stri
     };
 
     return apiAction(answersRecord)
-    //return resultUtils.answersData('retrieveAnswers', answersFormat)
     .then(answerData => {
       // You can change the logic of stage size here if there are more than 5 questions per stage
       const STAGE_SIZE = 5;

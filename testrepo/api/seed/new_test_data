@@ -1,0 +1,475 @@
+-- ////////////////////====================////////////////////
+--                    Beginner I: Lesson 1-5
+-- ////////////////////====================////////////////////
+
+-- ////////////////////==========Vocab==========////////////////////
+
+INSERT INTO questions (question_id, question_text, question_text_furigana, question_body, question_body_furigana, question_level, question_type) VALUES
+(1, 'Lesson 1: Vocabulary', '', 'What does "わたしはマイクです" mean?', '', 'Beginner I', 'vocab'),
+(2, 'Lesson 2: Vocabulary', '', 'Which particle marks the topic (main idea) of a sentence?', '', 'Beginner I', 'vocab'),
+(3, 'Lesson 3: Vocabulary', '', 'In which of the following situations is it incorrect to use ~さん after the name of a person?', '', 'Beginner I', 'vocab'),
+(4, 'Lesson 2: Vocabulary', '', 'What does "ここ" mean?', '', 'Beginner I', 'vocab'),
+(5, 'Lesson 4: Vocabulary', '', 'How do you say "now" in Japanese?', '', 'Beginner I', 'vocab'),
+
+INSERT INTO answers (question_id, answer_id, answer_text, answer_text_furigana, correct_answer) VALUES
+(1, 1, 'I am Mike.', '', TRUE),
+(1, 2, 'I know Mike.', '', FALSE),
+(1, 3, 'He is Mike.', '', FALSE),
+(1, 4, 'This is Mike.', '', FALSE),
+
+(2, 1, 'を', '', FALSE),
+(2, 2, 'は', '', TRUE),
+(2, 3, 'が', '', FALSE),
+(2, 4, 'に', '', FALSE),
+
+(3, 1, 'When talking to your parents', '', FALSE),
+(3, 2, 'When talking about your co-workers', '', FALSE),
+(3, 3, 'When talking about yourself', '', TRUE),
+(3, 4, 'When talking to your neighbor', '', FALSE),
+
+(4, 1, 'here', '', TRUE),
+(4, 2, 'there', '', FALSE),
+(4, 3, 'over there', '', FALSE),
+(4, 4, 'where', '', FALSE),
+
+(5, 1, 'きょう', '', FALSE),
+(5, 2, 'いま', '', TRUE),
+(5, 3, 'あした', '', FALSE),
+(5, 4, 'きのう', '', FALSE),
+
+-- ////////////////////==========Grammar==========////////////////////
+
+INSERT INTO questions (question_id, question_text, question_text_furigana, question_body, question_body_furigana, question_level, question_type) VALUES
+(6, 'Lesson 1: Grammar', '', 'What does "おきます" mean?', '', 'Beginner I', 'grammar'),
+(7, 'Lesson 2: Grammar', '', 'How would you say, "This book is my book."?', '', 'Beginner I', 'grammar'),
+(8, 'Lesson 3: Grammar', '', 'Which particle indicates the means or method by which you do something?', '', 'Beginner I', 'grammar'),
+(9, 'Lesson 4: Grammar', '', 'What does "はじめまして" mean?', '', 'Beginner I', 'grammar'),
+(10, 'Lesson 5: Grammar', '', 'Which particle is used to connect two or more nouns in a list?', '', 'Beginner I', 'grammar'),
+
+INSERT INTO answers (question_id, answer_id, answer_text, answer_text_furigana, correct_answer) VALUES
+(6, 1, 'to wake up', '', TRUE),
+(6, 2, 'to sleep', '', FALSE),
+(6, 3, 'to eat', '', FALSE),
+(6, 4, 'to drink', '', FALSE),
+
+(7, 1, 'ほんはこのわたしです。', '', FALSE),
+(7, 2, 'ほんはこれのわたしです。', '', FALSE),
+(7, 3, 'このほんはわたしのほんです。', '', TRUE),
+(7, 4, 'これほんはわたしのほんです。', '', FALSE),
+
+(8, 1, 'は', '', FALSE),
+(8, 2, 'を', '', FALSE),
+(8, 3, 'が', '', FALSE),
+(8, 4, 'で', '', TRUE),
+
+(9, 1, 'Good morning', '', FALSE),
+(9, 2, 'Nice to meet you', '', TRUE),
+(9, 3, 'Thank you', '', FALSE),
+(9, 4, 'Goodbye', '', FALSE),
+
+(10, 1, 'で', '', FALSE),
+(10, 2, 'は', '', FALSE),
+(10, 3, 'と', '', TRUE),
+(10, 4, 'ね', '', FALSE),
+
+-- ////////////////////==========Reading==========////////////////////
+
+INSERT INTO questions (question_id, question_text, question_text_furigana, question_body, question_body_furigana, question_level, question_type) VALUES
+(11, 'Lesson 1: Reading Comprehension', '', 
+'初めまして。わたしはジョン・ワットです。イギリスから来ました。どうぞよろしくお願いします。
+\nFrom which country is the person who introduced themselves?', 
+'はじ　き', 
+'Advanced', 'reading_comp'),
+(12, 'Lesson 2: Reading Comprehension', '', 
+'山田:この傘はミラーさんのですか。\nミラー:いいえ、違います。\n山田:だれのですか。\n佐藤:あ、わたしのです。ありがとうございます。
+\nWho is asking around for the owner of the umbrella?', 
+'やま　だ　かさ　ちが　やま　だ　さ　とう', 
+'Advanced', 'reading_comp'),
+(13, 'Lesson 3: Reading Comprehension', '', 
+'A:すみません。これはどこのコーヒーですか。\nB:インドネシアのです。\nA:いくらですか。\nB:600円です。
+\nWhat is the main gist the conversation above?', 
+'えん', 
+'Advanced', 'reading_comp'),
+(14, 'Lesson 4: Reading Comprehension', '', 
+'A:きのう12時まで勉強しました。\nB: そうですか。何時に寝ましたか。\nA:1時に寝ました。\nB:大変ですね。
+\nUp until what time did person A stay up? When did they go to bed?', 
+'じ　べん　きょう　なん　じ　ね　じ　ね　たい　へん', 
+'Advanced', 'reading_comp'),
+(15, 'Lesson 5: Reading Comprehension', '', 
+'A:先週、東京へ行きました。これ、お土産です。どうぞ。\nB:ありがとうございます。一人で行きましたか。
+\nA:いいえ、友達と行きました。\nB:何で行きましたか。\nA:バスで行きました。
+\nHow did Person A go to Tokyo last week?', 
+'せん　しゅう　とう　きょう　い　みや　げ　ひと　り　い　
+とも　だち　い　なん　い　い', 
+'Advanced', 'reading_comp'),
+
+INSERT INTO answers (question_id, answer_id, answer_text, answer_text_furigana, correct_answer) VALUES
+(11, 1, 'Ireland', '', FALSE),
+(11, 2, 'The Netherlands', '', FALSE),
+(11, 3, 'The United States', '', FALSE),
+(11, 4, 'The United Kingdom', '', TRUE),
+
+(12, 1, 'Mr. Yamada', '', TRUE),
+(12, 2, 'Ms. Sato', '', FALSE),
+(12, 3, 'Mr. Miller', '', FALSE),
+(12, 4, 'Ms. Yamada', '', FALSE),
+
+(13, 1, 'Person A asks where the wine was made and how much it costs. Person B says it''s from France and it costs ¥6,000.', '', FALSE),
+(13, 2, 'Person A asks where the coffee is from and how much it costs. Person B says it''s from Indonesia and it costs ¥600.', '', TRUE),
+(13, 3, 'Person B asks where the coffee is from and how much it costs. Persona A says it''s from Indonesia and it costs ¥600.', '', FALSE),
+(13, 4, 'Person B asks where the wine was made and how much it costs. Person A says it''s from France and it costs ¥6,000.', '', FALSE),
+
+(14, 1, 'Person A stood up studying until 2 o''clock and went to bed at 12 o''clock.', '', FALSE),
+(14, 2, 'Person A stood up studying until 12 o''clock and went to bed at 2 o''clock.', '', FALSE),
+(14, 3, 'Person A stood up studying until 11 o''clock and went to bed at 1 o''clock.', '', FALSE),
+(14, 4, 'Person A stood up studying until 12 o''clock and went to bed at 1 o''clock.', '', TRUE),
+
+(15, 1, 'By boat', '', FALSE),
+(15, 2, 'By taxi', '', FALSE),
+(15, 3, 'By bus', '', TRUE),
+(15, 4, 'By the shinkansen', '', FALSE),
+
+-- ////////////////////==========Listening==========////////////////////
+
+INSERT INTO questions (question_id, question_text, question_body, question_level, question_type, question_audio) VALUES
+(16, 'Lesson 1: Listening Comprehension', 'Who is Miller introducing himself to?', 'Beginner I', 'listening_comp', '/audio/minna_shokyu_1_001.mp3'),
+(17, 'Lesson 2: Listening Comprehension', 'What is Mr. Santos talking to Mr. Yamada about?', 'Beginner I', 'listening_comp', '/audio/minna_shokyu_1_005.mp3'),
+(18, 'Lesson 3: Listening Comprehension', 'What is the price of the wine that Maria bought?', 'Beginner I', 'listening_comp', '/audio/minna_shokyu_1_009.mp3'),
+(19, 'Lesson 4: Listening Comprehension', 'Until what time is the restauraunt open? What days are they closed?', 'Beginner I', 'listening_comp', '/audio/minna_shokyu_1_012.mp3'),
+(20, 'Lesson 5: Listening Comprehension', 'Which railway line goes to Koshien?', 'Beginner I', 'listening_comp', '/audio/minna_shokyu_1_017.mp3'),
+
+INSERT INTO answers (question_id, answer_id, answer_text, correct_answer) VALUES
+(16, 1, 'Ms. Sato', TRUE),
+(16, 2, 'Mr. Yamada', FALSE),
+(16, 3, 'Mr. Sato', FALSE),
+(16, 4, 'Ms. Yamada', FALSE),
+
+(17, 1, 'He is looking for apartment number 408.', FALSE),
+(17, 2, 'He is asking Mr. Yamada how he is doing.', FALSE),
+(17, 3, 'He is talking about drinking coffee.', FALSE),
+(17, 4, 'He is introducing himself to Mr. Yamada.', TRUE),
+
+(18, 1, '¥2,700', FALSE),
+(18, 2, '¥2,500', TRUE),
+(18, 3, '¥3,500', FALSE),
+(18, 4, '¥1,500', FALSE),
+
+(19, 1, 'They are open until 10. They are closed on Saturdays.', FALSE),
+(19, 2, 'They are open until 1. They are closed on Saturdays.', FALSE),
+(19, 3, 'They are open until 10. They are closed on Sundays.', TRUE),
+(19, 4, 'They are open until 1. They are closed on Sundays.', FALSE),
+
+(20, 1, 'Number 3', FALSE),
+(20, 2, 'Number 7', FALSE),
+(20, 3, 'Number 9', FALSE),
+(20, 4, 'Number 5', TRUE),
+
+-- ONLY EDIT IT THE QUESTION BODY AND THE ANSWER TEXTS FOR BEGINNER II READING, THE ANSWER OPTIONS BEING TRUE/FALSE HAS ALREADY BEEN CHANGED
+
+-- ////////////////////====================////////////////////
+--                    Beginner II: Lesson 6-10
+-- ////////////////////====================////////////////////
+
+-- ////////////////////==========Reading==========////////////////////
+
+INSERT INTO questions (question_id, question_text, question_text_furigana, question_body, question_body_furigana, question_level, question_type) VALUES
+(31, 'Lesson 6: Reading Comprehension', '', 
+'初めまして。わたしはジョン・ワットです。イギリスから来ました。どうぞよろしくお願いします。
+\nFrom which country is the person who introduced themselves?', 
+'はじ　き', 
+'Advanced', 'reading_comp'),
+(32, 'Lesson 7: Reading Comprehension', '', 
+'山田:この傘はミラーさんのですか。\nミラー:いいえ、違います。\n山田:だれのですか。\n佐藤:あ、わたしのです。ありがとうございます。
+\nWho is asking around for the owner of the umbrella?', 
+'やま　だ　かさ　ちが　やま　だ　さ　とう', 
+'Advanced', 'reading_comp'),
+(33, 'Lesson 8: Reading Comprehension', '', 
+'A:すみません。これはどこのコーヒーですか。\nB:インドネシアのです。\nA:いくらですか。\nB:600円です。
+\nWhat is the main gist the conversation above?', 
+'えん', 
+'Advanced', 'reading_comp'),
+(34, 'Lesson 9: Reading Comprehension', '', 
+'A:きのう12時まで勉強しました。\nB: そうですか。何時に寝ましたか。\nA:1時に寝ました。\nB:大変ですね。
+\nUp until what time did person A stay up? When did they go to bed?', 
+'じ　べん　きょう　なん　じ　ね　じ　ね　たい　へん', 
+'Advanced', 'reading_comp'),
+(35, 'Lesson 10: Reading Comprehension', '', 
+'A:先週、東京へ行きました。これ、お土産です。どうぞ。\nB:ありがとうございます。一人で行きましたか。
+\nA:いいえ、友達と行きました。\nB:何で行きましたか。\nA:バスで行きました。
+\nHow did Person A go to Tokyo last week?', 
+'せん　しゅう　とう　きょう　い　みや　げ　ひと　り　い　
+とも　だち　い　なん　い　い', 
+'Advanced', 'reading_comp'),
+
+INSERT INTO answers (question_id, answer_id, answer_text, answer_text_furigana, correct_answer) VALUES
+(31, 1, 'Ireland', '', FALSE),
+(31, 2, 'The Netherlands', '', TRUE),
+(31, 3, 'The United States', '', FALSE),
+(31, 4, 'The United Kingdom', '', FALSE),
+
+(32, 1, 'Mr. Yamada', '', FALSE),
+(32, 2, 'Ms. Sato', '', FALSE),
+(32, 3, 'Mr. Miller', '', TRUE),
+(32, 4, 'Ms. Yamada', '', FALSE),
+
+(33, 1, 'Person A asks where the wine was made and how much it costs. Person B says it''s from France and it costs ¥6,000.', '', FALSE),
+(33, 2, 'Person A asks where the coffee is from and how much it costs. Person B says it''s from Indonesia and it costs ¥600.', '', FALSE),
+(33, 3, 'Person B asks where the coffee is from and how much it costs. Persona A says it''s from Indonesia and it costs ¥600.', '', FALSE),
+(33, 4, 'Person B asks where the wine was made and how much it costs. Person A says it''s from France and it costs ¥6,000.', '', TRUE),
+
+(34, 1, 'Person A stood up studying until 2 o''clock and went to bed at 12 o''clock.', '', TRUE),
+(34, 2, 'Person A stood up studying until 12 o''clock and went to bed at 2 o''clock.', '', FALSE),
+(34, 3, 'Person A stood up studying until 11 o''clock and went to bed at 1 o''clock.', '', FALSE),
+(34, 4, 'Person A stood up studying until 12 o''clock and went to bed at 1 o''clock.', '', FALSE),
+
+(35, 1, 'By boat', '', FALSE),
+(35, 2, 'By taxi', '', FALSE),
+(35, 3, 'By bus', '', TRUE),
+(35, 4, 'By the shinkansen', '', FALSE),
+
+-- ////////////////////==========Listening==========////////////////////
+
+INSERT INTO questions (question_id, question_text, question_body, question_level, question_type, question_audio) VALUES
+(36, 'Lesson 6: Listening Comprehension', 'Who is Miller introducing himself to?', 'Beginner II', 'listening_comp', '/audio/minna_shokyu_1_021.mp3'),
+(37, 'Lesson 7: Listening Comprehension', 'What is Mr. Santos talking to Mr. Yamada about?', 'Beginner II', 'listening_comp', '/audio/minna_shokyu_1_024.mp3'),
+(38, 'Lesson 8: Listening Comprehension', 'What is the price of the wine that Maria bought?', 'Beginner II', 'listening_comp', '/audio/minna_shokyu_1_028.mp3'),
+(39, 'Lesson 9: Listening Comprehension', 'Until what time is the restauraunt open? What days are they closed?', 'Beginner II', 'listening_comp', '/audio/minna_shokyu_1_032.mp3'),
+(40, 'Lesson 10: Listening Comprehension', 'Which railway line goes to Koshien?', 'Beginner II', 'listening_comp', '/audio/minna_shokyu_1_035.mp3'),
+
+INSERT INTO answers (question_id, answer_id, answer_text, correct_answer) VALUES
+(36, 1, 'Ms. Sato', FALSE),
+(36, 2, 'Mr. Yamada', TRUE),
+(36, 3, 'Mr. Sato', FALSE),
+(36, 4, 'Ms. Yamada', FALSE),
+
+(37, 1, 'He is looking for apartment number 408.', FALSE),
+(37, 2, 'He is asking Mr. Yamada how he is doing.', FALSE),
+(37, 3, 'He is talking about drinking coffee.', TRUE),
+(37, 4, 'He is introducing himself to Mr. Yamada.', FALSE),
+
+(38, 1, '¥2,700', FALSE),
+(38, 2, '¥2,500', FALSE),
+(38, 3, '¥3,500', TRUE),
+(38, 4, '¥1,500', FALSE),
+
+(39, 1, 'They are open until 10. They are closed on Saturdays.', FALSE),
+(39, 2, 'They are open until 1. They are closed on Saturdays.', FALSE),
+(39, 3, 'They are open until 10. They are closed on Sundays.', FALSE),
+(39, 4, 'They are open until 1. They are closed on Sundays.', TRUE),
+
+(40, 1, 'Number 3', FALSE),
+(40, 2, 'Number 7', TRUE),
+(40, 3, 'Number 9', FALSE),
+(40, 4, 'Number 5', FALSE),
+
+-- ////////////////////====================////////////////////
+--                    Intermediate I: Lesson 11-18
+-- ////////////////////====================////////////////////
+
+-- ////////////////////==========Listening==========////////////////////
+
+INSERT INTO questions (question_id, question_text, question_body, question_level, question_type, question_audio) VALUES
+(56, 'Lesson 11: Listening Comprehension', 'Who is Miller introducing himself to?', 'Intermediate I', 'listening_comp', '/audio/minna_shokyu_1_039.mp3'),
+(57, 'Lesson 13: Listening Comprehension', 'What is Mr. Santos talking to Mr. Yamada about?', 'Intermediate I', 'listening_comp', '/audio/minna_shokyu_1_046.mp3'),
+(58, 'Lesson 15: Listening Comprehension', 'What is the price of the wine that Maria bought?', 'Intermediate I', 'listening_comp', '/audio/minna_shokyu_1_053.mp3'),
+(59, 'Lesson 17: Listening Comprehension', 'Until what time is the restauraunt open? What days are they closed?', 'Intermediate I', 'listening_comp', '/audio/minna_shokyu_1_060.mp3'),
+(60, 'Lesson 18: Listening Comprehension', 'Which railway line goes to Koshien?', 'Intermediate I', 'listening_comp', '/audio/minna_shokyu_1_063.mp3'),
+
+INSERT INTO answers (question_id, answer_id, answer_text, correct_answer) VALUES
+(56, 1, 'Ms. Sato', FALSE),
+(56, 2, 'Mr. Yamada', TRUE),
+(56, 3, 'Mr. Sato', FALSE),
+(56, 4, 'Ms. Yamada', FALSE),
+
+(57, 1, 'He is looking for apartment number 408.', FALSE),
+(57, 2, 'He is asking Mr. Yamada how he is doing.', FALSE),
+(57, 3, 'He is talking about drinking coffee.', TRUE),
+(57, 4, 'He is introducing himself to Mr. Yamada.', FALSE),
+
+(58, 1, '¥2,700', FALSE),
+(58, 2, '¥2,500', FALSE),
+(58, 3, '¥3,500', TRUE),
+(58, 4, '¥1,500', FALSE),
+
+(59, 1, 'They are open until 10. They are closed on Saturdays.', TRUE),
+(59, 2, 'They are open until 1. They are closed on Saturdays.', FALSE),
+(59, 3, 'They are open until 10. They are closed on Sundays.', FALSE),
+(59, 4, 'They are open until 1. They are closed on Sundays.', FALSE),
+
+(60, 1, 'Number 3', FALSE),
+(60, 2, 'Number 7', FALSE),
+(60, 3, 'Number 9', FALSE),
+(60, 4, 'Number 5', TRUE),
+
+-- ////////////////////====================////////////////////
+--                    Interediate II: Lesson 19-25
+-- ////////////////////====================////////////////////
+
+-- ////////////////////==========Listening==========////////////////////
+
+INSERT INTO questions (question_id, question_text, question_body, question_level, question_type, question_audio) VALUES
+(76, 'Lesson 19: Listening Comprehension', 'Who is Miller introducing himself to?', 'Intermediate II', 'listening_comp', '/audio/minna_shokyu_1_066.mp3'),
+(77, 'Lesson 21: Listening Comprehension', 'What is Mr. Santos talking to Mr. Yamada about?', 'Intermediate II', 'listening_comp', '/audio/minna_shokyu_1_072.mp3'),
+(78, 'Lesson 23: Listening Comprehension', 'What is the price of the wine that Maria bought?', 'Intermediate II', 'listening_comp', '/audio/minna_shokyu_1_078.mp3'),
+(79, 'Lesson 24: Listening Comprehension', 'Until what time is the restauraunt open? What days are they closed?', 'Intermediate II', 'listening_comp', '/audio/minna_shokyu_1_082.mp3'),
+(80, 'Lesson 25: Listening Comprehension', 'Which railway line goes to Koshien?', 'Intermediate II', 'listening_comp', '/audio/minna_shokyu_1_085.mp3'),
+
+INSERT INTO answers (question_id, answer_id, answer_text, correct_answer) VALUES
+(76, 1, 'Ms. Sato', TRUE),
+(76, 2, 'Mr. Yamada', FALSE),
+(76, 3, 'Mr. Sato', FALSE),
+(76, 4, 'Ms. Yamada', FALSE),
+
+(77, 1, 'He is looking for apartment number 408.', FALSE),
+(77, 2, 'He is asking Mr. Yamada how he is doing.', FALSE),
+(77, 3, 'He is talking about drinking coffee.', FALSE),
+(77, 4, 'He is introducing himself to Mr. Yamada.', TRUE),
+
+(78, 1, '¥2,700', FALSE),
+(78, 2, '¥2,500', FALSE),
+(78, 3, '¥3,500', TRUE),
+(78, 4, '¥1,500', FALSE),
+
+(79, 1, 'They are open until 10. They are closed on Saturdays.', TRUE),
+(79, 2, 'They are open until 1. They are closed on Saturdays.', FALSE),
+(79, 3, 'They are open until 10. They are closed on Sundays.', FALSE),
+(79, 4, 'They are open until 1. They are closed on Sundays.', FALSE),
+
+(80, 1, 'Number 3', FALSE),
+(80, 2, 'Number 7', TRUE),
+(80, 3, 'Number 9', FALSE),
+(80, 4, 'Number 5', FALSE),
+
+-- ////////////////////====================////////////////////
+--                    Advanced: Lesson 26-32
+-- ////////////////////====================////////////////////
+
+-- ////////////////////==========Reading==========////////////////////
+
+INSERT INTO questions (question_id, question_text, question_text_furigana, question_body, question_body_furigana, question_level, question_type) VALUES
+(91, 'Lesson 26: Reading Comprehension', '', 
+'星出彰彦様
+\nお帰りなさい。宇宙はどうでしたか。宇宙船の外は怖くなかったですか。宇宙はいつも暗いですが、昼と夜はどうやってわかるんですか。時間は日本の時間を使うんですか。宇宙の時間があるんですか。
+\n宇宙ステーションの生活は地球の生活とどう違うんですか。食事は1日3回ですか。毎日運動しますか。シャワーを浴びることはできるんですか。宇宙飛行士はみんな英語で話すんですか。
+\n僕も宇宙飛行士になりたいんですが、どんな勉強をしたらいいですか。教えてください。
+\n山田太郎
+\n Why is Taro asking Mr. Hoshide so many questions? What is he interested in?', 
+'ほし　で　あき　ひこ　さま　
+かえ　う　ちゅう　う　ちゅう　せん　そと　こわ　う　ちゅう　くら　ひる　よる　じ　かん　に　ほん　じ　かん　つか　う　ちゅう　じ　かん　
+う　ちゅう　せい　かつ　ち　きゅう　せい　かつ　ちが　しょく　じ　にち　かい　まい　にち　うん　どう　あ　う　ちゅう　ひ　こう　し　えい　ご　はな　
+ぼく　う　ちゅう　ひ　こう　し　べん　きょう　おし　
+やま　だ　た　ろう', 
+'Advanced', 'reading_comp'),
+(92, 'Lesson 28: Reading Comprehension', '', 
+'留学生パーティーのお知らせ
+\n日本の学生といっしょにパーティーをします。いろいろな国の料理を食べながら日本人と友達になりましょう。
+\nカラオケもあるし、ダンスもできるし、すてきなプレゼントもあります。皆さん、ぜひ参加してください。
+\n      日にち      12月3日（土）午後4時～8時
+\n      場所        さくら大学体育館
+\n※   パーティーは無料です。
+\nWhy are the exchange students holding a party? If Karina''s part time job that day ends at 2 p.m. would she be able to go?', 
+'りゅう　がく　せい　し　
+に　ほん　がく　せい　くに　りょう　り　た　に　ほん　じん　とも　だち　
+みな　さん　か　
+ひ　がつ　みっか　ど　ご　ご　じ　じ　
+ば　しょ　だい　がく　たい　いく　かん　
+む　りょう',
+'Advanced', 'reading_comp'),
+(93, 'Lesson 30: Reading Comprehension', '', 
+'わたしは部屋の壁に丸くて青い月の写真がはってあります。いつもベッドに入るまえに、写真を見ます。
+\nある晩、夢を見ました。わたしは広い部屋にいました。窓の外に地球が見えました。「ここは月のうちだ」と思いました。うれしかったです。
+でも、よく見ると、壁には何も掛けてありません。机やいすもありません。何も飾ってありません。わたしは「こんなうちは嫌だ」と大きい声で言いました。
+\nすると、目が覚めました。わたしの部屋にはベッドや机が置いてあります。壁にカレンダーも掛けてあります。本棚に好きな本がいろいろ並べてあります。夢で見たうちよりいいだと思いました。
+\nWhat did the writer dream about? How did it make him feel?', 
+'へ　や　かべ　まる　あお　つき　しゃ　しん　はい　しゃ　しん　み　
+ばん　ゆめ　み　ひろ　へ　や　まど　そと　ち　きゅう　み　つき　おも　
+み　かべ　なに　か　つくえ　なに　かざ　いや　おお　こえ　い　
+め　さ　へ　や　つくえ　お　かべ　か　ほん　だな　す　ほん　なら　ゆめ　み　おも　',
+'Advanced', 'reading_comp'),
+(94, 'Lesson 31: Reading Comprehension', '', 
+'わたしは九州の小さい村で生まれた。高校を卒業して、東京へ来てから、もう10年になる。今自動車会社で働いている。
+\n田舎にいたときは、映画館もないし、レストランもないし、田舎の生活は嫌だと思った。でも最近疲れたときや寂しいとき、よく田舎の青い空や緑の山を思い出す。
+目を閉じると、友達と泳いだ川の音が聞こえる。
+\nわたしは来年の春、会社をやめて、田舎へ帰るつもりだ。そして、都会の子どもたちが自由に遊べる「山の学校」をいつか作ろうと思っている。
+\nIn the past, why did the writer of this passage dislike life in the countryside? What does he think now?', 
+'きゅう　しゅう　ちい　むら　う　こう　こう　そつ　ぎょう　とう　きょう　き　年　いま　じ　どう　しゃ　がい　しゃ　はたら　
+い　なか　えい　が　かん　い　なか　せい　かつ　いや　さい　きん　つか　さび　い　なか　あお　そら　みどり　やま　おも　だ　
+め　と　とも　だち　およ　かわ　おと　き　
+らい　ねん　はる　かい　しゃ　い　なか　かえ　と　かい　こ　じ　ゆう　あそ　やま　がっ　こう　つく　おも',
+'Advanced', 'reading_comp'),
+(95, 'Lesson 32: Reading Comprehension', '', 
+'牡牛座（4月21日ー5月21日）
+\n☆仕事．．．．．．何か新しい仕事を始めると、成功するでしょう。でも、働きすぎには気をつけたほうがいいでしょう。
+\n☆お金．．．．．．今月はたくさんお金を使っても、困らないでしょう。宝くじを買うと、当たるかもしれません。
+\n☆健康．．．．．．東の方へ旅行したり、スポーツをしたりすると、元気になります。でも、足のけがには気をつけてください。
+\n☆恋愛．．．．．．一人でコンサートや展覧会に出かけると、いいでしょう。そのとき会った人が将来の恋人になるかもしれません。
+\n☆ラッキーアイテム．．．．．．青い石
+\nWhat does the astrology reading predict in terms of love? How about money?', 
+'お　うし　ざ　がつ　にち　がつ　にち　
+し　ごと　なに　あたら　し　ごと　はじ　せい　こう　はたら　き　
+かね　こん　げつ　かね　つか　こま　たから　か　あ　
+けん　こう　ひあし　ほう　りょ　こう　げん　き　あし　き　
+れん　あい　ひと　り　てん　らん　かい　であ　しょう　らい　こい　びと　
+あお　いし', 
+'Advanced', 'reading_comp'),
+
+INSERT INTO answers (question_id, answer_id, answer_text, answer_text_furigana, correct_answer) VALUES
+(91, 1, 'He is questioning Mr. Hoshide in his letter because he wants to learn more about space. He is specifically interested in how it is different from Earth.', '', FALSE),
+(91, 2, 'He is asking Mr. Hoshide so many questions because he wants to become an astronaut. He is interested in learning what life in space is like.', '', TRUE),
+(91, 3, 'He is writing a bunch of questions to Mr. Hoshide because he wants to become a scientist. He was wondering how Mr. Hoshide became an astronaut and wants to learn more about space.', '', FALSE),
+(91, 4, 'He is asking Mr. Hoshide a ton of questions because he wants to live on a space station. However, he was wondering if life in space would make it too difficult to live the way he does on Earth.', '', FALSE),
+
+(92, 1, 'The exchange students are hosting a party because they want to better their conversation skills while having a fun time with the Japanese students. The party starts at 8 a.m. so Karina would not be able to attend.', '', FALSE),
+(92, 2, 'The exchange students are hosting a party because they want to have a cultural exchange opportunity with all of the students. The party starts at 12 p.m. so she would have to arrive late.', '', FALSE),
+(92, 3, 'The exchange students are holding a party because they want to share with the Japanese students and make new friends. The party starts at 4 p.m. so she would be able to make it.', '', TRUE),
+(92, 4, 'The exchange students are holding a party because they want to show the Japanese students how similar their cultures are. The party starts at 4 p.m. so Karina would be able to join.', '', FALSE),
+
+(93, 1, 'The writer dreamt that he woke up living on the moon, and was excited to be living in space. However, he quickly became homesick and was glad things went back to normal after he woke up.', '', FALSE),
+(93, 2, 'The writer dreamt that he was inside of his regular room, but someone had stolen all of his belongings. He was relieved once he woke up, as everything was still where it was.', '', FALSE),
+(93, 3, 'The writer dreamt that he woke up inside someone else''s room. He thought it was incredibly boring since there was nothing inside of it, so he was glad to see his things in his room once he woke up.', '', FALSE),
+(93, 4, 'The writer dreamt that his room was inside of the moon. He didn''t have any of the stuff in his regular room, so once he woke up, he was able to appreciate what he had.', '', TRUE),
+
+(94, 1, 'The writer had previously disliked life in the countryside because they were interested in learning more about the world, but felt stuck. Now that she has lived in the city and managed to interact with people from abroad, she wants to return home now that she fufilled her dream.', '', FALSE),
+(94, 2, 'The writer used to dislike how there were no places like restaurants or movie theaters and that life was boring. She started to change her mind because she missed it whenever she thought about her memories, so she plans to move back.', '', TRUE),
+(94, 3, 'The writer disliked how the countryside was so big but she didn''t have any opportunities to make new friends. She moved to the city to find new connections, but after 10 years she has started to miss her old life, so she plans on quiting her job to move back.', '', FALSE),
+(94, 4, 'The writer was not very fond about how inconvenient life was in the countryside, which is why she moved to the city. However, now that she has experienced city life working in an office, she yearns for the memories of her childhood and wishes to go back.', '', FALSE),
+
+(95, 1, 'It suggests that you may meet your future partner if you go out on your own to see a concert or an art exhibit. It also recommends not being too stingy with your money for the month and that you might win the lottery.', '', TRUE),
+(95, 2, 'It believes that you may meet your furture partner if you decide to go out on your own and walk around a park. It also suggests that you may win a lot of money on horse race betting.', '', FALSE),
+(95, 3, 'It suggests that you may meet your future partner if you decide to go see a concert with a friend or two. It also warns that not using too much money will not lead to good results.', '', FALSE),
+(95, 4, 'It predicts that you may meet your future partner if you become an artist or join a band. It also advises against spending all your money and to not gamble with it.', '', FALSE),
+
+-- ////////////////////==========Listening==========////////////////////
+
+INSERT INTO questions (question_id, question_text, question_body, question_level, question_type, question_audio) VALUES
+(96, 'Lesson 26: Listening Comprehension', 'On what days is Miller supposed to throw out his cans and bottles? Where is he supposed to leave the garabage?', 'Advanced', 'listening_comp', '/audio/minna_shokyu_2_001.mp3'),
+(97, 'Lesson 28: Listening Comprehension', 'Why is Mrs. Ogawa trying to practice her English? What does Miller say to her?', 'Advanced', 'listening_comp', '/audio/minna_shokyu_2_007.mp3'),
+(98, 'Lesson 30: Listening Comprehension', 'What is the main gist of the conversation between Suzuki and Miller?', 'Advanced', 'listening_comp', '/audio/minna_shokyu_2_013.mp3'),
+(99, 'Lesson 31: Listening Comprehension', 'Why is Mr. Ogawa going to be alone? What does he plan on doing?', 'Advanced', 'listening_comp', '/audio/minna_shokyu_2_016.mp3'),
+(100, 'Lesson 32: Listening Comprehension', 'How has Schmitt been feeling recently? What does Mr. Ogawa say to him?', 'Advanced', 'listening_comp', '/audio/minna_shokyu_2_019.mp3'),
+
+INSERT INTO answers (question_id, answer_id, answer_text, correct_answer) VALUES
+(96, 1, 'On Mondays and Thursdays, next to the parking lot.', FALSE),
+(96, 2, 'On Saturdays, outside of the parking lot.', FALSE),
+(96, 3, 'On Mondays and Thursdays, inside of the parking lot.', FALSE),
+(96, 4, 'On Saturdays, next to the parking lot.', TRUE),
+
+(97, 1, 'She is going to do a homestay in Australia. Miller says that he is too busy with work and exams to help her.', TRUE),
+(97, 2, 'She is trying to better understand her boyfriend. Miller says that he would like to help, but he is too busy with work.', FALSE),
+(97, 3, 'She would like to visit Australia over the summer. Miller says that he wants to go too so he will help.', FALSE),
+(97, 4, 'She used to be good at English and is hoping to refine her skills. Miller offers to be her teacher in his spare time.', FALSE),
+
+(98, 1, 'Suzuki is telling Miller about the items he is packing for his three-day hiking trip.', FALSE),
+(98, 2, 'Suzuki is explaining to Miller what an emergency bag is, what kinds of things it contains, and where to get one.', TRUE),
+(98, 3, 'Suzuki is talking about how there was an emergency a while ago, so he is storing goods in case the power goes out again.', FALSE),
+(98, 4, 'Suzuki is asking Miller what he thinks about what foods and tools would be useful to bring for a camping trip.', FALSE),
+
+(99, 1, 'His family had been thinking about moving to Osaka but his wife found a new job. He planned to move alone first, and then the rest of his family will join him two months later.', FALSE),
+(99, 2, 'He was interested in getting a promotion, so he chose to leave his family in Tokyo while he goes to work abroad. He plans on coming back twice a year to see his family.', FALSE),
+(99, 3, 'He is getting divorced and decided to go back to his hometown in Osaka. He was interested in becoming a chef, so he plans to learn once he arrives.', FALSE),
+(99, 4, 'He is going to be transfered to Osaka next month, so he will be leaving his wife and son in Tokyo. He still plans to go home at least twice a month during the weekend.', TRUE),
+
+(100, 1, 'Schmiit has been feeling unfulfilled in his current job, and it is taking a toll on his mental health. Mr. Ogawa explains that it might be better to look for another job that he finds more enjoyment in.', FALSE),
+(100, 2, 'Schmitt says that he has been doing a lot of exercise, so his body had been aching quite often. Mr. Ogawa suggests that he take a break every one and a while and not push himself too much.', FALSE),
+(100, 3, 'Schmitt has been having stomach pain and headaches occasionally in recent times. Mr. Ogawa responds by saying that it might be stress and that he should get checked up at the hospital.', TRUE),
+(100, 4, 'Shmitt explains that he has not been able to get enough sleep because he has been doing a lot of overtime. Mr. Ogawa suggests that he do less work and focus on his health for the time being.', FALSE),

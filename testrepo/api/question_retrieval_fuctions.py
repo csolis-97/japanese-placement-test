@@ -48,7 +48,7 @@ def difficultyLevel(wasCorrect, questionCategory):
 
 
 # This function will be used to fetch four new questions, avoiding all previously used question_id
-def fetchNewQuestion(cursor, questionCategory, questionTrack):
+def fetchNewQuestion(questionCategory, questionTrack, cursor, mysql):
     # Use exclusionQuery to store previously used question_id and based on the length of questionTrack, and append the
     # previously used ids
     exclusionQuery = []
@@ -76,10 +76,13 @@ def fetchNewQuestion(cursor, questionCategory, questionTrack):
     print(newId)
     
     # Make a final query that will get all question and answer info for the five question_id that were previously retrieved, and return it
-    newQuery = "SELECT A.question_id, A.answer_id, A.answer_text, Q.question_text, Q.question_body, " \
-    "Q.question_level FROM questions Q, answers A WHERE Q.question_id = A.question_id AND " \
+    newQuery = "SELECT A.question_id, A.answer_id, A.answer_text, A.answer_text_furigana, Q.question_text, Q.question_text_furigana, " \
+    "Q.question_body, Q.question_body_furigana, Q.question_level, Q.question_audio FROM questions Q, answers A WHERE Q.question_id = A.question_id AND " \
     f"Q.question_id IN ({", ".join(map(str, newId))}) ORDER BY A.answer_id"
     cursor.execute(newQuery)
     newQuestion = cursor.fetchall()
 
+    # Once a suitable question has been found, close the cursor
+    cursor.close()
+    mysql.close()
     return newQuestion

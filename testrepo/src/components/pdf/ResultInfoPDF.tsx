@@ -1,8 +1,4 @@
-import { 
-    Text, 
-    View, 
-    StyleSheet
-} from "@react-pdf/renderer";
+import { Text, View, StyleSheet } from "@react-pdf/renderer";
 import { formatResultsDate } from "../../utils/utilFunctions";
 import { TestResult } from "@/types/sharedInterface";
 
@@ -33,10 +29,9 @@ const styles = StyleSheet.create({
 interface ResultInfoPDFProps {
     ResultInfoProps: TestResult;
     questionLength: number;
-
 };
 
-export default function ResultInfoPDF({ ResultInfoProps, questionLength } : ResultInfoPDFProps ) {
+export default function ResultInfoPDF({ ResultInfoProps, questionLength } : ResultInfoPDFProps) {
 
     // Format the date first
     const formattedDate = formatResultsDate(ResultInfoProps.end_time);

@@ -1,6 +1,5 @@
 "use server";
 
-import { getURL, responseMessage } from "./utilFunctions";
 import { 
     InfoData, 
     ResponseData, 
@@ -80,7 +79,7 @@ export async function apiAction(params: ActionKey) {
     }
 }
 
-// The helper function for apiAction, it handles all the mapping of values from
+// A helper function for apiAction, it handles all the mapping of values from
 // their names in the frontend to how they are referred to in the backend
 function translateMap(action: string, givenFields: PossibleDataTypes) {
     // This const will be used to properly match each possible field across the data types to the name it referred to as in JSON
@@ -111,10 +110,6 @@ function translateMap(action: string, givenFields: PossibleDataTypes) {
         // Not actually a duplicate, this is the one that was calculated in the backend
         testDate: 'end_time'
     };
-
-    // Learn how to map these values to each type to make the code less repetitive
-    type TestFormKeys = 'createRecord' | 'retrieveStage' | 'sendStage' | 'submitTest';
-    type ResultKeys = 'retrieveResults' | 'retrieveAnswers';
 
     // This const will be used to map the current request type to the proper route
     const apiRouteMap: Record<string, string> = {
@@ -156,4 +151,26 @@ function translateMap(action: string, givenFields: PossibleDataTypes) {
         routeError,
         jsonBody
     };
+}
+
+// A helper function for apiAction, this function will check if an environmental variable named VERCEL_URL exists. If it does,
+// return the address prefixed by https://. Otherwise, return the value of the FRONTEND_URL
+// environmental variable, or the default localhost at port 5000, or whichever port is specified in Flask.
+function getURL() {
+    if (process.env.VERCEL_URL) {
+        return `https://${process.env.VERCEL_URL}`;
+    }
+    return `${process.env.FRONTEND_URL}` || "http://localhost:5000";
+}
+
+// A helper function for apiAction, this function will be used in case an error occurs when attempting to request info from the 
+// backend. If the response is not okay, call the text function and store it in a const. Then print and throw the error.
+async function responseMessage(response: Response) {
+    console.log(`HERE IS THE STATUS OF THE RESPONSE: ${response.status}`);
+    if (!response.ok) {
+        const errorText = await response.text();
+        console.log(`HERE IS THE FULL ERROR TAKEN FROM THE RESPONSE: ${errorText}`);
+        const errorMessage = `Error with a status code of ${response.status}. Full details are as follows: ${errorText}`;
+        throw new Error(errorMessage);
+    }
 }

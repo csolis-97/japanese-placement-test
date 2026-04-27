@@ -1,9 +1,4 @@
-import { 
-    Page, 
-    Document, 
-    StyleSheet,
-    Font
-} from "@react-pdf/renderer";
+import { Page, Document, StyleSheet, Font } from "@react-pdf/renderer";
 import ResultInfoPDF from "./ResultInfoPDF";
 import QuestionDisplayPDF from "./QuestionDisplayPDF";
 import { ResultQuestion, TestResult } from "@/types/sharedInterface";
@@ -21,7 +16,14 @@ Font.register({
 const LINE_BREAK_NOT_ALLOWED = ['、', '。', '」', '』', '）', '！', '？', 'ー', 'ぁ', 'ぃ', 'ぅ', 'ぇ', 'ぉ', 'っ', 'ゃ', 'ゅ', 'ょ'];
 
 // Regex for checking if the character is a Japanese character. Used to determine when not to apply a line break
-const JAPANESE_CHAR_REGEX = /[\u3040-\u30FF\u4E00-\u9FFF\uFF66-\uFF9D]/;
+//const JAPANESE_CHAR_REGEX = /[\u3040-\u30FF\u4E00-\u9FFF\uFF66-\uFF9D]/;
+const JAPANESE_CHAR_REGEX = /[\u3041-\u3096\u30A0-\u30FF\u3400-\u4DB5\u4E00-\u9FCB\uF900-\uFA6A\u2E80-\u2FD5\uFF5F-\uFF9F\u3000-\u303F]/;
+// Hiragana range: [\u3041-\u3096]
+// Full width katakana range: [\u30A0-\u30FF]
+// Kanji range: [\u3400-\u4DB5\u4E00-\u9FCB\uF900-\uFA6A]
+// Kanji radicals range: [\u2E80-\u2FD5]
+// Half width katakana and punctuation range: [\uFF5F-\uFF9F]
+// Japanese symbols and punctuation range: [\u3000-\u303F]
 
 /* 
     This callback function will be used to determine where the line breaks occur for the Japanese text in the PDF.

@@ -151,10 +151,14 @@ export default function TestTake({shuffleSeed, currentTestInfo, initialQuestions
             <QuestionDisplay
               questionId = {testHook.currentQuestion + 1}
               questionText = {testHook.questions[testHook.stageInfo.current.stageQuestion].question_text}
+              questionTextFurigana = {testHook.questions[testHook.stageInfo.current.stageQuestion].question_text_furigana}
               questionBody = {testHook.questions[testHook.stageInfo.current.stageQuestion].question_body}
+              questionBodyFurigana = {testHook.questions[testHook.stageInfo.current.stageQuestion].question_body_furigana}
               questionCategory = {testHook.questions[testHook.stageInfo.current.stageQuestion].question_level}
+              questionAudio = {testHook.questions[testHook.stageInfo.current.stageQuestion]?.question_audio}
               answerId = {testHook.questions[testHook.stageInfo.current.stageQuestion].answer_id}
               answerText = {testHook.questions[testHook.stageInfo.current.stageQuestion].answer_text}
+              answerTextFurigana = {testHook.questions[testHook.stageInfo.current.stageQuestion].answer_text_furigana}
               selectedAnswer = {testHook.answerArray[testHook.currentQuestion]?.userText}
               alreadyAnswered = {testHook.answerArray[testHook.currentQuestion]?.alreadyAnswered}
               //Send the handleChange const as the value for onChangeValue so that the onChange field can be properly handled

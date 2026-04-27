@@ -3,10 +3,14 @@
 export interface TestQuestion {
   question_id: number;
   question_text: string;
+  question_text_furigana?: string;
   question_body: string;
+  question_body_furigana?: string;
   question_level: string;
+  question_audio?: string;
   answer_id: number[];
   answer_text: string[];
+  answer_text_furigana?: string[];
   already_answered?: boolean;
   correct_answer?: boolean[];
   is_correct?: boolean;
@@ -17,10 +21,14 @@ export interface TestQuestion {
 export interface ResultQuestion {
   question_id: number;
   question_text: string;
+  question_text_furigana?: string;
   question_body: string;
+  question_body_furigana?: string;
   question_level: string;
+  question_audio?: string;
   answer_id: number[];
   answer_text: string[];
+  answer_text_furigana?: string[];
   already_answered?: boolean;
   correct_answer?: boolean[];
   user_answer_text: string;

@@ -7,19 +7,6 @@ DROP DATABASE IF EXISTS test_database;
 CREATE DATABASE test_database;
 USE test_database;
 
--- reserved_names table section
-
--- Drop the reserved_names table if it exists
-DROP TABLE IF EXISTS reserved_names;
-
--- Create the reserved_names table
-
-CREATE TABLE reserved_names (
-    name_id INT AUTO_INCREMENT PRIMARY KEY,
-    reserved_name VARCHAR(255) NOT NULL UNIQUE,
-    reserved_desc VARCHAR(255) NOT NULL
-);
-
 -- users table section
 
 -- Drop the users table if it exists
@@ -36,17 +23,6 @@ CREATE TABLE users (
     created_at DATETIME NOT NULL
 );
 
--- unverified_users table section
-DROP TABLE IF EXISTS unverified_users;
-
--- Create the unverified_users table
-CREATE TABLE unverified_users (
-    case_id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(255) NOT NULL UNIQUE,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    created_at DATETIME NOT NULL
-);
-
 -- questions table section
 
 -- Drop the questions table if it exists
@@ -56,8 +32,12 @@ DROP TABLE IF EXISTS questions;
 CREATE TABLE questions (
     question_id INT AUTO_INCREMENT PRIMARY KEY,
     question_text VARCHAR(255) NOT NULL,
-    question_body VARCHAR(255) NOT NULL,
-    question_level ENUM ('Beginner I', 'Beginner II', 'Intermediate I', 'Intermediate II', 'Advanced') NOT NULL
+    question_text_furigana VARCHAR(255) DEFAULT NULL,
+    question_body VARCHAR(1000) NOT NULL,
+    question_body_furigana VARCHAR(1000) DEFAULT NULL,
+    question_level ENUM ('Beginner I', 'Beginner II', 'Intermediate I', 'Intermediate II', 'Advanced') NOT NULL,
+    question_type ENUM ('vocab', 'grammar', 'reading_comp', 'listening_comp') NOT NULL,
+    question_audio VARCHAR(255) DEFAULT NULL
 );
 
 -- answers table section
@@ -70,6 +50,7 @@ CREATE TABLE answers (
     question_id INT NOT NULL,
     answer_id INT NOT NULL,
     answer_text VARCHAR(255) NOT NULL,
+    answer_text_furigana VARCHAR(255) DEFAULT NULL,
     correct_answer BOOLEAN NOT NULL,
     PRIMARY KEY (question_id, answer_id),
     FOREIGN KEY (question_id) REFERENCES questions(question_id) ON DELETE CASCADE
@@ -113,32 +94,6 @@ CREATE TABLE user_answers (
     FOREIGN KEY (score_id) REFERENCES scores(score_id) ON DELETE CASCADE,
     FOREIGN KEY (question_id) REFERENCES questions(question_id) ON DELETE CASCADE
 );
-
--- messages table section
-DROP TABLE IF EXISTS messages;
-
--- Create the messages table
-CREATE TABLE messages (
-    message_id INT AUTO_INCREMENT PRIMARY KEY,
-    sender_id INT NOT NULL,
-    message_topic VARCHAR(255) NOT NULL,
-    message_body VARCHAR(500) NOT NULL,
-    created_at DATETIME NOT NULL,
-    FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE
-);
-
--- message recipients table section
-DROP TABLE IF EXISTS message_recipients;
-
--- Create the message_recipients table
-CREATE TABLE message_recipients (
-    message_id INT NOT NULL,
-    recipient_id INT NOT NULL,
-    PRIMARY KEY (message_id, recipient_id),
-    FOREIGN KEY (message_id) REFERENCES messages(message_id) ON DELETE CASCADE,
-    FOREIGN KEY (recipient_id) REFERENCES users(id) ON DELETE CASCADE
-);
-
 
 -- Database user creation section, not entirely sure if needed but just in case
 

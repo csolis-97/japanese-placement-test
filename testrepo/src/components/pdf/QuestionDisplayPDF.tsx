@@ -1,8 +1,4 @@
-import { 
-    Text, 
-    View, 
-    StyleSheet
-} from "@react-pdf/renderer";
+import { Text, View, StyleSheet } from "@react-pdf/renderer";
 import { ResultQuestion } from "@/types/sharedInterface";
 
 // This const lists all of the styles used for the PDF. It tries to mimic all of the styling used in the actual components as closely as possible
@@ -141,7 +137,7 @@ interface QuestionDisplayPDFProps {
     QuestionDisplayProps: ResultQuestion[];
 };
 
-export default function QuestionDisplayPDF({ QuestionDisplayProps } : QuestionDisplayPDFProps ) {
+export default function QuestionDisplayPDF({ QuestionDisplayProps } : QuestionDisplayPDFProps) {
     return (
         <View style = {styles.QuestionDisplayPadding}>
             {
@@ -183,7 +179,7 @@ export default function QuestionDisplayPDF({ QuestionDisplayProps } : QuestionDi
                                                 </Text>
                                             </View>
                                         </View>
-                                    )
+                                    );
                                 })
                             }
                         </View>

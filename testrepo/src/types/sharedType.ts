@@ -58,11 +58,15 @@ export type StageData = {
 // Type defined below will be used for setting the test questions and answers for components.
 export type QuestionType = {
   questionId: number;
+  questionAudio?: string;
   questionText: string;
+  questionTextFurigana?: string;
   questionBody: string;
+  questionBodyFurigana?: string;
   questionCategory: string;
   answerId: number[];
   answerText: string[];
+  answerTextFurigana?: string[];
   userText: string;
   alreadyAnswered: boolean;
 };

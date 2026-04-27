@@ -2,28 +2,6 @@ import { TestQuestion } from "@/types/sharedInterface";
 import { XORShift128 } from "random-seedable";
 import Sqids from "sqids";
 
-// The getURL function will check if an environmental variable named VERCEL_URL exists. If it does,
-// return the address prefixed by https://. Otherwise, return the value of the FRONTEND_URL
-// environmental variable, or the default localhost at port 5000, or whichever port is specified in Flask.
-export function getURL() {
-    if (process.env.VERCEL_URL) {
-        return `https://${process.env.VERCEL_URL}`;
-    }
-    return `${process.env.FRONTEND_URL}` || "http://localhost:5000";
-}
-
-// This function will be used in case an error occurs when attempting to request info from the backend.
-// If the response is not okay, call the text function and store it in a const. Then print and return.
-export async function responseMessage(response: Response) {
-    console.log(`HERE IS THE STATUS OF THE RESPONSE: ${response.status}`);
-    if (!response.ok) {
-        const errorText = await response.text();
-        console.log(`HERE IS THE FULL ERROR TAKEN FROM THE RESPONSE: ${errorText}`);
-        const errorMessage = `Error with a status code of ${response.status}. Full details are as follows: ${errorText}`;
-        throw new Error(errorMessage);
-    }
-}
-
 // This function will take an error of unknown type as an argument, and check its type. If it is Error,
 // return it. If it is a string, make a new error with it. Otherwise go to the else.
 export function errorType(error: unknown) {
@@ -65,8 +43,8 @@ export function checkName(name: string) {
     } 
 }
 
-// This function will shuffle the answer_id and answer_text (and correct_answer if it exists) (using the seedRNG that was also passed)
-// of the testQuestion array provided as the argument, and return it.
+// This function will shuffle the answer_id and answer_text (alongside answer_text_furigana and correct_answer if it exists) 
+// of the testQuestion array provided as the argument using the seedRNG, and return it.
 export function shuffleList(givenList: TestQuestion[], seedRNG: XORShift128) {
     console.log(`ENTERED THE SEED SHUFFLE WITH THIS SEED: ${seedRNG}!`);
     let cloneList = JSON.parse(JSON.stringify(givenList));
@@ -92,7 +70,17 @@ export function shuffleList(givenList: TestQuestion[], seedRNG: XORShift128) {
             //console.log(`MAPPED ${givenList[i].answer_text[index]} AT INDEX ${index} TO ${value} AT INDEX ${index} OF SHUFFLE INDEX!`);
             return value;
         });
-        // Make a const so it can define if the correct_answer array is null or not below
+        // Make a const so it can define if the answer_text_furigana array is null nor not
+        const answerFurigana = givenList[i].answer_text_furigana;
+        if (answerFurigana) {
+            const answerTextFurigana = cloneSublist.answer_text_furigana.map((value: string, index: number) => {
+                value = answerFurigana[shuffleIndex[index]];
+                return value;
+            });
+            // Set the shuffled array of answer_text_furigana
+            cloneSublist.answer_text_furigana = answerTextFurigana;
+        }
+        // Make a const so it can define if the correct_answer array is null or not
         const correctValues = givenList[i].correct_answer;
         if (correctValues) {
             const correctAnswer = cloneSublist.correct_answer.map((value: boolean, index: number) => {
@@ -169,5 +157,6 @@ export function shuffleResultsPrint(givenList: TestQuestion[]) {
         console.log(`HERE IS THE QUESTION ID FOR THE CURRENT QUESTION: ${givenList[i].question_id}`);
         console.log(`HERE ARE THE ANSWER IDS FOR THE CURRENT QUESTION: ${givenList[i].answer_id}`);
         console.log(`HERE ARE THE ANSWER TEXTS FOR THE CURRENT QUESTION: ${givenList[i].answer_text}`);
+        console.log(`HERE ARE THE ANSWER TEXT FURIGANAS FOR THE CURRENT QUESTION: ${givenList[i].answer_text_furigana}`);
     }   
 }

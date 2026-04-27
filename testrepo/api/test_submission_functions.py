@@ -1,6 +1,19 @@
 from datetime import datetime, timezone
 import uuid
 
+# This function will fetch all of the question levels for each question the user answered based on the questionTrack and the score_id and return them.
+def questionLevelQuery(scoreId, attemptNum, questionTrack, cursor):
+    paramList = [scoreId, attemptNum]
+    # Small note because I didn't know about using the map function here until I looked it up. In order to join a list with non integer
+    # values, you can merely do a join. However, if there are integers you must map them to a string first.
+    levelQuery = "SELECT DISTINCT Q.question_id, Q.question_level, U.user_was_correct, U.response_order FROM questions Q, scores S, " \
+    "user_answers U WHERE S.score_id = U.score_id AND Q.question_id = U.question_id AND S.score_id = %s AND U.attempt_id = %s " \
+    f"AND Q.question_id IN ({", ".join(map(str, questionTrack))}) ORDER BY U.response_order"
+    cursor.execute(levelQuery, tuple(paramList))
+    levelList = cursor.fetchall()
+    return levelList
+
+
 # This function will take all the graded answers and check each stage to count how many were correct. Once that is done, correct percentages will be
 # assigned to the proper index of a list, representing each stage. The overall average percentage alongside the aformentioned list are returned.
 def calculateScore(levelList, questionTrack, isCorrect):
@@ -78,6 +91,18 @@ def calculateScore(levelList, questionTrack, isCorrect):
     return totalScore
 
 
+# This function get the proper user info based on the given scoreId and attemptNum, and will return all the relevant info needed
+def getUserInfo(scoreId, attemptNum, cursor):
+    paramList = [scoreId, attemptNum]
+    getUserQuery = "SELECT U.id, U.email, U.fullname FROM users U, user_answers UA, scores S WHERE U.id = S.user_id AND S.score_id = UA.score_id " \
+    "AND UA.score_id = %s AND UA.attempt_id = %s"
+    cursor.execute(getUserQuery, tuple(paramList))
+    # Do something with this later
+    userInfo = cursor.fetchone()
+    print(f"USER INFO THAT WAS RETRIEVED! {userInfo}")
+    return userInfo
+
+
 # This function will convert the date to the proper MySQL format before returning all of the necessary parameters needed to store
 # The results
 def finalizeSubmitParams(submitTime, totalScore, entranceLevel, urlId, scoreId):
@@ -104,6 +129,25 @@ def finalizeSubmitParams(submitTime, totalScore, entranceLevel, urlId, scoreId):
     paramList = [totalScore, entranceLevel, finalTime, urlId, scoreId]
     print(paramList)
     return paramList
+
+def submitTest(stageDifficultyArray, submitTime, totalScore, urlId, scoreId, cursor, mysql):
+    # Set entranceLevel to the last difficulty value in stageDifficultyArray
+    print(f"THE USER WENT THROUGH THE FOLLOWING STAGES: {stageDifficultyArray}")
+    entranceLevel = stageDifficultyArray[len(stageDifficultyArray) - 1]
+    print(f"ENTRANCE LEVEL TO BE USED: {entranceLevel}")
+
+    # Use the submission time, the total score, and the entrance level to finalize the params
+    paramList = finalizeSubmitParams(submitTime, totalScore, entranceLevel, urlId, scoreId)
+    # Now, the correct record will be updated with the results in the database
+    scoreQuery = "UPDATE scores SET total_score = %s, entrance_level = %s, test_status = 'COMPLETED', end_time = %s, url_id = %s " \
+    "WHERE score_id = %s"
+
+    cursor.execute(scoreQuery, tuple(paramList))
+    mysql.commit()
+    print("SUCCESSFULLY STORED THE SCORES!")
+    # Finally, close the cursor
+    cursor.close()
+    mysql.close()
 
 # This function will be used to check any suspicions submission times. That is, test submissions with a time difference between 
 # more than 61 minutes from the start time, or less than 0 minutes from the start time. If it does, flag the record.

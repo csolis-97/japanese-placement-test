@@ -1,12 +1,18 @@
 "use client";
 
+import { generateFurigana } from "@/utils/generateFurigana";
+
 interface QuestionDisplayProps {
     questionId: number;
     questionText: string;
+    questionTextFurigana?: string;
     questionBody: string;
+    questionBodyFurigana?: string;
     questionCategory: string;
+    questionAudio?: string;
     answerId: number[];
     answerText: string[];
+    answerTextFurigana?: string[];
     selectedAnswer: string;
     alreadyAnswered?: boolean;
     correctAnswer?: boolean[];
@@ -25,12 +31,38 @@ export default function QuestionDisplay(props: QuestionDisplayProps) {
     // DEBUG, Log the values to check the current values
     console.log("ALREADY ANSWERED?");
     console.log(props.alreadyAnswered);
-    console.log("LOG THE CORRECT ANSWERS IF ANY!!");
+    console.log("LOG THE CORRECT ANSWERS IF ANY!");
     console.log(props.correctAnswer);
     console.log("VALUE IN SELECTED ANSWER!");
     console.log(props.selectedAnswer);
     console.log("WAS CORRECT?");
     console.log(props.wasCorrect);
+
+    // This arrow function will check if questionAudio exists, and if it does, if it is a valid audio file
+    const audioQuestion = () => {
+        try {
+            // check if the question is listening comprehension
+            if (props.questionAudio) {
+                console.log(`VALUE OF QUESTIONAUDIO: ${props.questionAudio}`);
+                console.log("Check if is an audio file!");
+                // Provided regex for a few different types of common audio extensions
+                const audioFormatRegex = /\.(mp3|ogg|wav|flac|aac)$/i;
+                const isAudio = audioFormatRegex.test(props.questionAudio);
+                if (isAudio) {
+                    console.log("Provided path is indeed an audio file!");
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+        catch {
+            console.log("Provided path was either not valid, or it was not an audio file!");
+            return false;
+            //throw new Error(`There was an error retrieving the audio file for question #${props.questionId}!`);
+        }
+    }
 
     return (
         <div className = 
@@ -46,8 +78,21 @@ export default function QuestionDisplay(props: QuestionDisplayProps) {
                 <div className = "text-gray-600 font-semibold">
                     <h1 className = "sm:text-3xl p-4">Question #{props.questionId}</h1>
                     <h1 className = "sm:text-xl px-4">Level: {props.questionCategory}</h1>
-                    <h2 className = "divide-y-2 px-4">{props.questionText}</h2>
-                    <p className = "sm:text-2xl p-4">{props.questionBody}</p>
+                    <h2 className = "divide-y-2 px-4">
+                        { // Check if there is furigana for the question text, and generate it if there is
+                            generateFurigana(props.questionText, props.questionTextFurigana, props.questionCategory)
+                        }
+                    </h2>
+                    { // Check if this is a listening comprehension question here
+                        audioQuestion() && (
+                            <audio className = "divide-y-2 px-4 mt-4" src = {props.questionAudio} controls></audio>
+                        )
+                    }
+                    <p className = "sm:text-2xl p-4">
+                        { // Check if there is furigana for the question body, and generate it if there is
+                            generateFurigana(props.questionBody, props.questionBodyFurigana, props.questionCategory)
+                        }
+                    </p>
                 </div>
                 <div className = "p-4 sm:pt-10">
                     <fieldset disabled = {props.alreadyAnswered} className = "sm:text-xl" >
@@ -104,7 +149,11 @@ export default function QuestionDisplay(props: QuestionDisplayProps) {
                                             ${cursorStatus}
                                             ${isAnswerCorrect ? (correctRadio) : userInCorrect ? (wrongRadio) : (regularRadio)}
                                     `}>
-                                        {props.answerText[index]}
+                                        <p>
+                                            { // Check if there is furigana for the given answer text, and generate it if there is
+                                                props.answerTextFurigana && generateFurigana(props.answerText[index], props.answerTextFurigana[index], props.questionCategory)
+                                            }
+                                        </p>
                                     </label>
                                 </div>
                                 );

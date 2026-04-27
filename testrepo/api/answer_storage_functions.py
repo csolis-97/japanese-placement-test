@@ -180,3 +180,24 @@ def checkNoAnswer(answerList):
             print("REPLACING CURRENT EMPTY QUESTION!")
             answerList[i] = "not answered"
     return answerList
+
+# This function will handle the answer submission. First it will build the query values, then the answer info, and then the answer data will be stored
+def submitAnswers(isCorrect, answerData, scoreId, attemptNum, questionId, questionTrack, currentStageNum, cursor, mysql):
+    # Check if the user actually had any answers. If not, skip to the else statement without interacting with the database.
+    if len(isCorrect) > 0:
+        # Assign valueQuery to the returned array
+        valueQuery = buildValueQuery(answerData)
+        # Then assign paramList to the array that was built in the function
+        paramList = buildAnswerData(answerData, scoreId, attemptNum, questionId, isCorrect, questionTrack, currentStageNum)
+        # Build the query using valueQuery, with paramList as its values
+        storeQuery = f"INSERT INTO user_answers(score_id, attempt_id, question_id, response_order, stage_answered, user_answer_text, user_was_correct) VALUES {" ".join(valueQuery)}"
+
+        cursor.execute(storeQuery, tuple(paramList))
+        mysql.commit()
+        print("SUCCESSFULLY STORED THE ANSWERS!")
+    else:
+        print("USER SUBMITTED NO ANSWERS, SO THERE IS NOTHING TO STORE.")
+
+    # Finally, close the cursor and return the data
+    cursor.close()
+    mysql.close()

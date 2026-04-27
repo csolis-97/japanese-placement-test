@@ -79,10 +79,14 @@ export default function ResultsDisplay({ answersPromise, children } : ResultsPro
                 <QuestionDisplay
                   questionId = {question.response_order}
                   questionText = {question.question_text}
+                  questionTextFurigana = {question.question_text_furigana}
                   questionBody = {question.question_body}
+                  questionBodyFurigana = {question.question_body_furigana}
                   questionCategory = {question.question_level}
+                  questionAudio = {question.question_audio}
                   answerId = {question.answer_id}
                   answerText = {question.answer_text}
+                  answerTextFurigana = {question.answer_text_furigana}
                   correctAnswer = {question.correct_answer}
                   wasCorrect = {question.user_was_correct}
                   //selectedAnswer is used to track which radio option the user has chosen

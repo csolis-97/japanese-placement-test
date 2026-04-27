@@ -4,7 +4,7 @@ import { useState, useEffect, Dispatch, SetStateAction } from "react";
 import { TestQuestion } from "@/types/sharedInterface";
 import { InfoData, RequestData } from "@/types/sharedType";
 import { errorType, checkEmail, checkName } from "@/utils/utilFunctions";
-import { ActionKey, apiAction } from "@/utils/apiUtilFunctions";
+import { ActionKey, apiAction } from "@/utils/sharedApiRouter";
 
 //These variables will apply the styling for the regular and disabled buttons
 const buttonDefaults = "mt-4 px-8 py-4 font-semibold text-sm text-white cursor-pointer disabled:pointer-events-none";
