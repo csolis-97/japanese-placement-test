@@ -10,20 +10,20 @@ import datetime
 # so set it to false if needed.
 
 # Import all the functions defined elsewhere in the backend. Remove the dot when running locally.
-#from .test_info_functions import *
-#from .question_retrieval_fuctions import *
-#from .answer_storage_functions import *
-#from .test_submission_functions import *
-#from .test_results_functions import *
-#from .util_functions import *
+from .test_info_functions import *
+from .question_retrieval_fuctions import *
+from .answer_storage_functions import *
+from .test_submission_functions import *
+from .test_results_functions import *
+from .util_functions import *
 
 # Import all the functions defined elsewhere in the backend. Remove the dot when running locally.
-from test_info_functions import *
-from question_retrieval_fuctions import *
-from answer_storage_functions import *
-from test_submission_functions import *
-from test_results_functions import *
-from util_functions import *
+# from test_info_functions import *
+# from question_retrieval_fuctions import *
+# from answer_storage_functions import *
+# from test_submission_functions import *
+# from test_results_functions import *
+# from util_functions import *
 
 app = Flask(__name__)
 
