@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from "react";
 import { XORShift128 } from "random-seedable";
 import TestStart from "./TestStart";
-import TestTake from "./testTake/TestTake";
+import TestTake from "./TestTake/TestTake";
 import { TimerSkeleton, QuestionDisplaySkeleton, ButtonSkeleton } from "./skeletons";
 import { seedCreate } from "../utils/utilFunctions";
 import { TestQuestion } from "@/types/sharedInterface";
