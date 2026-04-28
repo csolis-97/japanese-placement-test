@@ -6,7 +6,7 @@ import { useTestFlow } from "./useTestFlow";
 import { useHandleChange } from "./useHandleChange";
 import { TestQuestion } from "@/types/sharedInterface";
 import { InfoData, StageData, UserAnswerType} from "@/types/sharedType";
-import { errorType, shuffleList, shuffleResultsPrint } from "@/utils/utilFunctions";
+import { shuffleList, shuffleResultsPrint } from "@/utils/utilFunctions";
 
 type HookProps = {
   shuffleSeed: XORShift128;
