@@ -1,4 +1,3 @@
-
 -- ============================================================================
 -- BEGINNER I: LESSONS 1-5 (25 questions total)
 -- ============================================================================
@@ -336,7 +335,7 @@ INSERT INTO questions (question_text, question_body, question_body_furigana, que
 ('Lesson 12: Conjugation', 'What is the correct way of saying 今日は雨ではありませんから海に行きます in the past tense?', 'きょう　ー　あめ　うみ　い', 'Intermediate I', 'grammar'),
 ('Lesson 14: Grammar usage', 'Which of the following particles should be used in the following sentence that describes a phenomenon through the five senses? 外では雨＿降っていますから傘を貸しましょうか', 'そと　あめ　ふ　かさ　か', 'Intermediate I', 'grammar'),
 ('Lesson 15: Grammar usage', 'Which of the following verbs does not express a state or a habitual action when used in the form ～ています?', '', 'Intermediate I', 'grammar'),
-('Lesson 16: Particles', 'Which particle is used when describing the starting point of actions like でます and おります? ', '', 'Intermediate I', 'grammar'),
+('Lesson 16: Particles', 'Which particle is used when describing the starting point of actions like 出ます and 降ります? ', 'で　お', 'Intermediate I', 'grammar'),
 ('Lesson 17: Grammar usage', 'Which of the following sentences can be translated as "You must pay by Friday next week, so please do not forget." ?', '', 'Intermediate I', 'grammar'),
 ('Lesson 18: Grammar usage', 'When talking about what your hobby is using a verb, what would you attach after the verb in the dictionary form?', '', 'Intermediate I', 'grammar'),
 ('Lesson 11: Translation', 'How would you say the following in Japanese? "There are only three people who are busy in this room."', '', 'Intermediate I', 'grammar'),
@@ -418,10 +417,10 @@ INSERT INTO answers (question_id, answer_id, answer_text, answer_text_furigana, 
 (64, 3, '川田さんとミラーさんとどちらも遅いですか。', 'かわ　だ　おそ', FALSE),
 (64, 4, '車のほうが早いですか。', 'くるま　はや', FALSE),
 
-(65, 1, 'きのうはあめではありませんでしたからうみに行きました。', 'きのう　ー　あめ　うみ　い', FALSE),
-(65, 2, '今日はあめではありませんでしたからうみに行きました。', 'きょう　ー　あめ　うみ　い', TRUE),
-(65, 3, 'きのうはあめではありませんからうみに行きました。', 'きのう　ー　あめ　うみ　い', FALSE),
-(65, 4, 'きょうはあめではありませんでしたからうみに行きます。', 'きょう　ー　あめ　うみ　い', FALSE),
+(65, 1, '昨日は雨ではありませんでしたから海に行きました。', 'きのう　ー　あめ　うみ　い', FALSE),
+(65, 2, '今日は雨ではありませんでしたから海に行きました。', 'きょう　ー　あめ　うみ　い', TRUE),
+(65, 3, '昨日は雨ではありませんから海に行きました。', 'きのう　ー　あめ　うみ　い', FALSE),
+(65, 4, '今日は雨ではありませんでしたから海に行きます。', 'きょう　ー　あめ　うみ　い', FALSE),
 
 (66, 1, 'は', '', FALSE),
 (66, 2, 'が', '', TRUE),
@@ -499,7 +498,7 @@ INSERT INTO questions (question_text, question_body, question_body_furigana, que
 ('Lesson 20: Casual speech', 'Which of the following statements regarding casual conversation in Japanese is true?', '', 'Intermediate II', 'grammar'),
 ('Lesson 20: Particles', 'Which of the following particles cannot be omitted in casual conversation?', '', 'Intermediate II', 'grammar'),
 ('Lesson 23: Particle identification', 'Which particle indicates direction of movement?', '', 'Intermediate II', 'grammar'),
-('Lesson 19: Conjugation', 'When using the adjective あぶない with the verb なります, how should it be conjugated?', '', 'Intermediate II', 'grammar'),
+('Lesson 19: Conjugation', 'When using the adjective 危ない with the verb なります, how should it be conjugated?', 'あぶ', 'Intermediate II', 'grammar'),
 ('Lesson 21: Translation', 'How would you translate, "Nishikawa said there is a festival in town tomorrow, so he is going to go buy sashimi." into Japanese?', '', 'Intermediate II', 'grammar'),
 ('Lesson 23: Grammar pattern meaning', 'What does "～たり～たりします" express?', '', 'Intermediate II', 'grammar'),
 ('Lesson 22: Verb conjugation', 'How do you modify a noun with "買います" in present tense?', 'か', 'Intermediate II', 'grammar'),
@@ -566,10 +565,10 @@ INSERT INTO answers (question_id, answer_id, answer_text, answer_text_furigana, 
 (87, 3, 'へ', '', FALSE),
 (87, 4, 'に', '', TRUE),
 
-(88, 1, '危ないに', '', FALSE),
-(88, 2, '危なく', '', TRUE),
-(88, 3, '危なくなく', '', FALSE),
-(88, 4, '危ないく', '', FALSE),
+(88, 1, '危ないに', 'あぶ', FALSE),
+(88, 2, '危なく', 'あぶ', TRUE),
+(88, 3, '危なくなく', 'あぶ', FALSE),
+(88, 4, '危ないく', 'あぶ', FALSE),
 
 (89, 1, '西川さんは明日町で祭りがあるから刺身を買いに行くと言いました。', 'にし　かわ　あした　ー　まち　まつ　さし　み　か　い　い', TRUE),
 (89, 2, '西川さんは明日町に祭りがあるから刺身を買いに行くと言いました。', 'にし　かわ　あした　ー　まち　まつ　さし　み　か　い　い', FALSE),
@@ -586,7 +585,7 @@ INSERT INTO answers (question_id, answer_id, answer_text, answer_text_furigana, 
 (91, 3, '買った + noun', 'か', FALSE),
 (91, 4, '買う + noun', 'か', TRUE),
 
-(92, 1, 'この後、、仕事で会議がありますから調べに行く前に電車降りて何か食べたいです。', 'あと　し　ごと　かい　ぎ　しら　い　まえ　でん　しゃ　お　なに　た', FALSE),
+(92, 1, 'この後、仕事で会議がありますから調べに行く前に電車降りて何か食べたいです。', 'あと　し　ごと　かい　ぎ　しら　い　まえ　でん　しゃ　お　なに　た', FALSE),
 (92, 2, 'この後、仕事で会議がありますから調べに行く前に電車を降りて何か食べたいです。', 'あと　し　ごと　かい　ぎ　しら　い　まえ　でん　しゃ　お　なに　た', TRUE),
 (92, 3, 'こちらの後、仕事で会議がありますから調べに行く前に電車を降りまして何か食べたいでしょう。', 'あと　し　ごと　かい　ぎ　しら　い　まえ　でん　しゃ　お　なに　た', FALSE),
 (92, 4, 'こちらの後、仕事で会議があるから調べに行く前に電車を降りて何か食べましょうか。', 'あと　し　ごと　かい　ぎ　しら　い　まえ　でん　しゃ　お　なに　た', FALSE),
