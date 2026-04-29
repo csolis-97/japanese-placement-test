@@ -54,6 +54,10 @@ export function generateFurigana(questionField: string, furigana: string | undef
     const IRREGULAR_READINGS = ['今朝','朝日', '昨日', '今日', '明日', '明後日', '大人', '土産',];
     const furiganaList = furigana.split("　");
     //const textArray = questionField.split("");
+
+    /* LOOK INTO INTL SEGMENTER, MIGHT BE THE EASY WAY TO HANDLE MULTIPLE DIFFERENT KANJI COMPOUNDS BEING CONNECTED WHILE STILL PROPERLY ASSIGNING FURIGANA
+    https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Segmenter
+    */
     const givenText = questionField
     .replace(/(\p{sc=Han})(?=\p{sc=Hiragana}|\p{sc=Katakana}|\p{P})|(\p{sc=Hiragana}|\p{P})(?=\p{sc=Han}|\p{sc=Katakana})|(\p{sc=Katakana}\p{P})(?=\p{sc=Han}|\p{sc=Hiragana})/gu, "$& ");
     const textArray = givenText.split(/(\s+)/);
