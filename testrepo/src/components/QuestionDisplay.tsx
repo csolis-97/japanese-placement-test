@@ -149,7 +149,7 @@ export default function QuestionDisplay(props: QuestionDisplayProps) {
                                             ${cursorStatus}
                                             ${isAnswerCorrect ? (correctRadio) : userInCorrect ? (wrongRadio) : (regularRadio)}
                                     `}>
-                                        <p>
+                                        <p className = "text-sm sm:text-xl">
                                             { // Check if there is furigana for the given answer text, and generate it if there is
                                                 props.answerTextFurigana && generateFurigana(props.answerText[index], props.answerTextFurigana[index], props.questionCategory)
                                             }

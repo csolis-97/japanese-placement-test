@@ -21,7 +21,6 @@ export function generateFurigana(questionField: string, furigana: string | undef
     // Kanji radicals range: [\u2E80-\u2FD5]
     // Half width katakana and punctuation range: [\uFF5F-\uFF9F]
     // Japanese symbols and punctuation range: [\u3000-\u303F]
-    const JAPANESE_CHAR_REGEX = /[\u3041-\u3096\u30A0-\u30FF\u3400-\u4DB5\u4E00-\u9FCB\uF900-\uFA6A\u2E80-\u2FD5\uFF5F-\uFF9F\u3000-\u303F]/;
     const KANJI_REGEX = /[\u3400-\u4DB5\u4E00-\u9FCB\uF900-\uFA6A]/;
     const BEGINNER_TWO_KANJI = [
         '日','月','火','木','金','土','山','川','田',
@@ -51,12 +50,17 @@ export function generateFurigana(questionField: string, furigana: string | undef
         '家','内','族','兄','弟','奥','姉','妹','海','計',
         '部','屋','室','窓','開','閉','歌','意','味','天','考'
     ];
-    const IRREGULAR_READINGS = ['今朝','朝日', '昨日', '今日', '明日', '明後日', '大人', '土産',];
     const furiganaList = furigana.split("　");
     //const textArray = questionField.split("");
+
     const givenText = questionField
     .replace(/(\p{sc=Han})(?=\p{sc=Hiragana}|\p{sc=Katakana}|\p{P})|(\p{sc=Hiragana}|\p{P})(?=\p{sc=Han}|\p{sc=Katakana})|(\p{sc=Katakana}\p{P})(?=\p{sc=Han}|\p{sc=Hiragana})/gu, "$& ");
+    const furiganaText = furigana;
     const textArray = givenText.split(/(\s+)/);
+    let furiganaCtr = 0;
+    let regCtr = 0;
+    let furiganaTextCtr = 0;
+
     // Use a for loop to apply line break elements to any \n detected
     for (let i = 0; i < textArray.length -1; i++) {
         if (textArray[i].includes("\n")) {
@@ -67,7 +71,7 @@ export function generateFurigana(questionField: string, furigana: string | undef
     console.log(`HERE ARE EACH CHARACTERS OF THE STRING SPLIT INTO AN ARRAY: ${textArray}`);
 
     console.log(`HERE IS THE FINAL TEXT COMBINED BY KANJI COMPOUNDS: ${givenText}`);
-    console.log(`HERE IS THE FINAL FURIGANA COMBINED BY KANJI COMPOUNDS: ${furiganaList}`);
+    console.log(`HERE IS THE FINAL FURIGANA COMBINED BY KANJI COMPOUNDS: ${furiganaText}`);
 
     // These counters will be used to properly assign each kanji's furigana, based on the number of kanji that have been encountered, as well
     // as using them as the indices to properly match the furigana that was provided in the database
@@ -77,66 +81,65 @@ export function generateFurigana(questionField: string, furigana: string | undef
 
     // The map function will be used to iterate through each character and return TSX as needed
     const buildFurigana = textArray.map((char, index) => {
-        // These consts will be used to determine if the current character is kanji and if it is included in the list of kanji for each level
+        console.log(`CURRENT BUILD FURIGANA ITERATION: ${index}`);
+    //const buildFurigana = givenText.map((char, index) => {
+        const currentBlock = char.split("");
         const isKanji = KANJI_REGEX.test(char);
-
         // If the current character is kanji, increment the counter and set the proper indices
         if (isKanji) {
-            const currentKanjiCompound = char.split("");
-            const isBeginnerTwoKanji = currentKanjiCompound.some(char => BEGINNER_TWO_KANJI.includes(char));
-            const isIntermediateOneKanji = currentKanjiCompound.some(char => INTERMEDIATE_ONE_KANJI.includes(char));
-            const isIntermediateTwoKanji = currentKanjiCompound.some(char => INTERMEDIATE_TWO_KANJI.includes(char));
-            const isAdvancedKanji = currentKanjiCompound.some(char => ADVANCED_KANJI.includes(char));
+            // These consts will be used to determine if the current character is kanji and if it is included in the list of kanji for each level
+            const isBeginnerTwoKanji = currentBlock.some(char => BEGINNER_TWO_KANJI.includes(char));
+            const isIntermediateOneKanji = currentBlock.some(char => INTERMEDIATE_ONE_KANJI.includes(char));
+            const isIntermediateTwoKanji = currentBlock.some(char => INTERMEDIATE_TWO_KANJI.includes(char));
+            const isAdvancedKanji = currentBlock.some(char => ADVANCED_KANJI.includes(char));
+
             // These consts will be used to determine if the current kanji should have furigana or not based on the question level. With each increasing
             // level, the kanji from the previous levels will also be included
             const levelIsBeginnerTwo = questionLevel === 'Beginner II' && isBeginnerTwoKanji;
             const levelIsIntermediateOne = questionLevel === 'Intermediate I' && (isIntermediateOneKanji || isBeginnerTwoKanji);
             const levelIsIntermediateTwo = questionLevel === 'Intermediate II' && (isIntermediateTwoKanji || isIntermediateOneKanji || isBeginnerTwoKanji);
             const levelIsAdvanced = questionLevel === 'Advanced' && (isAdvancedKanji || isIntermediateTwoKanji || isIntermediateOneKanji || isBeginnerTwoKanji);
-            const furiganaNotNeeded = [levelIsBeginnerTwo, levelIsIntermediateOne, levelIsIntermediateTwo, levelIsAdvanced].some(Boolean) && [levelIsBeginnerTwo, levelIsIntermediateOne, levelIsIntermediateTwo, levelIsAdvanced].filter(Boolean).length > (char.length / 2);
+            const furiganaNotNeeded = [levelIsBeginnerTwo, levelIsIntermediateOne, levelIsIntermediateTwo, levelIsAdvanced].some(Boolean);
             console.log('IS BEGINNER II?', levelIsBeginnerTwo);
             console.log('IS INTERMEDIATE I?', levelIsIntermediateOne);
             console.log('IS INTERMEDIATE II?', levelIsIntermediateTwo);
             console.log('IS ADVANCED?', levelIsAdvanced);
-            console.log("IS FURIGANA NEEDED?", furiganaNotNeeded);
+            console.log("IS FURIGANA NOT NEEDED?", furiganaNotNeeded);
+            console.log(`CURRENT CHAR LENGTH FOR THE KANJI! ${char.length}`);
 
-            kanjiCounter++;
+            kanjiCounter = kanjiCounter + char.length - 1;
             lastCharIndex = lastKanjiIndex;
-            lastKanjiIndex = index + 1;
+            lastKanjiIndex = index;
             // Now check if the kanji should not have furigana based on the question level, or if the furigana is a dash 
             // (for kanji compounds with irregular readings, the furigana is given to the kanji that is learned last, thus the dash).
             // If it doesn't, return an empty fragment
-            if (furiganaNotNeeded) {
+            if (furiganaNotNeeded || furiganaList[kanjiCounter - 1] === "ー") {
+            //if (furiganaNotNeeded || furiganaText[kanjiCounter - 1] === "ー") {   
                 return (
-                    <Fragment key = {String(index)}>{`${char}`}</Fragment>
+                    <Fragment key = {String(index)}>{currentBlock}</Fragment>
                 );
             }
             // Otherwise, go here and return the ruby element with the furigana
             else {
                 // The format might look weird, but rp tags are used in case the user's browser doesn't support rt. 
                 // Also mb-1.5 so that it is properly aligned with the rest of the text
+                // {char}<rp>(</rp><rt className = "text-xs">{furiganaText[kanjiCounter - 1]}</rt><rp>)</rp>
                 console.log(`${char} is kanji! Return Ruby TSX!`);
                 return (
                     <Fragment key = {String(index)}>
-                        <ruby className = "mb-1.5">
-                            {char}<rp>(</rp><rt className = "text-[0.65rem]">{furiganaList[kanjiCounter - 1]}</rt><rp>)</rp>
+                        <ruby className = "sm:text-xxl mb-1.5">
+                            {char}<rp>(</rp><rt className = "text-xs">{furiganaList.slice(lastKanjiIndex, kanjiCounter)}</rt><rp>)</rp>
                         </ruby>
                     </Fragment>
                 );
             }
         }
-        else if (char === " " && JAPANESE_CHAR_REGEX.test(textArray[index + 1]) && JAPANESE_CHAR_REGEX.test(textArray[index - 1])) {
-            console.log("This is a space between a Japanese character and a non-Japanese character, so do not render it!");
-        }
         else {
             console.log(`${char} is not kanji!`);
             return (
-                <Fragment key = {String(index)}>
-                    {char}
-                </Fragment>
+                <Fragment key = {String(index)}>{currentBlock}</Fragment>
             );
         }
     });
-   
     return buildFurigana;
 }
