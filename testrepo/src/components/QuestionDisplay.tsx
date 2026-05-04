@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { generateFurigana } from "@/utils/generateFurigana";
 
 interface QuestionDisplayProps {
@@ -28,6 +29,16 @@ const regularNumberLabel = "text-gray-600 peer-checked:text-white";
 const coloredNumberLabel = "text-white";
 
 export default function QuestionDisplay(props: QuestionDisplayProps) {
+
+    // Wrapper function to ensure proper hyrdation of the furigana
+    const furiganaWrapper = (text: string, furigana: string | undefined, level: string) => {
+        const [currentFurigana, setCurrentFurigana] = useState<React.ReactNode>(null);
+        useEffect(() => {
+            setCurrentFurigana(generateFurigana(text, furigana, level));
+        }, [text, furigana, level]);
+        return currentFurigana;
+    };
+
     // DEBUG, Log the values to check the current values
     console.log("ALREADY ANSWERED?");
     console.log(props.alreadyAnswered);
@@ -80,7 +91,7 @@ export default function QuestionDisplay(props: QuestionDisplayProps) {
                     <h1 className = "sm:text-xl px-4">Level: {props.questionCategory}</h1>
                     <h2 className = "divide-y-2 px-4">
                         { // Check if there is furigana for the question text, and generate it if there is
-                            generateFurigana(props.questionText, props.questionTextFurigana, props.questionCategory)
+                            furiganaWrapper(props.questionText, props.questionTextFurigana, props.questionCategory)
                         }
                     </h2>
                     { // Check if this is a listening comprehension question here
@@ -90,7 +101,7 @@ export default function QuestionDisplay(props: QuestionDisplayProps) {
                     }
                     <p className = "sm:text-2xl p-4">
                         { // Check if there is furigana for the question body, and generate it if there is
-                            generateFurigana(props.questionBody, props.questionBodyFurigana, props.questionCategory)
+                            furiganaWrapper(props.questionBody, props.questionBodyFurigana, props.questionCategory)
                         }
                     </p>
                 </div>
@@ -151,7 +162,7 @@ export default function QuestionDisplay(props: QuestionDisplayProps) {
                                     `}>
                                         <p className = "text-sm sm:text-xl">
                                             { // Check if there is furigana for the given answer text, and generate it if there is
-                                                props.answerTextFurigana && generateFurigana(props.answerText[index], props.answerTextFurigana[index], props.questionCategory)
+                                                props.answerTextFurigana && furiganaWrapper(props.answerText[index], props.answerTextFurigana[index], props.questionCategory)
                                             }
                                         </p>
                                     </label>

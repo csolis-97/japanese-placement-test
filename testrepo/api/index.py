@@ -1,6 +1,5 @@
-from flask import Flask, jsonify, request, session, redirect, url_for, render_template, make_response
+from flask import Flask, jsonify, request
 from dotenv import load_dotenv
-from flask_bcrypt import Bcrypt
 from flask_cors import CORS
 import pymysql
 import os
@@ -72,9 +71,6 @@ try:
             # Use this to set the timezone of the current session's connection to the database
             init_command = "SET SESSION time_zone = '+00:00'"
         ))
-
-    # Initialize Bcrypt for password hashing
-    # bcrypt = Bcrypt(app)
 
 # If there were any errors during the initial setup, go here
 except Exception as e:

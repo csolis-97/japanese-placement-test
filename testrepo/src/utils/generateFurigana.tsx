@@ -1,3 +1,5 @@
+"use client";
+
 import { Fragment } from "react/jsx-runtime";
 
 // This function is mostly functional, though I have yet to test if the furigana is actually omitted for each level, since I have to edit the data first.
@@ -58,9 +60,19 @@ export function generateFurigana(questionField: string, furigana: string | undef
     /* LOOK INTO INTL SEGMENTER, MIGHT BE THE EASY WAY TO HANDLE MULTIPLE DIFFERENT KANJI COMPOUNDS BEING CONNECTED WHILE STILL PROPERLY ASSIGNING FURIGANA
     https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Segmenter
     */
-    const givenText = questionField
+
+    const segmenterJp = new Intl.Segmenter("ja-JP", { granularity: "word" });
+    const textSegments = segmenterJp.segment(questionField);
+    console.table(Array.from(textSegments));
+
+    const givenText = Array.from(textSegments).map((textPiece) => textPiece.segment)
+    .join(" ")
     .replace(/(\p{sc=Han})(?=\p{sc=Hiragana}|\p{sc=Katakana}|\p{P})|(\p{sc=Hiragana}|\p{P})(?=\p{sc=Han}|\p{sc=Katakana})|(\p{sc=Katakana}\p{P})(?=\p{sc=Han}|\p{sc=Hiragana})/gu, "$& ");
     const textArray = givenText.split(/(\s+)/);
+    
+    //const givenText = questionField
+    //.replace(/(\p{sc=Han})(?=\p{sc=Hiragana}|\p{sc=Katakana}|\p{P})|(\p{sc=Hiragana}|\p{P})(?=\p{sc=Han}|\p{sc=Katakana})|(\p{sc=Katakana}\p{P})(?=\p{sc=Han}|\p{sc=Hiragana})/gu, "$& ");
+    // const textArray = givenText.split(/(\s+)/);
     // Use a for loop to apply line break elements to any \n detected
     for (let i = 0; i < textArray.length -1; i++) {
         if (textArray[i].includes("\n")) {
