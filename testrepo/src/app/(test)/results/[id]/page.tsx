@@ -1,28 +1,34 @@
-export const dynamic = 'force-dynamic';
+"use server";
 
 import { Suspense } from "react";
-import * as resultUtils from "./actions";
-import ResultsDisplay from "@/app/components/ResultDisplay";
-import ResultInfo from "@/app/components/ResultInfo";
-import DownloadButtonPDF from "@/app/components/pdf/DownloadButtonPDF";
-import QuestionDisplay from "@/app/components/QuestionDisplay";
-import { ResultInfoSkeleton, QuestionDisplaySkeleton } from "@/app/components/skeletons";
-import { shuffleList, seedCreate } from "@/app/utils/utilFunctions";
-import { ResultQuestion, TestResult } from "@/app/types/sharedInterface";
+import { ActionKey, apiAction } from "@/utils/sharedApiRouter";
+import ResultsDisplay from "@/components/ResultDisplay";
+import ResultInfo from "@/components/ResultInfo";
+import DownloadButtonPDF from "@/components/pdf/DownloadButtonPDF";
+import { ResultInfoSkeleton, QuestionDisplaySkeleton } from "@/components/skeletons";
+import { shuffleList, seedCreate } from "@/utils/utilFunctions";
+import { ResultQuestion, TestResult } from "@/types/sharedInterface";
+import { ResultRequest, AnswersRequest } from "@/types/sharedType";
 
 export default async function Results({ params } : { params: Promise<{ id : string }> }) {
   // Here, the slugging params will be dealt with
   const { id } = await params;
   const urlString = id ? id : "";
 
-  let resultsFormat: resultUtils.ResultRequest = {
+  let resultsFormat: ResultRequest = {
     'testDate' : new Date(),
     'urlId' : urlString
   };
 
   let totalQuestions = 0;
 
-  const resultsPromise = resultUtils.resultsData('retrieveResults', resultsFormat) as Promise<TestResult>;
+  const resultsRecord: ActionKey = {
+    action: 'retrieveResults',
+    givenFields: resultsFormat
+  };
+
+  const resultsPromise = apiAction(resultsRecord) as Promise<TestResult>;
+  //const resultsPromise = resultUtils.resultsData('retrieveResults', resultsFormat) as Promise<TestResult>;
 
   // If the data is successfully retrieved, then the following HTML will return If not, error.tsx will catch the error
   const answersPromise = resultsPromise.then(async infoData => {
@@ -31,12 +37,17 @@ export default async function Results({ params } : { params: Promise<{ id : stri
     console.log(`CURRENT VALUE OF RESULTNUM: ${resultNum}`);
     console.log(`CURRENT VALUE OF ATTEMPTNUM: ${attemptNum}`);
 
-    let answersFormat: resultUtils.AnswersRequest = {    
+    let answersFormat: AnswersRequest = {    
       'attemptId' : attemptNum,
       'resultId' : resultNum
     };
 
-    return resultUtils.answersData('retrieveAnswers', answersFormat)
+    const answersRecord: ActionKey = {
+      action: 'retrieveAnswers',
+      givenFields: answersFormat
+    };
+
+    return apiAction(answersRecord)
     .then(answerData => {
       // You can change the logic of stage size here if there are more than 5 questions per stage
       const STAGE_SIZE = 5;

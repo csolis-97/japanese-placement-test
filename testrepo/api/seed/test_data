@@ -1,0 +1,811 @@
+-- ============================================================================
+-- BEGINNER I: LESSONS 1-5 (25 questions total)
+-- ============================================================================
+
+INSERT INTO questions (question_text, question_body, question_body_furigana, question_level, question_type) VALUES
+('Lesson 1: Translation', 'What does "私はマイクです" mean?', 'わたし', 'Beginner I', 'vocab'),
+('Lesson 1: Particle usage', 'Which particle marks the topic (main idea) of a sentence?', '', 'Beginner I', 'grammar'),
+('Lesson 1: Vocabulary', 'In which of the following situations is it incorrect to use ~さん after the name of a person?', '', 'Beginner I', 'grammar'),
+('Lesson 2: Vocabulary', 'What does "ここ" mean?', '', 'Beginner I', 'vocab'),
+('Lesson 4: Vocabulary', 'How do you say "now" in Japanese?', '', 'Beginner I', 'vocab'),
+('Lesson 4: Vocabulary', 'What does "起きます" mean?', 'お', 'Beginner I', 'vocab'),
+('Lesson 2: Translation', 'How would you say, "This book is my book."?', '', 'Beginner I', 'grammar'),
+('Lesson 5: Particle usage', 'Which particle indicates the means or method by which you do something?', '', 'Beginner I', 'grammar'),
+('Lesson 1: Translation', 'What does "はじめまして" mean?', '', 'Beginner I', 'vocab'),
+('Lesson 3: Particle usage', 'Which particle is used to connect two or more nouns in a list?', '', 'Beginner I', 'vocab'),
+('Lesson 5: Translation', 'How do you say, "I will go to Tokyo with my family." in Japanese?', '', 'Beginner I', 'grammar'),
+('Lesson 2: Vocabulary', 'What does "トイレはあそこです。" mean?', '', 'Beginner I', 'grammar'),
+('Lesson 1: Vocabulary', 'In formal speech, what is the most proper way of negating a noun?', '', 'Beginner I', 'grammar'),
+('Lesson 1: Particle usage', 'Which of the following sentences uses も properly?', '', 'Beginner I', 'grammar'),
+('Lesson 3: Vocabulary', 'How do you say "over there" in Japanese?', '', 'Beginner I', 'vocab'),
+('Lesson 4: Vocabulary', 'What does "朝日" mean?', 'あさ　ー', 'Beginner I', 'vocab'),
+('Lesson 1: Particle usage', 'How is the particle "か" used?', '', 'Beginner I', 'grammar'),
+('Lesson 5: Vocabulary', 'What does "帰ります" mean?', 'かえ', 'Beginner I', 'vocab'),
+('Lesson 4: Translation', 'Which does the sentence, "十時から五時まで食べません。" mean?', 'じゅう　じ　ご　じ　た', 'Beginner I', 'grammar'),
+('Lesson 1: Translation', 'What does "ありがとうございます" mean?', '', 'Beginner I', 'vocab'),
+('Lesson 2: Particle usage', 'Which particle is used to describe one noun with another noun?', '', 'Beginner I', 'grammar'),
+('Lesson 3: Vocabulary', 'Which noun is used when asking which country someone is from?', '', 'Beginner I', 'grammar'),
+('Lesson 4: Vocabulary', 'What does "昨日" mean?', 'きのう　ー', 'Beginner I', 'vocab'),
+('Lesson 2: Vocabulary', 'When responding to a question in the affirmative, which of the following is used?', '', 'Beginner I', 'grammar'),
+('Lesson 4: Particle usage', 'Which particle is used with time?', '', 'Beginner I', 'grammar');
+
+INSERT INTO answers (question_id, answer_id, answer_text, answer_text_furigana, correct_answer) VALUES
+(1, 1, 'I am Mike.', '', TRUE),
+(1, 2, 'I know Mike.', '', FALSE),
+(1, 3, 'He is Mike.', '', FALSE),
+(1, 4, 'This is Mike.', '', FALSE),
+
+(2, 1, 'を', '', FALSE),
+(2, 2, 'は', '', TRUE),
+(2, 3, 'が', '', FALSE),
+(2, 4, 'に', '', FALSE),
+
+(3, 1, 'When talking to your parents', '', FALSE),
+(3, 2, 'When talking about your co-workers', '', FALSE),
+(3, 3, 'When talking about yourself', '', TRUE),
+(3, 4, 'When talking to your neighbor', '', FALSE),
+
+(4, 1, 'here', '', TRUE),
+(4, 2, 'there', '', FALSE),
+(4, 3, 'over there', '', FALSE),
+(4, 4, 'where', '', FALSE),
+
+(5, 1, '今日', 'きょう　ー', FALSE),
+(5, 2, '今', 'いま　ー', TRUE),
+(5, 3, '明日', 'あした　ー', FALSE),
+(5, 4, '昨日', 'きのう　ー', FALSE),
+
+(6, 1, 'to wake up', '', TRUE),
+(6, 2, 'to sleep', '', FALSE),
+(6, 3, 'to eat', '', FALSE),
+(6, 4, 'to drink', '', FALSE),
+
+(7, 1, '本はこの私です。', 'ほん　わたし', FALSE),
+(7, 2, '本はこれの私です。', 'ほん　わたし', FALSE),
+(7, 3, 'この本は私の本です。', 'ほん　わたし　ほん', TRUE),
+(7, 4, 'これ本は私の本です。', 'ほん　わたし　ほん', FALSE),
+
+(8, 1, 'は', '', FALSE),
+(8, 2, 'を', '', FALSE),
+(8, 3, 'が', '', FALSE),
+(8, 4, 'で', '', TRUE),
+
+(9, 1, 'Good morning', '', FALSE),
+(9, 2, 'Nice to meet you', '', TRUE),
+(9, 3, 'Thank you', '', FALSE),
+(9, 4, 'Goodbye', '', FALSE),
+
+(10, 1, 'で', '', FALSE),
+(10, 2, 'は', '', FALSE),
+(10, 3, 'と', '', TRUE),
+(10, 4, 'ね', '', FALSE),
+
+(11, 1, '家族と東京へ行きます。', 'か　ぞく　とう　きょう　い', TRUE),
+(11, 2, '家族は東京に行きました。', 'か　ぞく　とう　きょう　い', FALSE),
+(11, 3, '家族で東京へ行きます。', 'か　ぞく　とう　きょう　い', FALSE),
+(11, 4, '家族が東京に行きませんでした。', 'か　ぞく　とう　きょう　い', FALSE),
+
+(12, 1, 'The toilet is over here.', '', FALSE),
+(12, 2, 'The toilet is way over there.', '', TRUE),
+(12, 3, 'The toilet is that way.', '', FALSE),
+(12, 4, 'This is not a toilet.', '', FALSE),
+
+(13, 1, 'じゃない', '', FALSE),
+(13, 2, 'ではない', '', FALSE),
+(13, 3, 'じゃありません', '', FALSE),
+(13, 4, 'ではありません', '', TRUE),
+
+(14, 1, '私も学生です。ミラーさんも教師です。', 'わたし　がく　せい　きょう　し', FALSE),
+(14, 2, '私も医者です。ミラーさんは医者です。', 'わたし　い　しゃ　い　しゃ', FALSE),
+(14, 3, '私は研究者です。ミラーさんも研究者です。', 'わたし　けん　きゅう　しゃ　けん　きゅう　しゃ', TRUE),
+(14, 4, '私は銀行員です。私も会社員です。', 'わたし　ぎん　こう　いん　わたし　かい　しゃ　いん', FALSE),
+
+(15, 1, 'ここ', '', FALSE),
+(15, 2, 'あそこ', '', FALSE),
+(15, 3, 'どこ', '', FALSE),
+(15, 4, 'そこ', '', TRUE),
+
+(16, 1, 'morning', '', TRUE),
+(16, 2, 'afternoon', '', FALSE),
+(16, 3, 'evening', '', FALSE),
+(16, 4, 'night', '', FALSE),
+
+(17, 1, 'For answering questions', '', FALSE),
+(17, 2, 'To explain what something means', '', FALSE),
+(17, 3, 'For emphasis', '', FALSE),
+(17, 4, 'To ask a question', '', TRUE),
+
+(18, 1, 'to go', '', FALSE),
+(18, 2, 'to go home', '', TRUE),
+(18, 3, 'to come', '', FALSE),
+(18, 4, 'to leave', '', FALSE),
+
+(19, 1, 'I eat from 10 to 5.', '', FALSE),
+(19, 2, 'I sleep from 10 to 5.', '', FALSE),
+(19, 3, 'I do not eat from 10 to 5.', '', TRUE),
+(19, 4, 'I do not rest from 10 to 5.', '', FALSE),
+
+(20, 1, 'Excuse me', '', FALSE),
+(20, 2, 'You are welcome', '', FALSE),
+(20, 3, 'I am sorry', '', FALSE),
+(20, 4, 'Thank you', '', TRUE),
+
+(21, 1, 'は', '', FALSE),
+(21, 2, 'を', '', FALSE),
+(21, 3, 'の', '', TRUE),
+(21, 4, 'が', '', FALSE),
+
+(22, 1, '何', 'なん', FALSE),
+(22, 2, '誰', 'だれ', FALSE),
+(22, 3, 'どこ', '', TRUE),
+(22, 4, 'いつ', '', FALSE),
+
+(23, 1, 'today', '', FALSE),
+(23, 2, 'yesterday', '', TRUE),
+(23, 3, 'tomorrow', '', FALSE),
+(23, 4, 'now', '', FALSE),
+
+(24, 1, 'いいえ、そうです。', '', FALSE),
+(24, 2, 'はい、こうです。', '', FALSE),
+(24, 3, 'いいえ、こうではありません。', '', FALSE),
+(24, 4, 'はい、そうです。', '', TRUE),
+
+(25, 1, 'を', '', FALSE),
+(25, 2, 'で', '', FALSE),
+(25, 3, 'へ', '', FALSE),
+(25, 4, 'に', '', TRUE);
+
+-- ============================================================================
+-- BEGINNER II: LESSONS 6-10 (25 questions total)
+-- ============================================================================
+
+INSERT INTO questions (question_text, question_body, question_body_furigana, question_level, question_type) VALUES
+('Lesson 10: Particle identification', 'When using あります・います to describe that something exists, which particle is used to denote where said person/thing exists?', '', 'Beginner II', 'grammar'),
+('Lesson 7: Grammar usage', 'Which of the following is the correct way to say that your father gave Tanaka a book?', '', 'Beginner II', 'grammar'),
+('Lesson 6: Particle identification', 'Which particle marks the direct object in the following sentence: 明日は山田先生が教室で英語を教えます。?', 'あした　ー　やま　だ　せん　せい　きょう　しつ　えい　ご　おし', 'Beginner II', 'grammar'),
+('Lesson 8: Adjective conjugation', 'How do you conjugate "高いです" into the negative form?', 'たか', 'Beginner II', 'grammar'),
+('Lesson 6: Translation', ' How would you say, "Would you like eat lunch together the day after tomorrow?" in Japanese?', '', 'Beginner II', 'grammar'),
+('Lesson 9: Grammar usage', 'If you wanted to ask Kawada why she dislikes baseball, how would you ask that in Japanese?', '', 'Beginner II', 'grammar'),
+('Lesson 10: Translation', 'What does "机の上" mean?', 'つくえ　うえ','Beginner II', 'vocab'),
+('Lesson 8: Vocabulary', 'If you wanted to ask someone what kind of books they like, which question word would you use?', '', 'Beginner II', 'vocab'),
+('Lesson 6: Grammar usage', 'Which noun cannot be used as the direct object of the verb する when saying that you do something?', '', 'Beginner II', 'vocab'),
+('Lesson 10: Vocabulary', 'Which location word would you use to say that something is in the middle of two things?', '', 'Beginner II', 'vocab'),
+('Lesson 8: Vocabulary', 'Which of the following expressions is used to express agreement or sympathy?', '', 'Beginner II', 'vocab'),
+('Lesson 7: Translation', 'What does 木村くん、もう中国語の宿題をしましたか? mean in English?', 'き　むら　ちゅう　ごく　ご　しゅく　だい', 'Beginner II', 'grammar'),
+('Lesson 8: Adjective conjugation', 'How do you make you say the following in Japanese? Miller is a nice person.', '', 'Beginner II', 'grammar'),
+('Lesson 8: Grammar usage', 'If you want to show contrast between two statements, which particle would you use?', '', 'Beginner II', 'grammar'),
+('Lesson 9: Translation', 'What does すみません、日本語がよくわかりませんから漢字を書きません。mean in English?', 'に　ほん　ご　かん　じ　か', 'Beginner II', 'grammar'),
+('Lesson 9: Grammar usage', 'How would you say, "I do not like cooking very much because I am not good at it" in Japanese?', '', 'Beginner II', 'grammar'),
+('Lesson 10: Particle usage', 'If you wanted to give a non-exhaustive list of examples of things in a list, which particle would you use?', '', 'Beginner II', 'grammar'),
+('Lesson 7: Particle usage', 'Which particle would be used in the following sentence: 「ありがとうございます」は英語＿何ですか。', 'えい　ご　なん', 'Beginner II', 'grammar'),
+('Lesson 7: Vocabulary', 'Which verb is used when you receive something from someone?', '', 'Beginner II', 'vocab'),
+('Lesson 8: Adjectives', 'Which type of adjective is "きれい"?', '', 'Beginner II', 'vocab'),
+('Lesson 9: Vocabulary', 'Which adverb would you use to say that you often do something?', '', 'Beginner II', 'vocab'),
+('Lesson 10: Vocabulary', 'What is the difference between あります and います?', '', 'Beginner II', 'grammar'),
+('Lesson 6: Translation', 'What does the following sentence mean in English? 庭でお酒を飲みましょう', 'にわ　さけ　の', 'Beginner II', 'grammar'),
+('Lesson 7: Grammar pattern', 'What particle comes after the person receiving something when using the verb "あげます"?', '', 'Beginner II', 'grammar'),
+('Lesson 10: Translation', 'What does 本はベッドの下にありますか mean in English?', 'ほん　した', 'Beginner II', 'grammar');
+
+INSERT INTO answers (question_id, answer_id, answer_text, answer_text_furigana,correct_answer) VALUES
+(26, 1, 'は', '', FALSE),
+(26, 2, 'を', '', FALSE),
+(26, 3, 'に', '', TRUE),
+(26, 4, 'で', '', FALSE),
+
+(27, 1, '田中さんが父に本をくれました', 'た　なか　ちち　ほん', FALSE),
+(27, 2, '父は田中さんに本をあげました。', 'ちち　た　なか　ほん', TRUE),
+(27, 3, '田中さんは父に本をあげました。', 'た　なか　ちち　ほん', FALSE),
+(27, 4, '父は田中さんに本をもらいました。', 'ちち　た　なか　ほん', FALSE),
+
+(28, 1, 'を', '', TRUE),
+(28, 2, 'が', '', FALSE),
+(28, 3, 'で', '', FALSE),
+(28, 4, 'は', '', FALSE),
+
+(29, 1, '高くではありません', 'たか', FALSE),
+(29, 2, '高くないです', 'たか', TRUE),
+(29, 3, '高いじゃないです', 'たか', FALSE),
+(29, 4, '高ないです', 'たか', FALSE),
+
+(30, 1, '一緒に昼ご飯に明後日を食べますか。', 'いっ　しょ　ひる　はん　あさって　ー　ー　た', FALSE),
+(30, 2, '食べますは明後日の昼ご飯に一緒ですか。', 'た　あさって　ー　ー　ひる　はん　いっ　しょ', FALSE),
+(30, 3, '明後日は一緒に昼ご飯が食べませんか。', 'あさって　ー　ー　いっ　しょ　ひる　はん　た', FALSE),
+(30, 4, '明後日一緒に昼ご飯を食べませんか。', 'あさって　ー　ー　いっ　しょ　ひる　はん　た', TRUE),
+
+(31, 1, '山田さん、どうして野球が嫌いですか。', 'やま　だ　や　きゅう　きら', FALSE),
+(31, 2, '川田さん、どうして野菜が嫌いですか。', 'かわ　だ　や　さい　きら', FALSE),
+(31, 3, '川田さん、どうして野球が嫌いですか。', 'かわ　だ　や　きゅう　きら', TRUE),
+(31, 4, 'どうして、山田さんは野球が嫌いですか。', 'やま　だ　や　きゅう　きら', FALSE),
+
+(32, 1, 'beneath the desk', '', FALSE),
+(32, 2, 'next to the desk', '', FALSE),
+(32, 3, 'on top of the desk', '', TRUE),
+(32, 4, 'inside the desk', '', FALSE),
+
+(33, 1, '何', 'なん', FALSE),
+(33, 2, 'どちら', '', FALSE),
+(33, 3, 'どれ', '', FALSE),
+(33, 4, 'どんな', '',TRUE),
+
+(34, 1, 'ドライブ', '', FALSE),
+(34, 2, 'ビール', '', TRUE),
+(34, 3, '何', 'なん', FALSE),
+(34, 4, '宿題', 'しゅく　だい', FALSE),
+
+(35, 1, '隣', 'となり', FALSE),
+(35, 2, '間', 'あいだ', TRUE),
+(35, 3, '外', 'そと', FALSE),
+(35, 4, '近く', 'ちか', FALSE),
+
+(36, 1, 'そうですかね', '', FALSE),
+(36, 2, 'そうですね', '', TRUE),
+(36, 3, 'どうですね', '', FALSE),
+(36, 4, 'そうですか', '', FALSE),
+
+(37, 1, 'Kimura, did you already lose your Chinese homework?', '', FALSE),
+(37, 2, 'Has Kimura started doing his Chinese homework already?', '', FALSE),
+(37, 3, 'Kimura, have you done your Chinese homework yet?', '', TRUE),
+(37, 4, 'My friend Kimura has already finished his Chinese homework.', '', FALSE),
+
+(38, 1, 'ミラーさんはしんせつ人です', 'しん　せつ　ひと', FALSE),
+(38, 2, 'ミラーさんはしんせつな人ですか。', 'しん　せつ　ひと', FALSE),
+(38, 3, 'ミラーさんはしんせつな人です。', 'しん　せつ　ひと', TRUE),
+(38, 4, 'ミラーさんをしんせつな人です。', 'しん　せつ　ひと', FALSE),
+
+(39, 1, 'は', '', FALSE),
+(39, 2, 'で', '', FALSE),
+(39, 3, 'へ', '', FALSE),
+(39, 4, 'が', '', TRUE),
+
+(40, 1, 'Sorry, I do not speak Japanese because I do not understand Japanese very well.', '', FALSE),
+(40, 2, 'Sorry, I do not write kanji because I do not understand Japanese very much.', '', TRUE),
+(40, 3, 'Sorry, I  write kanji because I do not understand Japanese very well.', '', FALSE),
+(40, 4, 'Sorry, I do not understand Japanese that well because I do not write kanji.', '', FALSE),
+
+(41, 1, '料理があまり好きではありませんから、料理が下手です。', 'りょう　り　す　りょう　り　へ　た', FALSE),
+(41, 2, '料理がわかりませんから、料理があまり好きじゃないです。', 'りょう　り　りょう　り　す', FALSE),
+(41, 3, '料理が下手です。料理があまり好きじゃありませんから。', 'りょう　り　へ　た　りょう　り　す', FALSE),
+(41, 4, '料理が下手ですから、料理があまり好きではありません。', 'りょう　り　へ　た　りょう　り　す', TRUE),
+
+(42, 1, 'は', '', FALSE),
+(42, 2, 'や', '',TRUE),
+(42, 3, 'と', '',FALSE),
+(42, 4, 'で', '', FALSE),
+
+(43, 1, 'を', '',FALSE),
+(43, 2, 'へ', '', FALSE),
+(43, 3, 'で', '', TRUE),
+(43, 4, 'や', '', FALSE),
+
+(44, 1, 'おくります', '', FALSE),
+(44, 2, 'くれます', '', FALSE),
+(44, 3, 'あげます', '', FALSE),
+(44, 4, 'もらいます', '', TRUE),
+
+(45, 1, 'い-adjective', '', FALSE),
+(45, 2, 'な-adjective', '', TRUE),
+(45, 3, 'adverb', '', FALSE),
+(45, 4, 'noun', '', FALSE),
+
+(46, 1, 'とても', '', FALSE),
+(46, 2, 'よく', '', TRUE),
+(46, 3, 'たくさん', '', FALSE),
+(46, 4, 'だいたい', '', FALSE),
+
+(47, 1, 'あります is used for living things except plants, います is used for inanimate objects and plants.', '', FALSE),
+(47, 2, 'あります is used for inanimate objects and plants, います is used for living things except plants.', '', TRUE),
+(47, 3, 'あります is used for inanimate objects, います is used for living things.', '', FALSE),
+(47, 4, 'They are interchangeable.', '', FALSE),
+
+(48, 1, 'Will you drink in the garden?', '', FALSE),
+(48, 2, 'Shall we drink in the living room?', '', FALSE),
+(48, 3, 'I drink in the living room.', '', FALSE),
+(48, 4, 'Shall we drink in the garden?', '', TRUE),
+
+(49, 1, 'を', '', FALSE),
+(49, 2, 'が', '', FALSE),
+(49, 3, 'に', '', TRUE),
+(49, 4, 'で', '', FALSE),
+
+(50, 1, 'Is the pet under the book?', '', FALSE),
+(50, 2, 'Is the textbook under the bed?', '', FALSE),
+(50, 3, 'Is the book under the bed?', '', TRUE),
+(50, 4, 'Is the pet under the bed?', '', FALSE);
+
+-- PART 2: INTERMEDIATE I (27 questions total)
+-- ============================================================================
+-- INTERMEDIATE I: LESSONS 11-18
+-- ============================================================================
+
+INSERT INTO questions (question_text, question_body, question_body_furigana, question_level, question_type) VALUES
+('Lesson 11: Translation', 'What is the meaning of the meaning of the following in English? ６か月に４回ぐらい喫茶店に行きます。', 'げつ　かい　きっ　さ　てん　い', 'Intermediate I', 'grammar'),
+('Lesson 12: Conjugation', 'What is the proper way of saying "The sukiyaki was very tasty." in Japanese?', '', 'Intermediate I', 'grammar'),
+('Lesson 13: Grammar usage', 'How would you change the following sentence using the たい form to express what you want to do with 行きます? どこか食べに行きますから強いお酒を飲みません。', 'い　た　い　つよ　さけ　の',  'Intermediate I', 'grammar'),
+('Lesson 14: Grammar usage', 'What does ～てください mean?', '',  'Intermediate I', 'grammar'),
+('Lesson 14: Conjugation', 'What is the て-form of the verb 行きます?', 'い',  'Intermediate I', 'grammar'),
+('Lesson 15: Particles', 'Which of the following particles is used to indicate the change in location of a person/thing resulting from an action?', '',  'Intermediate I', 'grammar'),
+('Lesson 14: Translation', 'How would you say the following in Japanese? Excuse me, I am going to sleep so could you please turn off the light?', '', 'Intermediate I', 'grammar'),
+('Lesson 15: Translation', 'How do you express "I do not know that person so do not tell him our address." in Japanese?', '', 'Intermediate I', 'grammar'),
+('Lesson 18: Translation', 'What is the correct way to translate the following into English? 高いホテルでは部屋を予約したいですが午後９時前に予約することがなかなかできません。', 'たか　へ　や　よ　やく　ご　ご　じ　まえ　よ　やく', 'Intermediate I', 'grammar'),
+('Lesson 12: Grammar usage', 'What is the following sentences means "Spanish is easier than Japanese." ?', '', 'Intermediate I', 'grammar'),
+('Lesson 14: Grammar usage', 'Which of the following sentences uses ～ています to correctly describe an ongoing action?', '', 'Intermediate I', 'grammar'),
+('Lesson 16: Grammar usage', 'Which of the following sentences is the proper way of saying you will do something after using ～てから?', '', 'Intermediate I', 'grammar'),
+('Lesson 11: Counters', 'Which of the following sentences showcases the proper use of quantifiers (numbers with counter suffixes)?', '', 'Intermediate I', 'grammar'),
+('Lesson 12: Grammar usage', 'Which of the following comparison sentences properly asks which of the two items is more ~ly/~er (adjective quality) than the other?', '', 'Intermediate I', 'grammar'),
+('Lesson 12: Conjugation', 'What is the correct way of saying 今日は雨ではありませんから海に行きます in the past tense?', 'きょう　ー　あめ　うみ　い', 'Intermediate I', 'grammar'),
+('Lesson 14: Grammar usage', 'Which of the following particles should be used in the following sentence that describes a phenomenon through the five senses? 外では雨＿降っていますから傘を貸しましょうか', 'そと　あめ　ふ　かさ　か', 'Intermediate I', 'grammar'),
+('Lesson 15: Grammar usage', 'Which of the following verbs does not express a state or a habitual action when used in the form ～ています?', '', 'Intermediate I', 'grammar'),
+('Lesson 16: Particles', 'Which particle is used when describing the starting point of actions like 出ます and 降ります? ', 'で　お', 'Intermediate I', 'grammar'),
+('Lesson 17: Grammar usage', 'Which of the following sentences can be translated as "You must pay by Friday next week, so please do not forget." ?', '', 'Intermediate I', 'grammar'),
+('Lesson 18: Grammar usage', 'When talking about what your hobby is using a verb, what would you attach after the verb in the dictionary form?', '', 'Intermediate I', 'grammar'),
+('Lesson 11: Translation', 'How would you say the following in Japanese? "There are only three people who are busy in this room."', '', 'Intermediate I', 'grammar'),
+('Lesson 12: Translation', 'How would you ask somebody the following question in Japanese: "Who is the tallest person in your family?" ?', '',  'Intermediate I', 'grammar'),
+('Lesson 13: Grammar usage', 'Which of the following sentences showcases the proper way to use ほしい?', '', 'Intermediate I', 'grammar'),
+('Lesson 16: Translation', 'What is the proper way of saying the following sentence in Japanese? Kitagawa is young, has big eyes and long hair. Nishikawa is also young and has big eyes, but she has short hair.', '',  'Intermediate I', 'grammar'),
+('Lesson 15: Grammar usage', 'What is the speaker saying in the following sentence? 失礼ですが、市役所の中では写真を取ってもいいですか。', 'しつ　れい　し　やく　しょ　なか　しゃ　しん　と', 'Intermediate I', 'grammar'),
+('Lesson 16: Translation', 'How would you ask somebody how to make a phone call to your friend in Japanese?', '', 'Intermediate I', 'grammar'),
+('Lesson 17: Translation', 'What does the following sentence mean in English? 月曜日は来なくてもいいですが水曜日は来なければなりません。', 'げつ　よう　び　こ　すい　よう　び　こ', 'Intermediate I', 'grammar');
+
+INSERT INTO answers (question_id, answer_id, answer_text, answer_text_furigana, correct_answer) VALUES
+(51, 1, 'I go to the mountains about six times every four months.', '', FALSE),
+(51, 2, 'I visit the shrine approximately four times every six months.', '', FALSE),
+(51, 3, 'I go to the cafe around four times every six months.', '', TRUE),
+(51, 4, 'I visit the ocean at least six times every four months.', '', FALSE),
+
+(52, 1, 'すき焼きはとても美味しかったでした。', 'や　お　い', FALSE),
+(52, 2, 'すき焼きはとても美味しかったです。', 'や　お　い', TRUE),
+(52, 3, 'すき焼きはとても美味しいでした。', 'や　お　い', FALSE),
+(52, 4, 'すき焼きはとても美味しくでした。', 'や　お　い', FALSE),
+
+(53, 1, 'どこか食べに行きたくないですから強いお酒を飲みません。', 'た　い　つよ　さけ　の', FALSE),
+(53, 2, 'どこか食べに行きたくないですから強いお酒を飲みます。', 'た　い　つよ　さけ　の', FALSE),
+(53, 3, 'どこか食べに行きたいですから強いお酒を飲みません。', 'た　い　つよ　さけ　の', TRUE),
+(53, 4, 'どこか食べに行きたいですから強いお酒を飲みます。', 'た　い　つよ　さけ　の', FALSE),
+
+(54, 1, 'Must not do ~', '', FALSE),
+(54, 2, 'Have to do ~', '', FALSE),
+(54, 3, 'Can I do ~', '', FALSE),
+(54, 4, 'Please do ~', '', TRUE),
+
+(55, 1, '行いて', 'い', FALSE),
+(55, 2, '行って', 'い', TRUE),
+(55, 3, '行きて', 'い', FALSE),
+(55, 4, '行くて', 'い', FALSE),
+
+(56, 1, 'を', '', FALSE),
+(56, 2, 'に', '', TRUE),
+(56, 3, 'へ', '', FALSE),
+(56, 4, 'は', '', FALSE),
+
+(57, 1, '電気を消してください。すみませんが、今かから寝ますから。', 'でん　き　け　いま　ね', FALSE),
+(57, 2, 'すみませんが、電気を消してくださいから今から寝ます。', 'でん　き　け　いま　ね', FALSE),
+(57, 3, 'すみませんが、今から寝ますから電気を消してください。', 'いま　ね　でん　き　け', TRUE),
+(57, 4, '電気を消してください。今から寝ますからすみません。', 'でん　き　け　いま　ね', FALSE),
+
+(58, 1, 'その人を知ってもいいですから住所を教えてはいけません。', 'ひと　し　じゅう　しょ　おし', FALSE),
+(58, 2, 'その人を知りませんから住所を教えてもいいです。', 'ひと　し　じゅう　しょ　おし', FALSE),
+(58, 3, 'その人を知りませんから住所を教えてはいけません。', 'ひと　し　じゅう　しょ　おし', TRUE),
+(58, 4, 'その人を知っていませんから住所を教えてはいけません。', 'ひと　し　じゅう　しょ　おし', FALSE),
+
+(59, 1, 'I want to book a room at an expensive hotel, but it is quite hard to do so after 9 a.m.', '', FALSE),
+(59, 2, 'I want to book a room at a tall hotel, but it is quite hard to do so after 9 p.m.', '', FALSE),
+(59, 3, 'I want to book a room at an expensive hotel, but it is quite hard to do so before 9 p.m.', '', TRUE),
+(59, 4, 'I want to book a room at a tall hotel, but it is quite hard to do so before 9 a.m.', '', FALSE),
+
+(60, 1, '日本語はスペイン語より簡単です。', 'に　ほん　ご　ご　かん　たん', FALSE),
+(60, 2, '日本語はスペイン語より難しいです。', 'に　ほん　ご　ご　むずか', FALSE),
+(60, 3, 'スペイン語は日本語より簡単です。', 'ご　に　ほん　ご　かん　たん', TRUE),
+(60, 4, 'スペイン語は日本語より難しいです。', 'ご　に　ほん　ご　むずか', FALSE),
+
+(61, 1, '弟は昨日日本の本を開けています。', 'おとうと　きのう　ー　に　ほん　ほん　あ', FALSE),
+(61, 2, '母は今そこのカフェで食べています。', 'はは　いま　た', TRUE),
+(61, 3, '妹は仕事で明日急いでいました。', 'いもうと　し　ごと　あした　ー　いそ', FALSE),
+(61, 4, '父は毎日家の外に車を止めていませんでした。', 'ちち　まい　にち　いえ　そと　くるま　と', FALSE),
+
+(62, 1, 'バスを降りて大学に入ってからテーブルにパソコンを置いてはいけません。', 'お　だい　がく　はい　お', FALSE),
+(62, 2, '昼ご飯を作って先生を呼んでから研究しに行きます。', 'ひる　はん　つく　せん　せい　よ　けん　きゅう　い', TRUE),
+(62, 3, 'お金を下ろします。ボタンを押してカードを入れてからです。', 'かね　お　お　い', FALSE),
+(62, 4, 'シャワーを浴びてからドアを閉めてから電車に乗ります。', 'あ　し　でん　しゃ　の', FALSE),
+
+(63, 1, '本はページの三枚を読みました。', 'ほん　さん　まい　よ', FALSE),
+(63, 2, '一人は子供があります。', 'ひと　り　こ　ども', FALSE),
+(63, 3, '車を一台買いました。', 'くるま　いち　だい　か', TRUE),
+(63, 4, '四個みかんを食べました。', 'よん　こ　た', FALSE),
+
+(64, 1, '冬と春とどちらが涼しいですか。', 'ふゆ　はる　すず', TRUE),
+(64, 2, '沖縄と京都の中でどこが熱いですか。', 'おき　なわ　きょう　と　なか　あつ', FALSE),
+(64, 3, '川田さんとミラーさんとどちらも遅いですか。', 'かわ　だ　おそ', FALSE),
+(64, 4, '車のほうが早いですか。', 'くるま　はや', FALSE),
+
+(65, 1, '昨日は雨ではありませんでしたから海に行きました。', 'きのう　ー　あめ　うみ　い', FALSE),
+(65, 2, '今日は雨ではありませんでしたから海に行きました。', 'きょう　ー　あめ　うみ　い', TRUE),
+(65, 3, '昨日は雨ではありませんから海に行きました。', 'きのう　ー　あめ　うみ　い', FALSE),
+(65, 4, '今日は雨ではありませんでしたから海に行きます。', 'きょう　ー　あめ　うみ　い', FALSE),
+
+(66, 1, 'は', '', FALSE),
+(66, 2, 'が', '', TRUE),
+(66, 3, 'を', '', FALSE),
+(66, 4, 'へ', '', FALSE),
+
+(67, 1, '住んでいます', 'す', FALSE),
+(67, 2, '売っています', 'う', FALSE),
+(67, 3, '入っています', 'はい', FALSE),
+(67, 4, '使っています', 'つか', TRUE),
+
+(68, 1, 'に', '', FALSE),
+(68, 2, 'を', '', TRUE),
+(68, 3, 'へ', '', FALSE),
+(68, 4, 'で', '', FALSE),
+
+(69, 1, '来週の金曜日からに払わなければなりませんから、忘れないでください。', 'らい　しゅう　きん　よう　び　はら　わす', FALSE),
+(69, 2, '来週の金曜日まで払わなければなりませんから、忘れないでください。', 'らい　しゅう　きん　よう　び　はら　わす', FALSE),
+(69, 3, '来週の金曜日までに払わなければなりませんから、忘れなくてもいいです。', 'らい　しゅう　きん　よう　び　はら　わす', FALSE),
+(69, 4, '来週の金曜日までに払わなければなりませんから、忘れないでください。', 'らい　しゅう　きん　よう　び　はら　わす', TRUE),
+
+(70, 1, 'から', '', FALSE),
+(70, 2, 'こと', '', TRUE),
+(70, 3, 'もの', '', FALSE),
+(70, 4, 'まで', '', FALSE),
+
+(71, 1, 'この部屋には忙しくない人が三人だけいます。', 'へ　や　いそが　ひと　さん　にん', FALSE),
+(71, 2, 'この部屋には忙しい人が三人だけいます。', 'へ　や　いそが　ひと　さん　にん', TRUE),
+(71, 3, 'この部屋は忙しい人が三人だけいます。', 'へ　や　いそが　ひと　さん　にん', FALSE),
+(71, 4, 'この部屋には忙しい人が三人だけいません。', 'へ　や　いそが　ひと　さん　にん', FALSE),
+
+(72, 1, '家族の中で誰が一番背が高いですか。', 'か　ぞく　なか　だれ　いち　ばん　せ　たか', TRUE),
+(72, 2, '家族の中は誰が一番背が高いですか。', 'か　ぞく　なか　だれ　いち　ばん　せ　たか', FALSE),
+(72, 3, '家族の中で誰が背が高いですか。', 'か　ぞく　なか　だれ　せ　たか', FALSE),
+(72, 4, '家族の中で誰が一番背が高くないですか。', 'か　ぞく　なか　だれ　いち　ばん　たか', FALSE),
+
+(73, 1, '今の車は古くないですから新しいのがほしいです。', 'いま　くるま　ふる　あたら', FALSE),
+(73, 2, '今の車は古いですから新しいのがほしいです。', 'いま　くるま　ふる　あたら', TRUE),
+(73, 3, '新しい車がほしいですから今のは古いです。', 'あたら　くるま　いま　ふる', FALSE),
+(73, 4, '新しい車がほしくないですから今のは古いです。', 'あたら　くるま　いま　ふる', FALSE),
+
+(74, 1, '西川さんは若くて目が大きくて髪が長いです。北川さんも若くて目が大きいですが髪が短いです。', 'にし　かわ　わか　め　おお　かみ　なが　きた　がわ　わか　め　おお　かみ　みじか', FALSE),
+(74, 2, '北川さんは若くて目が大きくて髪が短いです。西川さんも若くて目が大きいですが髪が長いです。', 'きた　がわ　わか　め　おお　かみ　みじか　にし　かわ　わか　め　おお　かみ　なが', FALSE),
+(74, 3, '西川さんは若くて目が大きくて髪が短いです。北川さんも若くて目が大きいですが髪が長いです。', 'にし　かわ　わか　め　おお　かみ　みじか　きた　がわ　わか　め　おお　かみ　みじか', FALSE),
+(74, 4, '北川さんは若くて目が大きくて髪が長いです。西川さんも若くて目が大きいですが髪が短いです。', 'きた　がわ　わか　め　おお　かみ　なが　にし　かわ　わか　め　おお　かみ　みじか', TRUE),
+
+(75, 1, 'I am sorry, must we not take photos inside of the city hall?', '', FALSE),
+(75, 2, 'Excuse me, do we have to take photos inside of the municipal office?', '', FALSE),
+(75, 3, 'My apologies, is it alright to take photos inside of the city hall?', '', TRUE),
+(75, 4, 'Excuse me, could you please take photos inside of the municipal office?', '', FALSE),
+
+(76, 1, 'なんで友達に電話してもいいですか。', 'とも　だち　でん　わ', FALSE),
+(76, 2, 'どうやって友達に電話しますか。', 'とも　だち　でん　わ', TRUE),
+(76, 3, 'どうやって友達に電話してもいいですか。', 'とも　だち　でん　わ', FALSE),
+(76, 4, 'なんで友達に電話しますか。', 'とも　だち　でん　わ', FALSE),
+
+(77, 1, 'I do not need to come on Wednesday, but I have to come on Monday.', '', FALSE),
+(77, 2, 'I do not need to come on Monday, but I have to come on Wednesday.', '', TRUE),
+(77, 3, 'I do not need to come on Thursday, but I have to come on Tuesday.', '', FALSE),
+(77, 4, 'I do not need to come on Tuesday, but I have to come on Thursday.', '', FALSE);
+
+-- PART 3: INTERMEDIATE II (25 questions total)
+-- ============================================================================
+-- INTERMEDIATE II: LESSONS 19-25
+-- ============================================================================
+
+INSERT INTO questions (question_text, question_body, question_body_furigana, question_level, question_type) VALUES
+('Lesson 19: Translation', 'Which of the following is the correct way to translate this sentence into English? 週末は相撲を見たりギータを弾いたりカラオケで歌を歌ったりします。', 'しゅう　まつ　すもう　ー　み　ひ　うた　うた', 'Intermediate II', 'grammar'),
+('Lesson 21: Grammar usage', 'Which of the following sentences showcases the correct way to use ～と思います?', 'おも', 'Intermediate II', 'grammar'),
+('Lesson 19: Grammar usage', 'Which of the following sentences showcases the correct way of using ～たことがあります?', '', 'Intermediate II', 'grammar'),
+('Lesson 22: Grammar usage', 'How do verbs modify nouns?', '', 'Intermediate II', 'grammar'),
+('Lesson 23: Grammar pattern meaning', 'What does "～とき" mean?', '', 'Intermediate II', 'grammar'),
+('Lesson 24: Grammar pattern meaning', 'What does "～てあげます" mean?', '', 'Intermediate II', 'grammar'),
+('Lesson 25: Grammar pattern meaning', 'What does "～たら" express?', '', 'Intermediate II', 'grammar'),
+('Lesson 20: Casual speech', 'Which of the following statements regarding casual conversation in Japanese is true?', '', 'Intermediate II', 'grammar'),
+('Lesson 20: Particles', 'Which of the following particles cannot be omitted in casual conversation?', '', 'Intermediate II', 'grammar'),
+('Lesson 23: Particle identification', 'Which particle indicates direction of movement?', '', 'Intermediate II', 'grammar'),
+('Lesson 19: Conjugation', 'When using the adjective 危ない with the verb なります, how should it be conjugated?', 'あぶ', 'Intermediate II', 'grammar'),
+('Lesson 21: Translation', 'How would you translate, "Nishikawa said there is a festival in town tomorrow, so he is going to go buy sashimi." into Japanese?', '', 'Intermediate II', 'grammar'),
+('Lesson 23: Grammar pattern meaning', 'What does "～たり～たりします" express?', '', 'Intermediate II', 'grammar'),
+('Lesson 22: Verb conjugation', 'How do you modify a noun with "買います" in present tense?', 'か', 'Intermediate II', 'grammar'),
+('Lesson 20: Casual speech', 'How would you convert the following sentence written in the casual form to the polite form? この後、仕事で会議あるから調べに行く前に電車降りて何か食べたい。', 'あと　し　ごと　かい　ぎ　しら　い　まえ　でん　しゃ　お　なに　た', 'Intermediate II', 'grammar'),
+('Lesson 24: Grammar pattern meaning', 'What does "～てもらいます" mean?', '', 'Intermediate II', 'grammar'),
+('Lesson 25: Grammar pattern meaning', 'What does "～ても" express?', '', 'Intermediate II', 'grammar'),
+('Lesson 24: Verb conjugation', 'What is the plain past negative of "行きます"?', 'い', 'Intermediate II', 'grammar'),
+('Lesson 20: Casual speech', 'In which of the following situations would you never use polite speech?', '', 'Intermediate II', 'grammar'),
+('Lesson 21: Grammar usage', 'What is the construction ～ないと equivalent in meaning to?', '', 'Intermediate II', 'grammar'),
+('Lesson 22: Grammar usage', 'How do you modify a noun with a past verb?', '', 'Intermediate II', 'grammar'),
+('Lesson 23: Grammar usage', 'What tense is used before "とき"?', '', 'Intermediate II', 'grammar'),
+('Lesson 24: Grammar pattern meaning', 'What does "～てくれます" mean?', '', 'Intermediate II', 'grammar'),
+('Lesson 25: Grammar pattern meaning', 'What does "～なら" express?', '', 'Intermediate II', 'grammar'),
+('Lesson 19: Form identification', 'What is the plain form of "います"?', '', 'Intermediate II', 'grammar');
+
+INSERT INTO answers (question_id, answer_id, answer_text, answer_text_furigana, correct_answer) VALUES
+(78, 1, 'On the weekends I watch sumo wrestling, play the guitar, and sing karaoke.', '', FALSE),
+(78, 2, 'On the weekends I do things like watch sumo wrestling, play the guitar, and sing karaoke.', '', TRUE),
+(78, 3, 'Over the weekend I watched sumo wrestling, played the guitar, and sang karaoke.', '', FALSE),
+(78, 4, 'Over the weekend I did things like watch sumo wrestling, play the guitar, and sing karaoke.', '', FALSE),
+
+(79, 1, '木村さんは最近仕事をやめたり無駄なことをしたりするだと思います。', 'き　むら　さい　きん　し　ごと　む　だ　おも', FALSE),
+(79, 2, 'あの野球のチームは試合で全然負けません。時田さんはチームのことに気をつけていると思いますから。', 'や　きゅう　し　あい　ぜん　ぜん　ま　とき　だ　き　おも', FALSE),
+(79, 3, '彼女はいつも役に立って天才ですから夢は留学するこどですと思います。', 'かの　じょ　やく　た　てん　さい　ゆめ　りゅう　がく　おも', FALSE),
+(79, 4, '彼氏は今東京に行っているから帰る前にお土産でも買ってくると思います。', 'かれ　し　いま　とう　きょう　い　かえ　まえ　ー　みやげ　か　おも', TRUE),
+
+(80, 1, '川田さんはよく眠くなってサッカーの練習を忘れることがあります。', 'かわ　だ　ねむ　れん　しゅう　わす', FALSE),
+(80, 2, '北川さんは強くて富士山に登ったことが五回あります。', 'きた　がわ　よわ　ふ　じ　さん　のぼ　ご　かい', TRUE),
+(80, 3, '田中さんは部屋を掃除することが少ないです。洗濯をすることがありますから。', 'た　なか　へ　や　そう　じ　すく　せん　たく', FALSE),
+(80, 4, 'ミラーさんは体が弱くてスポーツがあまり好きではありませんが、ゴルフをやらないことがあります。', 'からだ　よわ　す', FALSE),
+
+(81, 1, 'Verbs must be in ます-form', '', FALSE),
+(81, 2, 'Verbs cannot directly modify nouns', '', FALSE),
+(81, 3, 'Verbs must be in plain form', '', TRUE),
+(81, 4, 'Verbs must be in て-form', '', FALSE),
+
+(82, 1, 'If/when (conditional)', '', FALSE),
+(82, 2, 'Before', '', FALSE),
+(82, 3, 'When/at the time', '', TRUE),
+(82, 4, 'After', '', FALSE),
+
+(83, 1, 'Receive something from someone', '', FALSE),
+(83, 2, 'Do something for someone else', '', TRUE),
+(83, 3, 'Do something for yourself', '', FALSE),
+(83, 4, 'Have someone do something', '', FALSE),
+
+(84, 1, 'While', '', FALSE),
+(84, 2, 'If/when (conditional)', '', TRUE),
+(84, 3, 'Before', '', FALSE),
+(84, 4, 'Because', '', FALSE),
+
+(85, 1, 'です is replaced by だ in casual conversation.', '', FALSE),
+(85, 2, 'The い in ～ている is often dropped when speaking.', '', TRUE),
+(85, 3, 'けど can always replace が when speaking casually.', '', FALSE),
+(85, 4, 'The は particle can always be omitted, regardless of the context.', '', FALSE),
+
+(86, 1, 'を', '', FALSE),
+(86, 2, 'へ', '', FALSE),
+(86, 3, 'と', '', TRUE),
+(86, 4, 'は', '', FALSE),
+
+(87, 1, 'を', '', FALSE),
+(87, 2, 'で', '', FALSE),
+(87, 3, 'へ', '', FALSE),
+(87, 4, 'に', '', TRUE),
+
+(88, 1, '危ないに', 'あぶ', FALSE),
+(88, 2, '危なく', 'あぶ', TRUE),
+(88, 3, '危なくなく', 'あぶ', FALSE),
+(88, 4, '危ないく', 'あぶ', FALSE),
+
+(89, 1, '西川さんは明日町で祭りがあるから刺身を買いに行くと言いました。', 'にし　かわ　あした　ー　まち　まつ　さし　み　か　い　い', TRUE),
+(89, 2, '西川さんは明日町に祭りがあるから刺身を買いに行くと言いました。', 'にし　かわ　あした　ー　まち　まつ　さし　み　か　い　い', FALSE),
+(89, 3, '西川さんは明日町で祭りがあるから刺身を買いに行くだと言いました。', 'にし　かわ　あした　ー　まち　まつ　さし　み　か　い　い', FALSE),
+(89, 4, '西川さんは明日町に祭りがあるから刺身を買いに行くと言いませんでした。', 'にし　かわ　あした　ー　まち　まつ　さし　み　か　い　い', FALSE),
+
+(90, 1, 'Doing things things such as', '', TRUE),
+(90, 2, 'Doing things in sequence', '', FALSE),
+(90, 3, 'Doing things simultaneously', '', FALSE),
+(90, 4, 'Having done', '', FALSE),
+
+(91, 1, '買わなかった + noun', 'か', FALSE),
+(91, 2, '買います + noun', 'か', FALSE),
+(91, 3, '買った + noun', 'か', FALSE),
+(91, 4, '買う + noun', 'か', TRUE),
+
+(92, 1, 'この後、仕事で会議がありますから調べに行く前に電車降りて何か食べたいです。', 'あと　し　ごと　かい　ぎ　しら　い　まえ　でん　しゃ　お　なに　た', FALSE),
+(92, 2, 'この後、仕事で会議がありますから調べに行く前に電車を降りて何か食べたいです。', 'あと　し　ごと　かい　ぎ　しら　い　まえ　でん　しゃ　お　なに　た', TRUE),
+(92, 3, 'こちらの後、仕事で会議がありますから調べに行く前に電車を降りまして何か食べたいでしょう。', 'あと　し　ごと　かい　ぎ　しら　い　まえ　でん　しゃ　お　なに　た', FALSE),
+(92, 4, 'こちらの後、仕事で会議があるから調べに行く前に電車を降りて何か食べましょうか。', 'あと　し　ごと　かい　ぎ　しら　い　まえ　でん　しゃ　お　なに　た', FALSE),
+
+(93, 1, 'Someone does something for me', '', FALSE),
+(93, 2, 'I get someone to do something for me', '', TRUE),
+(93, 3, 'I do for someone', '', FALSE),
+(93, 4, 'Someone does', '', FALSE),
+
+(94, 1, 'Because', '', FALSE),
+(94, 2, 'If', '', FALSE),
+(94, 3, 'Even if/even though', '', TRUE),
+(94, 4, 'When', '', FALSE),
+
+(95, 1, '行かない', 'い', FALSE),
+(95, 2, '行かなかった', 'い', TRUE),
+(95, 3, '行きませんでした', 'い', FALSE),
+(95, 4, '行きません', 'い', FALSE),
+
+(96, 1, 'When calling a hotel to make a reservation.', '', FALSE),
+(96, 2, 'When speaking to the president of the company you work at.', '', FALSE),
+(96, 3, 'When talking with your best friend from high school.', '', TRUE),
+(96, 4, 'When giving a speech for a political campaign.', '', FALSE),
+
+(97, 1, '～なくてはいけません', '', FALSE),
+(97, 2, '～なければなりません', '', TRUE),
+(97, 3, '～なくても', '', FALSE),
+(97, 4, '～ないでください', '', FALSE),
+
+(98, 1, 'Using ます-form + noun', '', FALSE),
+(98, 2, 'Using plain past た + noun', '', TRUE),
+(98, 3, 'Using て-form + noun', '', FALSE),
+(98, 4, 'Using dictionary form + noun', '', FALSE),
+
+(99, 1, 'Only past tense', '', FALSE),
+(99, 2, 'Only present tense', '', FALSE),
+(99, 3, 'Both present and past can be used', '', TRUE),
+(99, 4, 'Only future tense', '', FALSE),
+
+(100, 1, 'I do something for someone', '', FALSE),
+(100, 2, 'Someone does something for me', '', TRUE),
+(100, 3, 'I receive something', '', FALSE),
+(100, 4, 'Someone gives me something', '', FALSE),
+
+(101, 1, 'When', '', FALSE),
+(101, 2, 'If that is the case', '', TRUE),
+(101, 3, 'Because', '', FALSE),
+(101, 4, 'Even if', '', FALSE),
+
+(102, 1, 'です', '', FALSE),
+(102, 2, 'いる', '', TRUE),
+(102, 3, 'ある', '', FALSE),
+(102, 4, 'おる', '', FALSE);
+
+-- PART 4: ADVANCED (27 questions total) + Summary
+-- ============================================================================
+-- ADVANCED: LESSONS 26-32
+-- ============================================================================
+
+INSERT INTO questions (question_text, question_body, question_body_furigana, question_level, question_type) VALUES
+('Lesson 26: Grammar pattern meaning', 'What does "～ながら" express?', '', 'Advanced', 'grammar'),
+('Lesson 27: Grammar pattern meaning', 'What does "～ておく" mean?', '', 'Advanced', 'grammar'),
+('Lesson 28: Grammar pattern meaning', 'What does "～そうだ" (after verb stem) indicate?', '', 'Advanced', 'grammar'),
+('Lesson 28: Grammar pattern meaning', 'What does "verb stem + やすい" mean?', '', 'Advanced', 'grammar'),
+('Lesson 29: Form creation', 'How do you form the passive of Group 1 verbs?', '', 'Advanced', 'grammar'),
+('Lesson 30: Form pattern', 'What is the honorific form pattern?', '', 'Advanced', 'grammar'),
+('Lesson 31: Grammar pattern meaning', 'What does "～よう" (plain volitional) express?', '', 'Advanced', 'grammar'),
+('Lesson 32: Grammar pattern meaning', 'What does "～んだ" express?', '', 'Advanced', 'grammar'),
+('Lesson 26: Grammar pattern meaning', 'What does "～ても" mean?', '', 'Advanced', 'grammar'),
+('Lesson 29: Form meaning', 'What does the causative form express?', '', 'Advanced', 'grammar'),
+('Lesson 30: How to say', 'How do you form humble expressions?', '', 'Advanced', 'grammar'),
+('Lesson 32: Grammar pattern meaning', 'What does "～ようだ" mean?', '', 'Advanced', 'grammar'),
+('Lesson 26: Grammar pattern meaning', 'What does "～てしまう" express?', '', 'Advanced', 'grammar'),
+('Lesson 27: Grammar pattern meaning', 'What does "～てある" indicate?', '', 'Advanced', 'grammar'),
+('Lesson 28: Grammar pattern meaning', 'What does "verb stem + にくい" mean?', '', 'Advanced', 'grammar'),
+('Lesson 29: Form creation', 'How do you form the causative of "食べる"?', 'た', 'Advanced', 'grammar'),
+('Lesson 30: Vocabulary', 'What is the honorific form of "食べる"?', 'た', 'Advanced', 'grammar'),
+('Lesson 31: Grammar pattern meaning', 'What does "～つもりだ" express?', '', 'Advanced', 'grammar'),
+('Lesson 32: Grammar pattern meaning', 'What does "～わけだ" mean?', '', 'Advanced', 'grammar'),
+('Lesson 26: Grammar usage', 'Can "～ながら" be used with all verbs?', '', 'Advanced', 'grammar'),
+('Lesson 27: Grammar pattern meaning', 'What does "～てみる" mean?', '', 'Advanced', 'grammar'),
+('Lesson 28: Grammar pattern meaning', 'What does "～そうだ" (after plain form) indicate?', '', 'Advanced', 'grammar'),
+('Lesson 29: Form creation', 'How do you form the passive of "見ます"?', 'み', 'Advanced', 'grammar'),
+('Lesson 30: Vocabulary', 'What is the humble form of "行く"?', 'い', 'Advanced', 'grammar'),
+('Lesson 31: Grammar pattern meaning', 'What does "～予定だ" express?', 'よ　てい', 'Advanced', 'grammar'),
+('Lesson 32: Grammar pattern meaning', 'What does "～はずだ" mean?', '', 'Advanced', 'grammar'),
+('Lesson 29: Form meaning', 'What does the causative-passive form express?', '', 'Advanced', 'grammar');
+
+INSERT INTO answers (question_id, answer_id, answer_text, answer_text_furigana, correct_answer) VALUES
+(103, 1, 'Before doing', '', FALSE),
+(103, 2, 'While doing (simultaneous actions)', '', TRUE),
+(103, 3, 'After doing', '', FALSE),
+(103, 4, 'Without doing', '', FALSE),
+
+(104, 1, 'Continue doing', '', FALSE),
+(104, 2, 'Do in advance/preparation', '', TRUE),
+(104, 3, 'Try doing', '', FALSE),
+(104, 4, 'Finish doing', '', FALSE),
+
+(105, 1, 'I heard that', '', FALSE),
+(105, 2, 'It looks like/seems (appearance)', '', TRUE),
+(105, 3, 'I think that', '', FALSE),
+(105, 4, 'I want to', '', FALSE),
+
+(106, 1, 'Want to do', '', FALSE),
+(106, 2, 'Easy to do', '', TRUE),
+(106, 3, 'Can do', '', FALSE),
+(106, 4, 'Must do', '', FALSE),
+
+(107, 1, 'Add られる to stem', '', FALSE),
+(107, 2, 'Change う to あれる', '', TRUE),
+(107, 3, 'Change う to える', '', FALSE),
+(107, 4, 'Add せる to stem', '', FALSE),
+
+(108, 1, 'ご + verb stem + します', '', FALSE),
+(108, 2, 'お + verb stem + になります', '', TRUE),
+(108, 3, 'お + dictionary form + になります', '', FALSE),
+(108, 4, 'verb stem + れます', '', FALSE),
+
+(109, 1, 'Want to do', '', FALSE),
+(109, 2, 'Let''s do/I think I''ll do (intention)', '', TRUE),
+(109, 3, 'Can do', '', FALSE),
+(109, 4, 'Must do', '', FALSE),
+
+(110, 1, 'Possibility', '', FALSE),
+(110, 2, 'Explanation/emphasis', '', TRUE),
+(110, 3, 'Permission', '', FALSE),
+(110, 4, 'Obligation', '', FALSE),
+
+(111, 1, 'While', '', FALSE),
+(111, 2, 'Even if/even though', '', TRUE),
+(111, 3, 'When', '', FALSE),
+(111, 4, 'Because', '', FALSE),
+
+(112, 1, 'To experience someone doing something to you', '', FALSE),
+(112, 2, 'To make/let someone do something', '', TRUE),
+(112, 3, 'To be able to do', '', FALSE),
+(112, 4, 'To have done', '', FALSE),
+
+(113, 1, 'Using passive form', '', FALSE),
+(113, 2, 'Using special humble verbs or お + stem + する', '', TRUE),
+(113, 3, 'Using potential form', '', FALSE),
+(113, 4, 'Using causative form', '', FALSE),
+
+(114, 1, 'I think', '', FALSE),
+(114, 2, 'It seems/appears (based on information)', '', TRUE),
+(114, 3, 'I heard', '', FALSE),
+(114, 4, 'I want', '', FALSE),
+
+(115, 1, 'Complete doing/regrettably', '', TRUE),
+(115, 2, 'Try doing', '', FALSE),
+(115, 3, 'Keep doing', '', FALSE),
+(115, 4, 'Start doing', '', FALSE),
+
+(116, 1, 'Someone did something (result remains)', '', TRUE),
+(116, 2, 'Someone is doing', '', FALSE),
+(116, 3, 'Someone did', '', FALSE),
+(116, 4, 'Something exists', '', FALSE),
+
+(117, 1, 'Easy to do', '', FALSE),
+(117, 2, 'Want to do', '', FALSE),
+(117, 3, 'Difficult to do', '', TRUE),
+(117, 4, 'Must do', '', FALSE),
+
+(118, 1, '食べさせる', 'た', TRUE),
+(118, 2, '食べられる', 'た', FALSE),
+(118, 3, '食べよう', 'た', FALSE),
+(118, 4, '食べれる', 'た', FALSE),
+
+(119, 1, '食べになります', 'た', FALSE),
+(119, 2, '召し上がります', 'め　あ', TRUE),
+(119, 3, 'いただきます', '', FALSE),
+(119, 4, 'お食べします', 'た', FALSE),
+
+(120, 1, 'Expectation', '', FALSE),
+(120, 2, 'Intention/Plan', '', TRUE),
+(120, 3, 'Ability', '', FALSE),
+(120, 4, 'Permission', '', FALSE),
+
+(121, 1, 'That is to say', '', TRUE),
+(121, 2, 'I think', '', FALSE),
+(121, 3, 'Probably', '', FALSE),
+(121, 4, 'Maybe', '', FALSE),
+
+(122, 1, 'Yes, with all verbs', '', FALSE),
+(122, 2, 'No, mainly with continuous actions', '', TRUE),
+(122, 3, 'Only with する verbs', '', FALSE),
+(122, 4, 'Only with motion verbs', '', FALSE),
+
+(123, 1, 'Keep doing', '', FALSE),
+(123, 2, 'Try doing', '', TRUE),
+(123, 3, 'Finish doing', '', FALSE),
+(123, 4, 'Do in advance', '', FALSE),
+
+(124, 1, 'It looks like (appearance)', '', FALSE),
+(124, 2, 'I heard that (hearsay)', '', TRUE),
+(124, 3, 'I think that', '', FALSE),
+(124, 4, 'It seems (guess)', '', FALSE),
+
+(125, 1, '見せる', 'み', FALSE),
+(125, 2, '見られる', 'み', TRUE),
+(125, 3, '見させる', 'み', FALSE),
+(125, 4, '見える', 'み', FALSE),
+
+(126, 1, 'お行きになります', 'い', FALSE),
+(126, 2, '参ります', 'まい', TRUE),
+(126, 3, 'お行きします', 'い', FALSE),
+(126, 4, 'いらっしゃいます', '', FALSE),
+
+(127, 1, 'Hope/wish', '', FALSE),
+(127, 2, 'Schedule/plan', '', TRUE),
+(127, 3, 'Possibility', '', FALSE),
+(127, 4, 'Obligation', '', FALSE),
+
+(128, 1, 'It seems', '', FALSE),
+(128, 2, 'Probably', '', FALSE),
+(128, 3, 'Should be/Expected to', '', TRUE),
+(128, 4, 'Maybe', '', FALSE),
+
+(129, 1, 'To be able to do', '', FALSE),
+(129, 2, 'To be made to do', '', TRUE),
+(129, 3, 'To make someone do', '', FALSE),
+(129, 4, 'To let someone do', '', FALSE);

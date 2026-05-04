@@ -1,0 +1,108 @@
+-- database creation section
+
+-- DROP DATABASE if it exists
+DROP DATABASE IF EXISTS test_database;
+
+-- CREATE test_database
+CREATE DATABASE test_database;
+USE test_database;
+
+-- users table section
+
+-- Drop the users table if it exists
+DROP TABLE IF EXISTS users;
+
+-- Create the users table, for now passwords and usernames are unncessary so they are not marked as NOT NULL
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    fullname VARCHAR(255) NOT NULL,
+    created_at DATETIME NOT NULL
+);
+
+-- questions table section
+
+-- Drop the questions table if it exists
+DROP TABLE IF EXISTS questions;
+
+-- Create the questions table
+CREATE TABLE questions (
+    question_id INT AUTO_INCREMENT PRIMARY KEY,
+    question_text VARCHAR(255) NOT NULL,
+    question_text_furigana VARCHAR(255) DEFAULT NULL,
+    question_body VARCHAR(1000) NOT NULL,
+    question_body_furigana VARCHAR(1000) DEFAULT NULL,
+    question_level ENUM ('Beginner I', 'Beginner II', 'Intermediate I', 'Intermediate II', 'Advanced') NOT NULL,
+    question_type ENUM ('vocab', 'grammar', 'reading_comp', 'listening_comp') NOT NULL,
+    question_audio VARCHAR(255) DEFAULT NULL
+);
+
+-- answers table section
+
+-- Drop the answers table if it exists
+DROP TABLE IF EXISTS answers;
+
+-- Create the answers table
+CREATE TABLE answers (
+    question_id INT NOT NULL,
+    answer_id INT NOT NULL,
+    answer_text VARCHAR(255) NOT NULL,
+    answer_text_furigana VARCHAR(255) DEFAULT NULL,
+    correct_answer BOOLEAN NOT NULL,
+    PRIMARY KEY (question_id, answer_id),
+    FOREIGN KEY (question_id) REFERENCES questions(question_id) ON DELETE CASCADE
+);
+
+-- scores table section
+
+-- Drop the scores table if it exists
+DROP TABLE IF EXISTS scores;
+
+CREATE TABLE scores (
+    score_id INT NOT NULL UNIQUE AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    total_score FLOAT NOT NULL,
+    entrance_level ENUM ('Beginner I', 'Beginner II', 'Intermediate I', 'Intermediate II', 'Advanced') NOT NULL,
+    test_status ENUM ('IN_PROGRESS', 'COMPLETED') NOT NULL,
+    start_time DATETIME NOT NULL,
+    end_time DATETIME NULL,
+    url_id VARCHAR(36) DEFAULT NULL UNIQUE,
+    is_suspicious BOOLEAN DEFAULT FALSE,
+    suspicious_reason VARCHAR(500) DEFAULT NULL,
+    PRIMARY KEY (score_id, user_id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- user_answers table section
+
+-- Drop the user_answers table if it exists
+DROP TABLE IF EXISTS user_answers;
+
+-- Create the user_answers table
+CREATE TABLE user_answers (
+    score_id INT NOT NULL,
+    attempt_id INT NOT NULL,
+    question_id INT NOT NULL,
+    response_order INT NOT NULL,
+    stage_answered INT NOT NULL,
+    user_answer_text VARCHAR(255) NOT NULL,
+    user_was_correct BOOLEAN NOT NULL,
+    PRIMARY KEY (score_id, attempt_id, question_id),
+    FOREIGN KEY (score_id) REFERENCES scores(score_id) ON DELETE CASCADE,
+    FOREIGN KEY (question_id) REFERENCES questions(question_id) ON DELETE CASCADE
+);
+
+-- Database user creation section, not entirely sure if needed but just in case
+
+-- Create the user and grant privileges
+GRANT SELECT, INSERT, DELETE, UPDATE
+ON test_database.*
+TO root@localhost;
+IDENTIFIED BY 'password';
+
+-- Flush privilieges to ensure they are applied
+FLUSH PRIVILEGES;
+
+-- In case you need to alter the password, use this
+-- ALTER USER 'root'@'localhost' IDENTIFIED WITH caching_sha2_password BY 'password';
+-- FLUSH PRIVILEGES;

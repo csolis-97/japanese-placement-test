@@ -1,6 +1,5 @@
-from flask import Flask, jsonify, request, session, redirect, url_for, render_template, make_response
+from flask import Flask, jsonify, request
 from dotenv import load_dotenv
-from flask_bcrypt import Bcrypt
 from flask_cors import CORS
 import pymysql
 import os
@@ -10,17 +9,19 @@ import datetime
 # so set it to false if needed.
 
 # Import all the functions defined elsewhere in the backend. Remove the dot when running locally.
-from .test_data_functions import *
+from .test_info_functions import *
 from .question_retrieval_fuctions import *
 from .answer_storage_functions import *
 from .test_submission_functions import *
+from .test_results_functions import *
 from .util_functions import *
 
 # Import all the functions defined elsewhere in the backend. Remove the dot when running locally.
-#from test_data_functions import *
+#from test_info_functions import *
 #from question_retrieval_fuctions import *
 #from answer_storage_functions import *
 #from test_submission_functions import *
+#from test_results_functions import *
 #from util_functions import *
 
 app = Flask(__name__)
@@ -71,9 +72,6 @@ try:
             init_command = "SET SESSION time_zone = '+00:00'"
         ))'''
 
-    # Initialize Bcrypt for password hashing
-    # bcrypt = Bcrypt(app)
-
 # If there were any errors during the initial setup, go here
 except Exception as e:
     print(f"Crashed while setting up the Flask application and database connection: {e}")
@@ -108,7 +106,7 @@ def testForm():
         # If the action is createRecord, create a record for the results, and send the attempt_id and score_id back
         if action == 'createRecord':
             try:
-                initialAttempt = data['user_attempt']
+                initialAttempt = data['attempt_id']
                 initialScoreId = data['score_id']
                 email = data['email']
                 name = data['name']
@@ -180,19 +178,16 @@ def testForm():
                 questionCategory = difficultyLevel(wasCorrect, questionCategory)
 
                 # Fetch the next question based on the current level, alongside avoiding all previously used question_ids
-                newQuestion = fetchNewQuestion(cursor, questionCategory, questionTrack)
+                newQuestion = fetchNewQuestion(questionCategory, questionTrack, cursor, mysql)
 
-                # Once a suitable question has been found, close the cursor
-                cursor.close()
-                mysql.close()
                 # DEBUG PRINT THE RESULT OF FETCHING FROM THE DATABASE
                 print("BEFORE THE FOR LOOP!")
                 print(newQuestion)
 
                 # Create the key and fields that will be used to map the data into a dictionary and then convert that to one list
                 questionKey = 'question_id'
-                singleFields = ['question_id', 'question_text', 'question_body', 'question_level']
-                nestedFields = ['answer_id', 'answer_text']
+                singleFields = ['question_id', 'question_text', 'question_text_furigana', 'question_body', 'question_body_furigana', 'question_level', 'question_audio']
+                nestedFields = ['answer_id', 'answer_text', 'answer_text_furigana']
 
                 # Map the question and answer data to one single list with this function and return results to newQuestion
                 newQuestion = mapAnswerstoQuestion(newQuestion, questionKey, singleFields, nestedFields)
@@ -219,10 +214,10 @@ def testForm():
                 # Store the user's answer data that was retrieved and get the current attemptNum from the database
                 questionId = data['question_id']
                 answerData = data['user_answer_text']
-                attemptNum = data['user_attempt']
+                attemptNum = data['attempt_id']
                 questionTrack = data['past_id']
                 scoreId = data['score_id']
-                currentStage = data['current_stage']
+                currentStageNum = data['current_stage_num']
 
                 # ALL OF THE BELOW IS DEBUG TO CHECK THE VALUES
                 print(data)
@@ -235,31 +230,13 @@ def testForm():
 
                 # First, check for any questions that were not answered an assign them the value "not answered"
                 answerData = checkNoAnswer(answerData)
-
                 # Enter a function to get the correct answer info based on the question_id of the questions answered
-                results = getCorrectAnswerInfo(cursor, answerData, questionId, answerId, currentStage)
-
+                results = getCorrectAnswerInfo(cursor, answerData, questionId, answerId, currentStageNum)
                 # Check which of the users answers were correct and store that information in isCorrect
                 isCorrect = gradeAnswers(results, questionId)
+                # Submit the answers to the database
+                submitAnswers(isCorrect, answerData, scoreId, attemptNum, questionId, questionTrack, currentStageNum, cursor, mysql)
 
-                # Check if the user actually had any answers. If not, skip to the else statement without interacting with the database.
-                if len(isCorrect) > 0:
-                    # Assign valueQuery to the returned array
-                    valueQuery = buildValueQuery(answerData)
-                    # Then assign paramList to the array that was built in the function
-                    paramList = buildAnswerData(answerData, scoreId, attemptNum, questionId, isCorrect, questionTrack, currentStage)
-                    # Build the query using valueQuery, with paramList as its values
-                    storeQuery = f"INSERT INTO user_answers(score_id, attempt_id, question_id, response_order, stage_answered, user_answer_text, user_was_correct) VALUES {" ".join(valueQuery)}"
-
-                    cursor.execute(storeQuery, tuple(paramList))
-                    mysql.commit()
-                    print("SUCCESSFULLY STORED THE ANSWERS!")
-                else:
-                    print("USER SUBMITTED NO ANSWERS, SO THERE IS NOTHING TO STORE.")
-
-                # Finally, close the cursor and return the data
-                cursor.close()
-                mysql.close()
                 return jsonify(isCorrect), 200
             
             # The except statement will call a function that handles errors and returns JSON
@@ -273,9 +250,9 @@ def testForm():
             try:
                 # Store the data retrieved from the JSON into separate variables
                 scoreId = data['score_id']
-                attemptNum = data['user_attempt']
+                attemptNum = data['attempt_id']
                 isCorrect = data['was_correct']
-                stageArray = data ['stage_array']
+                stageDifficultyArray = data ['stage_difficulty_array']
                 questionTrack = data['past_id']
                 urlId = data['url_id']
                 paramList = []
@@ -294,17 +271,8 @@ def testForm():
                 # First, check that the urlId is a unique value that is currently not in the database. If it is, reassign it
                 checkUUID(urlId, cursor)
                 
-                # Now begin
-                paramList = [scoreId, attemptNum]
-
-                # Make a query to get all the question levels for each question the user answered based on the questionTrack and the score_id
-                # Small note because I didn't know about using the map function here until I looked it up. In order to join a list with non integer
-                # values, you can merely do a join. However, if there are integers you must map them to a string first.
-                levelQuery = "SELECT DISTINCT Q.question_id, Q.question_level, U.user_was_correct, U.response_order FROM questions Q, scores S, " \
-                "user_answers U WHERE S.score_id = U.score_id AND Q.question_id = U.question_id AND S.score_id = %s AND U.attempt_id = %s " \
-                f"AND Q.question_id IN ({", ".join(map(str, questionTrack))}) ORDER BY U.response_order"
-                cursor.execute(levelQuery, tuple(paramList))
-                levelList = cursor.fetchall()
+                # Now begin by getting the levels for all questions that were answered
+                levelList = questionLevelQuery(scoreId, attemptNum, questionTrack, cursor)
 
                 # Using the submitTime, a function called calculateScore will return the necessary paramList for updating the current score ID
                 paramList = []
@@ -313,39 +281,14 @@ def testForm():
 
                 # Check if the submission time was suspicious or not. If it was, flag it
                 timeCheck(submitTime, scoreId, cursor, mysql)
-
                 # Use the data retrieved from the database query, questions answered and their results to calculate the score. The total score 
                 # and the percentage correct for each stage will be returned to the two variables.
                 totalScore = calculateScore(levelList, questionTrack, isCorrect)
+                # Unused for now, get the current user's info
+                getUserInfo(scoreId, attemptNum, cursor)
+                # Finally, use all the relevant info to submit the test
+                submitTest(stageDifficultyArray, submitTime, totalScore, urlId, scoreId, cursor, mysql)
 
-                # Set entranceLevel to the last difficulty value in stageArray
-                print(f"THE USER WENT THROUGH THE FOLLOWING STAGES: {stageArray}")
-                entranceLevel = stageArray[len(stageArray) - 1]
-                print(f"ENTRANCE LEVEL TO BE USED: {entranceLevel}")
-
-                # Next, get the correct user_id based on the result id and the attempt id
-                paramList = [scoreId, attemptNum]
-                getUserQuery = "SELECT U.id, U.email, U.fullname FROM users U, user_answers UA, scores S WHERE U.id = S.user_id AND S.score_id = UA.score_id " \
-                "AND UA.score_id = %s AND UA.attempt_id = %s"
-                cursor.execute(getUserQuery, tuple(paramList))
-                # Do something with this later
-                userInfo = cursor.fetchone()
-                print(f"USER INFO THAT WAS RETRIEVED! {userInfo}")
-                userId = userInfo['id']
-
-                # Use the submission time, the total score, and the entrance level to finalize the params
-                paramList = finalizeSubmitParams(submitTime, totalScore, entranceLevel, urlId, scoreId)
-                
-                # Now, the correct record will be updated with the results in the database
-                scoreQuery = "UPDATE scores SET total_score = %s, entrance_level = %s, test_status = 'COMPLETED', end_time = %s, url_id = %s " \
-                "WHERE score_id = %s"
-
-                cursor.execute(scoreQuery, tuple(paramList))
-                mysql.commit()
-                print("SUCCESSFULLY STORED THE SCORES!")
-                # Finally, close the cursor
-                cursor.close()
-                mysql.close()
                 return jsonify("Test submitted!"), 201
             
             # The except statement will call a function that handles errors and returns JSON
@@ -380,31 +323,9 @@ def resultDisplay():
                 urlId = data['url_id']
                 print(f"THE CURRENT URLID: {urlId}")
                 paramList = [urlId]
-                resultQuery = "SELECT S.score_id, U.attempt_id, S.total_score, S.entrance_level, S.end_time FROM scores S, user_answers U" \
-                " WHERE S.score_id = U.score_id AND S.url_id = %s"
 
-                #Execute the query with the parameters, store the first entry, close the cursor, and return
-                cursor.execute(resultQuery, tuple(paramList))
-                resultData = cursor.fetchone()
-                cursor.close()
-                mysql.close()
-
-                # DEBUG Check the data retrieved from the database
-                print("CURRENT RESULT RECORD DATA")
-                print(resultData)
-
-                # oldDate = str(resultData['end_time'])
-                # DEBUG Check the format of old date
-                # print("OLDDATE")
-                # print(oldDate)
-
-                # Use isoformat as it is the quickest way to format the date in the proper manner, add Z for UTC timezone
-                finalDate = f"{resultData['end_time'].isoformat()}Z"
-                # DEBUG Check the updated date
-                # print("FINALDATE")
-                # print(finalDate)
-                # Set the new date in the resultData before sending
-                resultData['end_time'] = finalDate
+                # Query the database for the proper test record using the provided urlId
+                resultData = retrieveTestRecord(paramList, cursor, mysql)
 
                 # DEBUG Check the final version with the updated date
                 print("FINAL RESULTS DATA")
@@ -427,17 +348,9 @@ def resultDisplay():
                 print("ATTEMPTID FOR CURRENT RETRIEVAL")
                 print(attemptId)
                 paramList = [scoreId]
-                # This simple query will select all question and answer info only for the questions the user answered on their current attempt.
-                # The DISTINCT keyword is used so that duplicate records are not obtained.
-                answersQuery = "SELECT DISTINCT Q.question_id, Q.question_text, Q.question_body, Q.question_level, A.answer_id, A.answer_text, " \
-                "A.correct_answer, U.user_answer_text, U.user_was_correct, U.response_order FROM questions Q, answers A, user_answers U, scores S " \
-                "WHERE Q.question_id = A.question_id AND A.question_id = U.question_id AND U.score_id = S.score_id AND " \
-                "S.score_id = %s ORDER BY U.response_order"
 
-                cursor.execute(answersQuery, paramList)
-                answerData = cursor.fetchall()
-                cursor.close()
-                mysql.close()
+                # Get the test answer data based on the provided scoreId in the paramList
+                answerData = retrieveTestAnswers(paramList, cursor, mysql)
 
                 # DEBUG PRINT THE RESULT OF FETCHING FROM THE DATABASE
                 print("BEFORE THE FOR LOOP!")
@@ -445,8 +358,8 @@ def resultDisplay():
 
                 # Create the necessary fields to be passed to the function so that the answers can be properly mapped to each question
                 questionKey = 'question_id'
-                singleFields = ['question_id', 'question_text', 'question_body', 'question_level', 'user_answer_text', 'user_was_correct', 'response_order']
-                nestedFields = ['answer_id', 'answer_text', 'correct_answer']
+                singleFields = ['question_id', 'question_text', 'question_text_furigana', 'question_body', 'question_body_furigana', 'question_level', 'question_audio', 'user_answer_text', 'user_was_correct', 'response_order']
+                nestedFields = ['answer_id', 'answer_text', 'answer_text_furigana', 'correct_answer']
                 answerData = mapAnswerstoQuestion(answerData, questionKey, singleFields, nestedFields)
 
                 # Return the retrieved answers
@@ -466,5 +379,5 @@ def resultDisplay():
 
 # Once the app is running, it will use the port 5000 and communicate to the localhost. It will also be in debug mode
 # After the app is out of development, not needed in production
-#if __name__ == '__main__':
+# if __name__ == '__main__':
 #   app.run(debug=True, host="localhost", port=int("5000"))

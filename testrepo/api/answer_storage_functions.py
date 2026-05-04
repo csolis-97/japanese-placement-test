@@ -1,5 +1,5 @@
 # This function will fetch all of the question info, alongside its respective answer info, given the user's answer and question_id
-def getCorrectAnswerInfo(cursor, answerList, questionId, answerId, currentStage):
+def getCorrectAnswerInfo(cursor, answerList, questionId, answerId, currentStageNum):
     # The results list will store the answer information stored in the database in order to check it with the user's answers.
     results = []
     print(answerList)
@@ -25,7 +25,7 @@ def getCorrectAnswerInfo(cursor, answerList, questionId, answerId, currentStage)
             '''Here, append the current answeredQuestion value to the list of questionId.
             The SQL query will expect a value for answer_text and then question_id in that order, so the list is set accordingly.'''
             paramList = [answeredQuestion, int(questionId[i])]
-            checkQuestions(paramList, cursor, answerId, results, currentStage)
+            checkQuestions(paramList, cursor, answerId, results, currentStageNum)
 
     # DEBUG CHECK THE LIST OF RESULTS HERE
     print("LIST OF RESULTS")
@@ -33,7 +33,7 @@ def getCorrectAnswerInfo(cursor, answerList, questionId, answerId, currentStage)
     return results
 
 # A function used to append one question's answer information from the database to the results
-def checkQuestions(paramList, cursor, answerId, results, currentStage): 
+def checkQuestions(paramList, cursor, answerId, results, currentStageNum): 
     # PRINT THE CURRENT PARAMLIST FOR DEBUG
     print("HERE IS THE CURRENT PARAMLIST")
     print(paramList)
@@ -57,7 +57,7 @@ def checkQuestions(paramList, cursor, answerId, results, currentStage):
             'question_id': paramList[1],
             'answer_id': 0,
             'answer_text': paramList[0],
-            'question_level': currentStage
+            'question_level': currentStageNum
         })
     # Reset paramList for the next iteration
     paramList = []
@@ -138,7 +138,7 @@ def buildValueQuery(answerList):
     return valueQuery
 
 # This function is used to build the parameters that will be inserted into the valueQuery from the previous method
-def buildAnswerData(answerData, scoreId, attemptNum, questionId, isCorrect, questionTrack, currentStage):
+def buildAnswerData(answerData, scoreId, attemptNum, questionId, isCorrect, questionTrack, currentStageNum):
     # Initiate paramList
     paramList = []
     # Enter a for loop with enumeration in order to append the proper values that will be used as parameters for the query 
@@ -148,7 +148,7 @@ def buildAnswerData(answerData, scoreId, attemptNum, questionId, isCorrect, ques
         paramList.append(attemptNum)
         paramList.append(questionId)
         paramList.append(len(questionTrack))
-        paramList.append(currentStage + 1)
+        paramList.append(currentStageNum + 1)
         paramList.append(answerData)
         paramList.append(isCorrect)
     else:
@@ -163,7 +163,7 @@ def buildAnswerData(answerData, scoreId, attemptNum, questionId, isCorrect, ques
                 paramList.append(i + 1)
             else:
                 paramList.append((i + 1) + (len(questionTrack) - 5))
-            paramList.append(currentStage + 1)
+            paramList.append(currentStageNum + 1)
             paramList.append(answerData[i])
             paramList.append(isCorrect[i])
 
@@ -180,3 +180,24 @@ def checkNoAnswer(answerList):
             print("REPLACING CURRENT EMPTY QUESTION!")
             answerList[i] = "not answered"
     return answerList
+
+# This function will handle the answer submission. First it will build the query values, then the answer info, and then the answer data will be stored
+def submitAnswers(isCorrect, answerData, scoreId, attemptNum, questionId, questionTrack, currentStageNum, cursor, mysql):
+    # Check if the user actually had any answers. If not, skip to the else statement without interacting with the database.
+    if len(isCorrect) > 0:
+        # Assign valueQuery to the returned array
+        valueQuery = buildValueQuery(answerData)
+        # Then assign paramList to the array that was built in the function
+        paramList = buildAnswerData(answerData, scoreId, attemptNum, questionId, isCorrect, questionTrack, currentStageNum)
+        # Build the query using valueQuery, with paramList as its values
+        storeQuery = f"INSERT INTO user_answers(score_id, attempt_id, question_id, response_order, stage_answered, user_answer_text, user_was_correct) VALUES {" ".join(valueQuery)}"
+
+        cursor.execute(storeQuery, tuple(paramList))
+        mysql.commit()
+        print("SUCCESSFULLY STORED THE ANSWERS!")
+    else:
+        print("USER SUBMITTED NO ANSWERS, SO THERE IS NOTHING TO STORE.")
+
+    # Finally, close the cursor and return the data
+    cursor.close()
+    mysql.close()

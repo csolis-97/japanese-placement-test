@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import MessageModal from "@/app/components/MessageModal";
+import MessageModal from "@/components/MessageModal";
 
 
 export default function ErrorPage( { error, reset } : { error: Error & { digest?: string }, reset: () => void } ) {
