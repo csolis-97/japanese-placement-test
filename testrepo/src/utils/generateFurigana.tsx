@@ -55,11 +55,6 @@ export function generateFurigana(questionField: string, furigana: string | undef
     ];
     const IRREGULAR_READINGS = ['今朝','朝日', '昨日', '今日', '明日', '明後日', '大人', '土産',];
     const furiganaList = furigana.split("　");
-    //const textArray = questionField.split("");
-
-    /* LOOK INTO INTL SEGMENTER, MIGHT BE THE EASY WAY TO HANDLE MULTIPLE DIFFERENT KANJI COMPOUNDS BEING CONNECTED WHILE STILL PROPERLY ASSIGNING FURIGANA
-    https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Segmenter
-    */
 
     const segmenterJp = new Intl.Segmenter("ja-JP", { granularity: "word" });
     const textSegments = segmenterJp.segment(questionField);
@@ -70,9 +65,6 @@ export function generateFurigana(questionField: string, furigana: string | undef
     .replace(/(\p{sc=Han})(?=\p{sc=Hiragana}|\p{sc=Katakana}|\p{P})|(\p{sc=Hiragana}|\p{P})(?=\p{sc=Han}|\p{sc=Katakana})|(\p{sc=Katakana}\p{P})(?=\p{sc=Han}|\p{sc=Hiragana})/gu, "$& ");
     const textArray = givenText.split(/(\s+)/);
     
-    //const givenText = questionField
-    //.replace(/(\p{sc=Han})(?=\p{sc=Hiragana}|\p{sc=Katakana}|\p{P})|(\p{sc=Hiragana}|\p{P})(?=\p{sc=Han}|\p{sc=Katakana})|(\p{sc=Katakana}\p{P})(?=\p{sc=Han}|\p{sc=Hiragana})/gu, "$& ");
-    // const textArray = givenText.split(/(\s+)/);
     // Use a for loop to apply line break elements to any \n detected
     for (let i = 0; i < textArray.length -1; i++) {
         if (textArray[i].includes("\n")) {
@@ -109,7 +101,8 @@ export function generateFurigana(questionField: string, furigana: string | undef
             const levelIsIntermediateOne = questionLevel === 'Intermediate I' && (isIntermediateOneKanji || isBeginnerTwoKanji);
             const levelIsIntermediateTwo = questionLevel === 'Intermediate II' && (isIntermediateTwoKanji || isIntermediateOneKanji || isBeginnerTwoKanji);
             const levelIsAdvanced = questionLevel === 'Advanced' && (isAdvancedKanji || isIntermediateTwoKanji || isIntermediateOneKanji || isBeginnerTwoKanji);
-            const furiganaNotNeeded = [levelIsBeginnerTwo, levelIsIntermediateOne, levelIsIntermediateTwo, levelIsAdvanced].some(Boolean) && [levelIsBeginnerTwo, levelIsIntermediateOne, levelIsIntermediateTwo, levelIsAdvanced].filter(Boolean).length > (char.length / 2);
+            //const furiganaNotNeeded = [levelIsBeginnerTwo, levelIsIntermediateOne, levelIsIntermediateTwo, levelIsAdvanced].some(Boolean) && [levelIsBeginnerTwo, levelIsIntermediateOne, levelIsIntermediateTwo, levelIsAdvanced].filter(Boolean).length > (char.length / 2);
+            const furiganaNotNeeded = [levelIsBeginnerTwo, levelIsIntermediateOne, levelIsIntermediateTwo, levelIsAdvanced].some(Boolean) && currentKanjiCompound.every(char => BEGINNER_TWO_KANJI.includes(char) || INTERMEDIATE_ONE_KANJI.includes(char) || INTERMEDIATE_TWO_KANJI.includes(char) || ADVANCED_KANJI.includes(char));
             console.log('IS BEGINNER II?', levelIsBeginnerTwo);
             console.log('IS INTERMEDIATE I?', levelIsIntermediateOne);
             console.log('IS INTERMEDIATE II?', levelIsIntermediateTwo);
