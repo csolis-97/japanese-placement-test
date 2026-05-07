@@ -55,7 +55,7 @@ in order to connect to the database instance which you create, which can be done
 pnpm install sqids
 pnpm add @react-pdf/renderer'''
 
-3. In your terminal, install the dependencies for Python by doing the following (if the file cannot be found, make sure you did "cd testrepo first):
+3. In your terminal, install the dependencies for Python by doing the following (if the file cannot be found, make sure you did "cd testrepo" first):
 '''pip install -r requirements.txt'''
 
 4. In order to run the front end, open a new terminal and enter the following:
@@ -64,7 +64,9 @@ pnpm add @react-pdf/renderer'''
 pnpm dev
 '''
 
-5. In order to run the back end, open another new terminal and enter the following:
+5. In index.py, Uncomment the local import statements and database creation function alongside the objects created by calling the function, and the last two lines for running in debug. Comment out the ones used by Vercel as well.
+
+6. In order to run the back end, open another new terminal and enter the following:
 
 '''cd testrepo/api
 python index.py
@@ -75,4 +77,4 @@ python index.py
 ######              NOTES               ######
 ######                                  ######
 
-This is not a fully complete placement test application. It is currently missing a method of properly sending test results to the relevant email addresses. Furthermore, some things like dealing with what happens when users leaves the page have not been implemented. 
+This is not a placement test application with extensive features such as sending the results via email address or handling a user leaving the test halfway through it. Also, there is a bug with the furigana sometimes for some words not being displayed despite the kanji not yet being learned at the current difficulty level.
