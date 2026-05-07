@@ -4,6 +4,7 @@ from flask_cors import CORS
 import pymysql
 import os
 import datetime
+import tempfile
 
 # Look into Flask-APScheduler for scheduling jobs. Note that two of these schedulers will be launched if Flask is in debug mode
 # so set it to false if needed.
@@ -38,12 +39,16 @@ try:
     # Load the environment variables from the .env file, which will then be used to configure the database connection
     load_dotenv()
 
-    # Get the path for the CA certificate so that SSL can be used to connect to the database.
-    caPath = os.path.join(os.path.dirname(__file__), "ca.pem")
-
     # This function when called will return a connection to the TiDB Cloud database using the environmental variables provided
     def getDB():
         print("ABOUT TO RETURN THE DATABASE CONNECTION!")
+        # Get the path for the CA certificate so that SSL can be used to connect to the database.
+        caCertificate = os.getenv('TIDB_SSL_CA')
+        tempDir = tempfile.gettempdir()
+        caPath = os.path.join(tempDir, "ca.pem")
+        with open(caPath, 'w') as f:
+            f.write(caCertificate)
+
         return (pymysql.connect(
             host = os.getenv('TIDB_HOST'),
             port = int(os.getenv('TIDB_PORT')),
