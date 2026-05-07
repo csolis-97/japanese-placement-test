@@ -48,7 +48,7 @@ in order to connect to the database instance which you create, which can be done
 
 1. Clone the depository in a terminal by doing the following:
 
-'''git clone https://github.com/HansyToadsworth/TestRepo-Update.git'''
+'''git clone https://github.com/csolis-97/japanese-placement-test.git'''
 
 2. In your terminal, install the dependencies for TypeScript:
 '''pnpm install random-seedable
@@ -64,9 +64,11 @@ pnpm add @react-pdf/renderer'''
 pnpm dev
 '''
 
-5. In index.py, Uncomment the local import statements and database creation function alongside the objects created by calling the function, and the last two lines for running in debug. Comment out the ones used by Vercel as well.
+5. Create a database using the seeding files provided under testrepo/api/seed, namely local_test_database.sql and test_data, using a tool like MySQLWorkbench. If you would like to make your own data, you are welcome to do so.
 
-6. In order to run the back end, open another new terminal and enter the following:
+6. In index.py, Uncomment the local import statements and database creation function alongside the objects created by calling the function, and the last two lines for running in debug. Comment out the ones used by Vercel as well.
+
+7. In order to run the back end, open another new terminal and enter the following:
 
 '''cd testrepo/api
 python index.py
